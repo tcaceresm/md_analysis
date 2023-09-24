@@ -28,7 +28,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":h:i:n:d:e:p:t:m:r:" option; do
+while getopts ":h:i:n:d:e:p:t:r:" option; do
    case $option in
       h) # Print this help
          Help
@@ -45,8 +45,6 @@ while getopts ":h:i:n:d:e:p:t:m:r:" option; do
          prod=$OPTARG;;
       t) # Topology processing
          topo=$OPTARG;;
-      m) # Remove WAT
-         rm_hoh=$OPTARG;;
       r) # Compute RMSD
          rmsd=$OPTARG;;
      \?) # Invalid option
