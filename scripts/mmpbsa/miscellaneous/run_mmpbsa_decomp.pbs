@@ -1,0 +1,74 @@
+#!/bin/csh
+#
+#$ -N iaa1
+#$ -S /bin/csh
+#$ -pe intelmpi8_* 8
+#$ -q parallel
+#$ -l h_rt=23:59:00
+#$ -j y
+
+#
+# --- Prepare environment
+#
+#source /etc/profile.d/modules.csh
+#module purge
+#module add sge
+#module add intel-cluster-runtime
+#module add amber/amber14
+set AMBERHOME=/home/tcaceres/amber20
+source $AMBERHOME/amber.csh
+#/bin/sleep 5
+
+################################################################################
+#      Do not modify the script from here onward
+#
+#
+# --- Prepare calculation
+#
+limit stacksize unlimited
+set SCRIPT=/mnt/Backup1/UC/10mo_Semestre/tecnicas_avanzadas/dinamica_molecular/tir1/2p1q/protocolo_n5_10ns/calc_a_1t/iaa1/s1_100_1/pb3_gb0/run_mmpbsa_decomp.pbs
+set SY=iaa1
+set CALC=iaa1_pb3_gb0
+set PARAMS=mmpbsa_decomp.in
+set TOPO=/mnt/Backup1/UC/10mo_Semestre/tecnicas_avanzadas/dinamica_molecular/tir1/2p1q/protocolo_n5_10ns/calc_a_1t/iaa1/topo
+set SNAPS=/mnt/Backup1/UC/10mo_Semestre/tecnicas_avanzadas/dinamica_molecular/tir1/2p1q/protocolo_n5_10ns/calc_a_1t/iaa1/snapshots
+
+#
+# --- Inform about HOST
+#
+#echo $HOSTNAME
+
+#
+# --- Go to working directory 
+#
+set PATH=/mnt/Backup1/UC/10mo_Semestre/tecnicas_avanzadas/dinamica_molecular/tir1/2p1q/protocolo_n5_10ns/calc_a_1t/iaa1/s1_100_1/pb3_gb0
+cd $PATH
+
+#
+# --- Create tmp directory
+#
+cd /tmp
+mkdir $CALC
+cd $CALC
+cp $PATH/$PARAMS .
+ln -s $TOPO topo
+ln -s $SNAPS snapshots
+
+#
+# --- Execute
+#
+set MMPBSA=/home/tcaceres/amber20/bin/mm_pbsa.pl
+perl $MMPBSA $PARAMS
+
+#
+# --- Zipping output
+#
+gzip -9 ${SY}*
+cp ${SY}* $PATH
+rm -r /tmp/$CALC
+gunzip $PATH/${SY}_statistics.out
+
+#
+# --- Exit this script
+#
+exit

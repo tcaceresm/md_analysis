@@ -1,0 +1,7 @@
+leap_script_4.in lo utilizo cuando me surge el siguiente error:
+
+Al querer calcular el RMSD/RMSF sin aguas, se basa en las topologías sin aguas. Por alguna razón, aún habían
+aguas en la topologia (y, por lo tanto, en el PDB). Estas topologías se basan en los PDB's de la carpeta leap.
+Simplemente elimino las aguas de los PDB's en la carpeta leap, y uso el leap_script_4.in para obtener las nuevas
+topologías sin aguas.
+El script topo_processing.sh se encarga de eso.

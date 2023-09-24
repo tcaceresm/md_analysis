@@ -1,0 +1,22 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+set default PBradii parse
+loadoff WDPATH/leap/LIGND/LIGND_am1.lib
+loadoff WDPATH/receptor/ihp/ihp.lib
+
+LIG = loadpdb WDPATH/leap/LIGND/LIGND_lig.pdb
+REC = loadpdb MD_am1/LIGND_vac_rec.pdb
+COM = loadpdb MD_am1/LIGND_vac_com.pdb
+
+loadAmberParams WDPATH/leap/LIGND/LIGND.frcmod
+saveAmberParm LIG RUTA/LIGND_gb0_pb3_lig.top RUTA/LIGND_gb0_pb3_lig.crd
+savepdb LIG RUTA/LIGND_vac_lig.pdb
+
+saveAmberParm REC RUTA/LIGND_gb0_pb3_rec.top RUTA/LIGND_gb0_pb3_rec.crd
+savepdb REC RUTA/LIGND_vac_rec.pdb
+
+saveAmberParm COM RUTA/LIGND_gb0_pb3_com.top RUTA/LIGND_gb0_pb3_com.crd
+savepdb COM RUTA/LIGND_vac_com.pdb
+
+quit

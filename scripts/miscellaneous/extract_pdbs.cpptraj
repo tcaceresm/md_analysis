@@ -1,0 +1,8 @@
+parm ../../cryst/iaa1_solv_com.top
+trajin *.mdcrd
+autoimage
+strip :WAT
+strip :Na+
+rms fit :1-585
+trajout ensemble.pdb pdb
+
