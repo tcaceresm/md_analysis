@@ -1,8 +1,0 @@
-parm ../../cryst/LIGN_solv_com.parm7
-trajin *md_nvt_red_**.mdcrd*
-autoimage
-strip :WAT
-strip :Na+
-rms fit :1-NRES
-trajout LIGN_equi.nc format netcdf
-
