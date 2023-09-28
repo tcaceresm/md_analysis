@@ -1,0 +1,19 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadoff /borrar/MD/tri/lib/LIG.lib
+loadoff /borrar/MD/cofactor_lib/ihp.lib
+
+COM = loadpdb /borrar/MD/tri/topo/tri_com.pdb
+
+loadAmberParams /borrar/MD/tri/lib/tri.frcmod
+
+addIons COM Na+ 0
+saveAmberParm COM /borrar/MD/tri/topo/tri_cio_com.parm7 /borrar/MD/tri/topo/tri_cio_com.crd
+
+solvatebox COM TIP3PBOX 11.0
+savepdb COM /borrar/MD/tri/topo/tri_solv_com.pdb
+saveAmberParm COM /borrar/MD/tri/topo/tri_solv_com.parm7 /borrar/MD/tri/topo/tri_solv_com.crd
+
+quit

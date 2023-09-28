@@ -1,0 +1,27 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadoff /borrar/MD/iaa/lib/iaa.lib
+loadoff /borrar/MD/cofactor_lib/ihp.lib
+
+LIG = loadpdb /borrar/MD/iaa/topo/iaa_lig.pdb
+REC = loadpdb /borrar/MD/iaa/topo/iaa_rec.pdb
+COM = loadpdb /borrar/MD/iaa/topo/iaa_com.pdb
+
+loadAmberParams /borrar/MD/iaa/lib/iaa.frcmod
+
+saveAmberParm LIG /borrar/MD/iaa/topo/iaa_vac_lig.parm7 /borrar/MD/iaa/topo/iaa_vac_lig.crd
+savepdb LIG /borrar/MD/iaa/topo/iaa_vac_lig.pdb
+
+saveAmberParm REC /borrar/MD/iaa/topo/iaa_vac_rec.parm7 /borrar/MD/iaa/topo/iaa_vac_rec.crd
+savepdb REC /borrar/MD/iaa/topo/iaa_vac_rec.pdb
+
+saveAmberParm COM /borrar/MD/iaa/topo/iaa_vac_com.parm7 /borrar/MD/iaa/topo/iaa_vac_com.crd
+savepdb COM /borrar/MD/iaa/topo/iaa_vac_com.pdb
+
+charge LIG
+charge REC
+charge COM
+
+quit

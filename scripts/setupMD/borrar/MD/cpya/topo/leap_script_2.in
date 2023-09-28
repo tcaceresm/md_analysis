@@ -1,0 +1,19 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadoff /borrar/MD/cpya/lib/LIG.lib
+loadoff /borrar/MD/cofactor_lib/ihp.lib
+
+COM = loadpdb /borrar/MD/cpya/topo/cpya_com.pdb
+
+loadAmberParams /borrar/MD/cpya/lib/cpya.frcmod
+
+addIons COM Na+ 0
+saveAmberParm COM /borrar/MD/cpya/topo/cpya_cio_com.parm7 /borrar/MD/cpya/topo/cpya_cio_com.crd
+
+solvatebox COM TIP3PBOX 11.0
+savepdb COM /borrar/MD/cpya/topo/cpya_solv_com.pdb
+saveAmberParm COM /borrar/MD/cpya/topo/cpya_solv_com.parm7 /borrar/MD/cpya/topo/cpya_solv_com.crd
+
+quit

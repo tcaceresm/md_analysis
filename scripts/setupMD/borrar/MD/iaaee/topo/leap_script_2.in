@@ -1,0 +1,19 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadoff /borrar/MD/iaaee/lib/LIG.lib
+loadoff /borrar/MD/cofactor_lib/ihp.lib
+
+COM = loadpdb /borrar/MD/iaaee/topo/iaaee_com.pdb
+
+loadAmberParams /borrar/MD/iaaee/lib/iaaee.frcmod
+
+addIons COM Na+ 0
+saveAmberParm COM /borrar/MD/iaaee/topo/iaaee_cio_com.parm7 /borrar/MD/iaaee/topo/iaaee_cio_com.crd
+
+solvatebox COM TIP3PBOX 11.0
+savepdb COM /borrar/MD/iaaee/topo/iaaee_solv_com.pdb
+saveAmberParm COM /borrar/MD/iaaee/topo/iaaee_solv_com.parm7 /borrar/MD/iaaee/topo/iaaee_solv_com.crd
+
+quit
