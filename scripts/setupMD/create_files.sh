@@ -48,16 +48,20 @@ while getopts ":hi:n:d:e:p:t:r:" option; do
    esac
 done
 
-#### CHANGE THIS VARIABLES #####
-
-# Ligandos analizados
-declare -a LIGANDS=("ben" "bma" "cfa" "cpoa" "cpya" "flu" "iaa" "iaaee" "ipa" "naa" "nta" "paa" "pic" "qui" "tri" "trp" ) 
-COFACTOR="ihp"
-
 #Ruta de la carpeta del script (donde se encuentra este script)
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Ligandos analizados
+declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
+declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+echo ${LIGANDS[*]}
+
+COFACTOR=($(ls ${SCRIPT_PATH}/cofactor/))
+
+# Input para LEaP
 LEAP_SCRIPT_1="leap_script_1.in"
 LEAP_SCRIPT_2="leap_script_2.in"
+
 ##############################
 echo $WDPATH
 echo "Checking existence of MD folder"
@@ -90,8 +94,6 @@ for LIG in "${LIGANDS[@]}"
     
     TOPO="${WDPATH}/MD/${LIG}/topo/"
     
-   # mkdir -p ${WDPATH}/MD/{cofactor_lib,${LIG}/{lib,topo,setupMD/{rep1/{equi,prod},rep2/{equi,prod},rep3/{equi,prod},rep4/{equi,prod},rep5/{equi,prod}}}}
-
     TOPO=${WDPATH}/MD/${LIG}/topo
     LIGAND_LIB=${WDPATH}/MD/${LIG}/lib
     COFACTOR_LIB=${WDPATH}/MD/cofactor_lib
