@@ -1,14 +1,64 @@
 #!/usr/bin/bash
 
 #### CHANGE THIS VARIABLES #####
+#!/usr/bin/bash
+set -e
+set -u
+set -o pipefail
 
-ID="2p1m" #ID del complejo simulado
-N_RES="569" # Numero del residuo del ligando. 566 afb5 570 2p1q_noDegron 569 2p1m
+############################################################
+# Help                                                     #
+############################################################
+Help()
+{
+   # Display Help
+
+   echo "Syntax: copy_files.sh [-h|i|n|d|e|p|t]"
+   echo "options:"
+   echo "h     Print help"
+   echo "i     ID of protein structure."
+   echo "n     Residue Number in structure complex."
+   echo "d     Working Directory."
+   echo "e     0|1. Process equilibration output."
+   echo "p     0|1. Process production output"
+   echo "t     0|1. Process topology."
+   echo "r     0|1. Compute RMSD from trajectories"
+   echo
+}
+
+############################################################
+# Process the input options. Add options as needed.        #
+############################################################
+# Get the options
+while getopts ":hi:n:d:e:p:t:r:" option; do
+   case $option in
+      h) # Print this help
+         Help
+         exit;;
+      i) # Enter a folder ID.
+         ID=$OPTARG;;
+      n) # Enter the residue Number from PDB complex structure.
+         N_RES=$OPTARG;;
+      d) # Enter the MD Directory
+         WDPATH=$OPTARG;;
+      e) # Equilibration processing
+         equi=$OPTARG;;
+      p) # Production processing
+         prod=$OPTARG;;
+      t) # Topology processing
+         topo=$OPTARG;;
+      r) # Compute RMSD
+         rmsd=$OPTARG;;
+     \?) # Invalid option
+         echo "Error: Invalid option"
+         exit;;
+   esac
+done
 
 
 # Ligandos analizados
 declare -a arr=("ben" "bma" "cfa" "cpoa" "cpya" "flu" "iaa" "iaaee" "ipa" "naa" "nta" "paa" "pic" "qui" "tri" "trp" )
-declare -a arr=("iaa")
+#declare -a arr=("iaa")
 
 #Ruta de la carpeta del script (donde se encuentra este script)
 SCRIPT_PATH="/mnt/Backup2/scripts/prepare_calc_mmpbsa"
