@@ -56,7 +56,8 @@ declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 echo ${LIGANDS[*]}
 
-COFACTOR=($(ls ${SCRIPT_PATH}/cofactor/))
+COFACTOR_MOL2=($(ls ${SCRIPT_PATH}/cofactor/))
+COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
 # Input para LEaP
 LEAP_SCRIPT_1="leap_script_1.in"
@@ -97,6 +98,7 @@ for LIG in "${LIGANDS[@]}"
     TOPO=${WDPATH}/MD/${LIG}/topo
     LIGAND_LIB=${WDPATH}/MD/${LIG}/lib
     COFACTOR_LIB=${WDPATH}/MD/cofactor_lib
+    
 
     echo "Copying files to $TOPO"  
     echo "Copying ${LEAP_SCRIPT_1} and ${LEAP_SCRIPT_2} to $TOPO"
@@ -108,6 +110,26 @@ for LIG in "${LIGANDS[@]}"
     sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2}
     sed -i "s/COF/${COFACTOR}/g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2}
     sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2}
+    
+done #Done with create directories
+
+# Prepare cofactor. 
+    cp $SCRIPT_PATH/cofactor/$COFACTOR_MOL2 $COFACTOR_LIB
+    cd $COFACTOR_LIB
+    $AMBERHOME/bin/antechamber -i ${COFACTOR_MOL2} -fi mol2 -o ${COFACTOR_MOL2} -fo mol2 -c bcc -nc -12 -j
+    cd $SCRIPT_PATH
+
+# Prepare Ligands
+for LIG in ${LIGANDS_MOL2[@]}
+do
+    cp $SCRIPT_PATH/ligands/$LIG $TOPO
+    cd $TOPO
+    $AMBERHOME/bin/antechamber -i ${LIG} -fi mol2 -o ${LIG} -fo mol2 -c bcc
+    cd $SCRIPT_PATH
+    
+
+done
+    
 
    #This is to obtain total atom from parmtop file
    #TOTAL_ATOM=$(cat ${WDPATH}/MD_am1/${LIG}1/cryst/${LIG}1_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}') #por si se usan trajectorias solvatadas para la extraccion
@@ -119,6 +141,5 @@ for LIG in "${LIGANDS[@]}"
 #   FIRST_ATOM_LIG=$(($LAST_ATOM_REC + 1))
 #   LAST_ATOM_LIG=$TOTAL_ATOM
    
-   
-   done
+
 echo "DONE!"

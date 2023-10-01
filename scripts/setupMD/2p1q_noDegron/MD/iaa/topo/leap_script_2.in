@@ -1,0 +1,19 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadoff /2p1q_noDegron//MD/iaa/lib/LIG.lib
+loadoff /2p1q_noDegron//MD/cofactor_lib/ihp.lib
+
+COM = loadpdb /2p1q_noDegron//MD/iaa/topo/iaa_com.pdb
+
+loadAmberParams /2p1q_noDegron//MD/iaa/lib/iaa.frcmod
+
+addIons COM Na+ 0
+saveAmberParm COM /2p1q_noDegron//MD/iaa/topo/iaa_cio_com.parm7 /2p1q_noDegron//MD/iaa/topo/iaa_cio_com.crd
+
+solvatebox COM TIP3PBOX 11.0
+savepdb COM /2p1q_noDegron//MD/iaa/topo/iaa_solv_com.pdb
+saveAmberParm COM /2p1q_noDegron//MD/iaa/topo/iaa_solv_com.parm7 /2p1q_noDegron//MD/iaa/topo/iaa_solv_com.crd
+
+quit
