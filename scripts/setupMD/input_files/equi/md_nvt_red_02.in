@@ -28,6 +28,6 @@ NVT MD w/ position restraints (4 kcal/molA) and PME (sander)
  &end
 Hold the solutes fixed
 4.0
-RES 1 579
+RES 1 TOTALRES
 END
 END

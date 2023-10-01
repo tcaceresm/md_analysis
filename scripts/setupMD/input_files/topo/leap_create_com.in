@@ -1,0 +1,36 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+set default PBradii parse
+
+loadoff LIGAND_LIB_PATH/LIGND.lib
+loadoff COFACTOR_LIB_PATH/COF.lib
+
+LIG = loadpdb LIGAND_LIB_PATH/LIGND_lig.pdb
+REC = loadpdb REC_PATH/RECEPTOR_prep.pdb
+COM = combine {REC LIG}
+
+savepdb COM TOPO_PATH/LIGND_com.pdb
+savepdb REC TOPO_PATH/LIGND_rec.pdb
+savepdb LIG TOPO_PATH/LIGND_lig.pdb
+
+loadAmberParams /LIGAND_LIB_PATH/LIGND.frcmod
+
+saveAmberParm LIG /TOPO_PATH/LIGND_vac_lig.parm7 /TOPO_PATH/LIGND_vac_lig.crd
+saveAmberParm REC /TOPO_PATH/LIGND_vac_rec.parm7 /TOPO_PATH/LIGND_vac_rec.crd
+saveAmberParm COM /TOPO_PATH/LIGND_vac_com.parm7 /TOPO_PATH/LIGND_vac_com.crd
+
+
+charge LIG
+charge REC
+charge COM
+
+addIons COM Na+ 0
+addions COM Cl- 0
+
+solvatebox COM TIP3PBOX 11.0
+savepdb COM /TOPO_PATH/LIGND_solv_com.pdb
+saveAmberParm COM /TOPO_PATH/LIGND_solv_com.parm7 /TOPO_PATH/LIGND_solv_com.crd
+
+quit

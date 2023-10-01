@@ -3,8 +3,8 @@ source leaprc.water.tip3p
 source leaprc.gaff
 
 loadAmberParams LIGND.frcmod
-LIGND = loadmol2 LIGND.mol2
-check LIGND
-saveoff LIGND LIGND.lib
+LIG = loadmol2 LIGND.mol2
+check LIG
+saveoff LIG LIGND.lib
 
 quit

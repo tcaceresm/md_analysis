@@ -2,7 +2,7 @@ source leaprc.protein.ff14SB
 source leaprc.water.tip3p
 source leaprc.gaff
 
-loadoff /LIGAND_LIB_PATH/LIG.lib
+loadoff /LIGAND_LIB_PATH/LIGND.lib
 loadoff /COFACTOR_LIB_PATH/COF.lib
 
 COM = loadpdb /TOPO_PATH/LIGND_com.pdb
@@ -10,7 +10,8 @@ COM = loadpdb /TOPO_PATH/LIGND_com.pdb
 loadAmberParams /LIGAND_LIB_PATH/LIGND.frcmod
 
 addIons COM Na+ 0
-saveAmberParm COM /TOPO_PATH/LIGND_cio_com.parm7 /TOPO_PATH/LIGND_cio_com.crd
+addions COM Cl- 0
+#saveAmberParm COM /TOPO_PATH/LIGND_cio_com.parm7 /TOPO_PATH/LIGND_cio_com.crd
 
 solvatebox COM TIP3PBOX 11.0
 savepdb COM /TOPO_PATH/LIGND_solv_com.pdb
