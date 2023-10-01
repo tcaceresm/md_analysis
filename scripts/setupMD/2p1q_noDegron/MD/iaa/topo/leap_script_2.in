@@ -2,18 +2,18 @@ source leaprc.protein.ff14SB
 source leaprc.water.tip3p
 source leaprc.gaff
 
-loadoff /2p1q_noDegron//MD/iaa/lib/LIG.lib
-loadoff /2p1q_noDegron//MD/cofactor_lib/ihp.lib
+loadoff //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/lib/LIG.lib
+loadoff //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/cofactor_lib/ihp.lib
 
-COM = loadpdb /2p1q_noDegron//MD/iaa/topo/iaa_com.pdb
+COM = loadpdb //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/topo/iaa_com.pdb
 
-loadAmberParams /2p1q_noDegron//MD/iaa/lib/iaa.frcmod
+loadAmberParams //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/lib/iaa.frcmod
 
 addIons COM Na+ 0
-saveAmberParm COM /2p1q_noDegron//MD/iaa/topo/iaa_cio_com.parm7 /2p1q_noDegron//MD/iaa/topo/iaa_cio_com.crd
+saveAmberParm COM //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/topo/iaa_cio_com.parm7 //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/topo/iaa_cio_com.crd
 
 solvatebox COM TIP3PBOX 11.0
-savepdb COM /2p1q_noDegron//MD/iaa/topo/iaa_solv_com.pdb
-saveAmberParm COM /2p1q_noDegron//MD/iaa/topo/iaa_solv_com.parm7 /2p1q_noDegron//MD/iaa/topo/iaa_solv_com.crd
+savepdb COM //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/topo/iaa_solv_com.pdb
+saveAmberParm COM //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/topo/iaa_solv_com.parm7 //home/tcaceres/Documents/github/md_analysis/scripts/setupMD/2p1q_noDegron//MD/iaa/topo/iaa_solv_com.crd
 
 quit

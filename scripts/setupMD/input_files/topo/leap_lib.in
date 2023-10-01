@@ -1,0 +1,10 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadAmberParams LIGND.frcmod
+LIGND = loadmol2 LIGND.mol2
+check LIGND
+saveoff LIGND LIGND.lib
+
+quit

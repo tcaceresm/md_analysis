@@ -1,0 +1,10 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadAmberParams iaa.frcmod
+iaa = loadmol2 iaa.mol2
+check iaa
+saveoff iaa iaa.lib
+
+quit

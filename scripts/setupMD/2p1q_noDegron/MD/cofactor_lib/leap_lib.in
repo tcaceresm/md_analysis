@@ -1,0 +1,10 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadAmberParams ihp.frcmod
+ihp = loadmol2 ihp.mol2
+check ihp
+saveoff ihp ihp.lib
+
+quit
