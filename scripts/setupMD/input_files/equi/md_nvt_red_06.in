@@ -11,7 +11,7 @@ NVT MD w/No position restraints and PME (sander)
   cut    = 9.0,
   nsnb   = 10,
 
-  nstlim = 500000,
+  nstlim = 25000,
   nscm   = 0,
   t      = 350.0,  
   dt     = 0.002,

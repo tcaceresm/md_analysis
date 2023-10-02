@@ -212,7 +212,7 @@ Preparing MD files
         TOTALRES=$(cat ${TOPO}/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
         
         cp $SCRIPT_PATH/input_files/equi/*  $WDPATH/MD/$LIG/setupMD/rep$rep/equi/
-        sed -i "s/RES_TOTAL/${TOTALRES}/g" $WDPATH/MD/$LIG/setupMD/rep$rep/equi/*
+        sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/$LIG/setupMD/rep$rep/equi/*
         
         cp $SCRIPT_PATH/input_files/prod/md_prod.in $WDPATH/MD/$LIG/setupMD/rep$rep/prod/
         

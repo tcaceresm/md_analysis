@@ -31,6 +31,6 @@ NPT MD w/ position restraints (5 kcal/molA) and PME (sander)
  &end
 Hold the Protein fixed
 5.0
-RES 1 RES_TOTAL
+RES 1 TOTALRES
 END
 END
