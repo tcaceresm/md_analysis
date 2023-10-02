@@ -3,10 +3,10 @@ Scripts used to setup, run and analyze MD.
 # setupMD
 Folder structure created with setupMD script.
 ```bash
-├── any_receptor
+├── input_receptor
 │   └── MD
 │       ├── cofactor_lib
-│       ├── lig
+│       ├── input_lig
 │       │   ├── lib
 │       │   ├── setupMD
 │       │   │   ├── rep1
