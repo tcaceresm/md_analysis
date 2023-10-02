@@ -27,7 +27,7 @@ ID/
     │   └── topo
     └── receptor
 ```
-All input files are based on input_files folder.
+All input files are based on input_files, ligands, receptor and cofactor folders.
 ```bash
 cofactor/
 └── cof.mol2
