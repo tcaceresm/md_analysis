@@ -43,12 +43,12 @@ while getopts ":hi:n:d:e:p:r:" option; do
    esac
 done
 
-#Ruta de la carpeta del script (donde se encuentra este script)
+
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROD_FILES=$SCRIPT_PATH/prod_processing/
 EQUI_FILES=$SCRIPT_PATH/equi_processing/
 
-WDPATH=$(realpath $WDPATH)
+WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
 setupMD_PATH=$(realpath ../setupMD/)
 
 # Ligandos analizados
@@ -57,7 +57,7 @@ declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 echo "
 ##############################
-Welcome to traj_proc (trajectory processing) v0.0.0
+Welcome to trajectory processing v0.0.0
 Author: Tomás Cáceres <caceres.tomas@uc.cl>
 Laboratory of Molecular Design <http://schuellerlab.org/>
 https://github.com/tcaceresm/md_analysis
