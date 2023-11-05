@@ -1,4 +1,4 @@
-./scripts/setupMD/2p1q_noDegron
-./scripts/setupMD/receptor
-./scripts/setupMD/ligands
-./scripts/setupMD/cofactor
+./scripts/setupMD/2p1q_noDegron/
+./scripts/setupMD/receptor/*.pdb
+./scripts/setupMD/ligands/*.mol2
+./scripts/setupMD/cofactor/*.mol2
