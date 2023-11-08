@@ -1,6 +1,7 @@
 # md_analysis
 Scripts used to setup, run and analyze MD.
 # setupMD
+The main goal is to have only essential files required to setup the molecular dynamics. There is a lot of software capable of doing this, but I dont require that complexity.
 This script is used to create folder structure and configure input files. Below there is an example of folder structure created with setupMD script.
 ```bash
 ID/
