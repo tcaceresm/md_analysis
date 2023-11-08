@@ -4,11 +4,9 @@ Scripts used to setup, run and analyze MD. This is not intended for all purposes
 The main goal is to have only essential files required to setup the molecular dynamics. There is a lot of software/workflows capable of doing this but I dont require that complexity (I used to use FEW workflow).
 This script is used to create folder structure and configure input files.
 Obviously, you can change the input configurations files to meet your requirements.
+## Usage
 ```bash
-How to get help:
-bash setupMD.sh -h
-
-How to run setupMD.sh
+bash setupMD.sh -h # get help.
 bash setupMD.sh -d working_directory 
 ```
 Below there is an example of folder structure created with setupMD script.
@@ -68,7 +66,7 @@ receptor/
 # traj_proc.sh
 This script is to remove water from coordinates, image, calculate RMSD and RMSF of all protein, ligand and binding site.
 It's based on setup_MD folder structure.
-- Usage
+## Usage
 ```bash
 
 bash traj_proc.sh -h # get help
