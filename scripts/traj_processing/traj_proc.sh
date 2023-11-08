@@ -10,7 +10,7 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: copy_files.sh [-h|i|n|d|e|p]"
+   echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|i|n|d|e|p]"
    echo "options:"
    echo "h     Print help"
    echo "d     Working Directory."
@@ -51,7 +51,7 @@ EQUI_FILES=$SCRIPT_PATH/equi_processing/
 WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
 setupMD_PATH=$(realpath ../setupMD/)
 
-# Ligandos analizados
+# Analyzed ligands
 declare -a LIGANDS_MOL2=($(ls $setupMD_PATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
@@ -91,9 +91,11 @@ Processing Production Files
 ##############################
 "
 	    echo "Copying files to $PROD"
-	    echo "Copying process_mdout.perl to ${PROD}"
+	    echo "Copying process_mdout.perl to ${PROD}"   
             cp $PROD_FILES/process_mdout.perl $PROD
 
+            cd $PROD
+            
             /usr/bin/perl ${PROD}/process_mdout.perl *.out  
 	    
   	    if [[ $rmsd -eq 1 ]]
@@ -102,15 +104,17 @@ Processing Production Files
 	    	cp $PROD_FILES/$RM_HOH $PROD
 	    	sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
 	    	sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
+	    	sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
 	    	
 	    	echo "Removing WAT from trajectories"
-	        cd $PROD
+	        #cd $PROD
 	    	${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
 	    	
             	echo "Copying (and overwriting) $RMSD"
 		cp $PROD_FILES/$RMSD $PROD
 		sed -i "s/LIG/${LIG}/g" "$PROD/$RMSD"
 		sed -i "s/NRES/${N_RES}/g" "$PROD/$RMSD"
+		sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RMSD"
 		
 		echo "Calculating RMSD from unsolvated trajectories"
 		${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
