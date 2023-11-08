@@ -72,4 +72,4 @@ It's based on setup_MD folder structure.
 bash traj_proc.sh -h # get help
 bash traj_proc.sh -d working_directory -e 1 -p 1 -r 1 # process equil and prod phase. Also, calculate RMSD/F
 ```
-If you do not want to calculate, for example, RMSD and RMSF, you need to explicitely pass `-r 0`.
+If you do not want to calculate, for example, RMSD and RMSF, you need to explicitly pass `-r 0`.
