@@ -1,10 +1,10 @@
 # md_analysis
 Scripts used to setup, run and analyze MD. This is not intended for all purposes. It's just an automation of my tasks: 5 repetitions of different ligands docked to only one receptor, containing one cofactor.
-# setupMD.sh
+## setupMD.sh
 The main goal is to have only essential files required to setup the molecular dynamics. There is a lot of software/workflows capable of doing this but I dont require that complexity (I used to use FEW workflow).
 This script is used to create folder structure and configure input files.
 Obviously, you can change the input configurations files to meet your requirements.
-## Usage
+### Usage
 ```bash
 bash setupMD.sh -h # get help.
 bash setupMD.sh -d working_directory 
@@ -63,10 +63,10 @@ ligands/
 receptor/
 └── 2p1q_receptor.pdb
 ```
-# traj_proc.sh
+## traj_proc.sh
 This script is to remove water from coordinates, image, calculate RMSD and RMSF of all protein, ligand and binding site.
 It's based on setup_MD folder structure.
-## Usage
+### Usage
 ```bash
 
 bash traj_proc.sh -h # get help
