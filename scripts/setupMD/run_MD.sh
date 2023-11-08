@@ -10,9 +10,9 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: copy_files.sh [-h|i|n|d]"
+   echo "Syntax: bash run_MD.sh -d \$DIRECTORY "
    echo "options:"
-   echo "h     Print help"
+   echo "h     Print this help"
    echo "d     Working Directory."
    echo
 }
@@ -21,7 +21,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hi:d:" option; do
+while getopts ":hd:" option; do
    case $option in
       h) # Print this help
          Help
