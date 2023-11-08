@@ -10,8 +10,9 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: copy_files.sh [-h|i|n|d]"
-   echo "options:"
+   echo "Syntax: bash setup_MD.sh [-h|d]"
+   echo "To save a log file and also print the status, run: bash setup_MD.sh -d \$DIRECTORY | tee -a \$LOGFILE"
+   echo "Options:"
    echo "h     Print help"
    echo "d     Working Directory."
    echo
@@ -21,7 +22,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hi:d:" option; do
+while getopts ":hd:" option; do
    case $option in
       h) # Print this help
          Help
@@ -96,7 +97,7 @@ Preparing receptor ${RECEPTOR}
 "
 RECEPTOR_PATH=$WDPATH/MD/receptor/
 cp $SCRIPT_PATH/receptor/$RECEPTOR_PDB $RECEPTOR_PATH
-$AMBERHOME/bin/pdb4amber -i $WDPATH/MD/receptor/$RECEPTOR_PDB -o $WDPATH/MD/receptor/${RECEPTOR}_prep.pdb --add-missing-atoms --no-conect --nohyd --reduce
+$AMBERHOME/bin/pdb4amber -i $WDPATH/MD/receptor/$RECEPTOR_PDB -o $WDPATH/MD/receptor/${RECEPTOR}_prep.pdb --add-missing-atoms --no-conect --nohyd --reduce > "${WDPATH}/MD/receptor/pdb4amber.log"
 
 echo "Done"
 
