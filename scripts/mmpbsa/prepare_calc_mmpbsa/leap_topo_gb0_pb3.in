@@ -2,6 +2,7 @@ source leaprc.protein.ff14SB
 source leaprc.water.tip3p
 source leaprc.gaff
 set default PBradii parse
+
 loadoff WDPATH/leap/LIGND/LIGND_am1.lib
 loadoff WDPATH/receptor/ihp/ihp.lib
 

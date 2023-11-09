@@ -1,55 +1,18 @@
 #!/usr/bin/bash
-set -e
-set -u
-set -o pipefail
 
-############################################################
-# Help                                                     #
-############################################################
-Help()
-{
-   # Display Help
+#### CHANGE THIS VARIABLES #####
 
-   echo "Syntax: bash setup_MMPBSA.sh [-h|d]"
-   echo "To save a log file and also print the status, run: bash setup_MMPBSA.sh -d \$DIRECTORY | tee -a \$LOGFILE"
-   echo "Options:"
-   echo "h     Print help"
-   echo "d     Working Directory."
-   echo
-}
+ID="2p1q" #ID del complejo simulado
+N_RES="569" # Numero del residuo del ligando. 566 afb5 570 2p1q_noDegron 569 2p1m
 
-############################################################
-# Process the input options. Add options as needed.        #
-############################################################
-# Get the options
-while getopts ":hd:" option; do
-   case $option in
-      h) # Print this help
-         Help
-         exit;;
-      d) # Enter the MD Directory
-         WD_PATH=$OPTARG;;
-     \?) # Invalid option
-         echo "Error: Invalid option"
-         exit;;
-   esac
-done
-
-#Ruta de la carpeta del script (donde se encuentra este script)
-SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#echo "SCRIPT PATH $SCRIPT_PATH"
-
-# Ruta de la carpeta de trabajo. Es SCRIPT_PATH / WD_PATH
-WDPATH=${SCRIPT_PATH}/$WD_PATH
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
-declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-#echo "LIGANDS ${LIGANDS[*]}"
+declare -a arr=("ben" "bma" "cfa" "cpoa" "cpya" "flu" "iaa" "iaaee" "ipa" "naa" "nta" "paa" "pic" "qui" "tri" "trp" )
 
-RECEPTOR_PDB=($(ls ${SCRIPT_PATH}/receptor/))
-RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
-
+#Ruta de la carpeta del script (donde se encuentra este script)
+SCRIPT_PATH="/mnt/Backup2/scripts/degron_mmpbsa_files"
+#Ruta de las simulaciones
+WDPATH="/mnt/Backup3/${ID}/protocolo_n5_10ns" #ojo con el protocolo
 
 degron=1 #procesar input para degron mmpbsa. Solo si ya existen las trayectorias
 leap_script="leap_topo_gb1_pb4.in"
