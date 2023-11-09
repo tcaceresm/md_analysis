@@ -3,9 +3,9 @@ source leaprc.water.tip3p
 source leaprc.gaff
 set default PBradii mbondi
 
-loadoff /mnt/Backup3/ID/protocolo_n5_10ns/leap/LIG1/LIG1_am1.lib
-loadoff /mnt/Backup3/ID/protocolo_n5_10ns/receptor/ihp/ihp.lib
-loadAmberParams /mnt/Backup3/ID/protocolo_n5_10ns/leap/LIG1/LIG1.frcmod
+loadoff WD_PATH/MD/LIG/lib/LIG.lib
+loadoff WD_PATH/MD/cofactor_lib/IHP.lib
+loadAmberParams WD_PATH/MD/LIG/lib/LIG.frcmod
 
 DEG = loadpdb /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/degron.pdb
 REC = loadpdb /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/receptor.pdb
