@@ -63,7 +63,7 @@
 #   NM - Calculation of entropies with nmode.
 #
 VERBOSE               0
-PARALLEL              10
+PARALLEL              20
 #
 PREFIX                degronREP
 PATH                  ./
@@ -118,9 +118,9 @@ NM                    0
 #         parameters (NUMBER_REC_GROUPS, RSTART, RSTOP).
 #
 BOX                   YES
-NTOTAL                TOTAL_ATOM
+NTOTAL                LAST_ATOM
 NSTART                1
-NSTOP                 500
+NSTOP                 100
 NFREQ                 1
 #
 NUMBER_REC_GROUPS     2
@@ -143,17 +143,7 @@ LSTOP                 9220
 #     in ascii as well as in .gz format.
 #   To be able to identify the title line, it must be identical in all files.
 #
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_001_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_002_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_003_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_004_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_005_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_006_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_007_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_008_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_009_img.mdcrd.gz
-TRAJECTORY          ../../../MD_am1/LIGNDREP/com/prod/md_prod_010_img.mdcrd.gz
-
+TRAJECTORY          WD_PATH/MD/LIGND/setupMD/repREP/LIGND_prod_noWAT_mmpbsa.nc
 #
 ################################################################################
 @PROGRAMS
