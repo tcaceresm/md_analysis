@@ -43,16 +43,16 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WDPATH=${SCRIPT_PATH}/$WD_PATH
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
+declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 #echo "LIGANDS ${LIGANDS[*]}"
 
-COFACTOR_MOL2=($(ls ${SCRIPT_PATH}/cofactor/))
+COFACTOR_MOL2=($(ls ${WDPATH}/cofactor/))
 #echo "COFACTOR mol2 $COFACTOR_MOL2"
 COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 #echo "COFACTOR $COFACTOR"
 
-RECEPTOR_PDB=($(ls ${SCRIPT_PATH}/receptor/))
+RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 # Input para LEaP
 LEAP_SCRIPT_1="leap_topo_vac.in"
@@ -89,6 +89,7 @@ if test -e "${WDPATH}/MD"
         "
     fi 
 
+
 # Prepare receptor. 
 echo "
 ####################################
@@ -96,7 +97,7 @@ Preparing receptor ${RECEPTOR}
 ####################################
 "
 RECEPTOR_PATH=$WDPATH/MD/receptor/
-cp $SCRIPT_PATH/receptor/$RECEPTOR_PDB $RECEPTOR_PATH
+cp ${WDPATH}/receptor/$RECEPTOR_PDB $RECEPTOR_PATH
 $AMBERHOME/bin/pdb4amber -i $WDPATH/MD/receptor/$RECEPTOR_PDB -o $WDPATH/MD/receptor/${RECEPTOR}_prep.pdb --add-missing-atoms --no-conect --nohyd --reduce > "${WDPATH}/MD/receptor/pdb4amber.log"
 
 echo "Done"
@@ -112,7 +113,7 @@ Preparing cofactor ${COFACTOR_MOL2}
 
 COFACTOR_LIB=${WDPATH}/MD/cofactor_lib
 
-cp $SCRIPT_PATH/cofactor/$COFACTOR_MOL2 $COFACTOR_LIB
+cp ${WDPATH}/cofactor/$COFACTOR_MOL2 $COFACTOR_LIB
 cp $SCRIPT_PATH/input_files/topo/leap_lib.in $COFACTOR_LIB
 sed -i "s/LIGND/${COFACTOR}/g" $COFACTOR_LIB/leap_lib.in
 sed -i "s/LIG/${COFACTOR}/g" $COFACTOR_LIB/leap_lib.in
@@ -166,7 +167,7 @@ for LIG in "${LIGANDS[@]}" #Create folders and copy input files and mol2
     cp $SCRIPT_PATH/input_files/topo/${LEAP_SCRIPT_2} $TOPO # same as above
     cp $SCRIPT_PATH/input_files/topo/${LEAP_SCRIPT_3} $TOPO
     cp $SCRIPT_PATH/input_files/topo/${LEAP_LIB} $LIGAND_LIB 
-    cp $SCRIPT_PATH/ligands/${LIG}.mol2 $LIGAND_LIB # copy ligand.mol2 to lib folder
+    cp ${WDPATH}/ligands/${LIG}.mol2 $LIGAND_LIB # copy ligand.mol2 to lib folder
 
     sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_SCRIPT_1} $TOPO/$LEAP_SCRIPT_2 ${TOPO}/${LEAP_SCRIPT_3} $LIGAND_LIB/$LEAP_LIB
     sed -i "s+TOPO_PATH+${TOPO}+g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2} ${TOPO}/${LEAP_SCRIPT_3}
