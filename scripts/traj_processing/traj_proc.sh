@@ -179,6 +179,7 @@ Processing Equilibration Files
         else
             echo "No unsolvated coordinates available."
 	fi
+    fi
     done
 done
 echo "DONE!"
