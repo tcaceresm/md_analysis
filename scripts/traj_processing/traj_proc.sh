@@ -10,7 +10,7 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|i|n|d|e|p]"
+   echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|d|e|p]"
    echo "options:"
    echo "h     Print help"
    echo "d     Working Directory."
@@ -24,7 +24,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hi:n:d:e:p:r:" option; do
+while getopts ":h:d:e:p:r:" option; do
    case $option in
       h) # Print this help
          Help
@@ -74,7 +74,7 @@ for i in 1 2 3 4 5
     EQUI="${WDPATH}/MD/${LIG}/setupMD/rep${i}/equi/"
     PROD="${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod/"
     TOPO="${WDPATH}/MD/${LIG}/topo/"
-    N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep -v 'WAT' | tail -n 3 | grep 'ATOM' | awk '{print $5}')
+    N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep -v 'LIG' | tail -n 1 | awk '{print $5}')
     
     RM_HOH="remove_hoh_prod" #remove_hoh_prod
     RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
@@ -96,29 +96,19 @@ Processing Production Files
 
             cd $PROD
             
-            /usr/bin/perl ${PROD}/process_mdout.perl *.out  
+            /usr/bin/perl ${PROD}/process_mdout.perl *.out
+            
+            echo "Copying (and overwriting) $RM_HOH"
+	    cp $PROD_FILES/$RM_HOH $PROD
+	    sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
+	    sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
+	    sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
+	    	
+	    echo "Removing WAT from trajectories"
+	    #cd $PROD
+	    ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
 	    
-  	    if [[ $rmsd -eq 1 ]]
-    	    then
-    	        echo "Copying (and overwriting) $RM_HOH"
-	    	cp $PROD_FILES/$RM_HOH $PROD
-	    	sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
-	    	sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
-	    	sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
-	    	
-	    	echo "Removing WAT from trajectories"
-	        #cd $PROD
-	    	#${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
-	    	
-            	echo "Copying (and overwriting) $RMSD"
-		cp $PROD_FILES/$RMSD $PROD
-		sed -i "s/LIG/${LIG}/g" "$PROD/$RMSD"
-		sed -i "s/NRES/${N_RES}/g" "$PROD/$RMSD"
-		sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RMSD"
-		
-		echo "Calculating RMSD from unsolvated trajectories"
-		${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
-	    fi
+
             cd $SCRIPT_PATH
 
     fi
@@ -159,5 +149,23 @@ Processing Equilibration Files
     fi
 
     done
+    
+    if [[ $rmsd -eq 1 ]]
+        then
+        if test -f ${PROD}/${LIG}_prod_noWAT.nc
+        then
+            echo "Correct unsolvated coordinates available!"
+            echo "Copying (and overwriting) $RMSD"
+	    cp $PROD_FILES/$RMSD $PROD
+	    sed -i "s/LIG/${LIG}/g" "$PROD/$RMSD"
+	    sed -i "s/NRES/${N_RES}/g" "$PROD/$RMSD"
+	    sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RMSD"
+		
+	    echo "Calculating RMSD from unsolvated trajectories"
+	    ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
+        else
+            echo "No unsolvated coordinates available."
+	fi
+    
 done
 echo "DONE!"
