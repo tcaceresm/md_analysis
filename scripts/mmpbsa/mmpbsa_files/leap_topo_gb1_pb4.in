@@ -1,0 +1,21 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff
+set default PBradii mbondi
+
+loadoff WD_PATH/MD/LIG/lib/LIG.lib
+loadoff WD_PATH/MD/cofactor_lib/IHP.lib
+loadAmberParams WD_PATH/MD/LIG/lib/LIG.frcmod
+
+DEG = loadpdb /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/degron.pdb
+REC = loadpdb /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/receptor.pdb
+COM = loadpdb /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/complejo.pdb
+
+
+saveAmberParm DEG /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_gb1_pb4_lig.parm7 /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_gb1_pb4_lig.crd
+savepdb DEG /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_vac_lig.pdb
+saveAmberParm REC /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_gb1_pb4_rec.parm7 /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_gb1_pb4_rec.crd
+savepdb REC /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_vac_rec.pdb
+saveAmberParm COM /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_gb1_pb4_com.parm7 /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_gb1_pb4_com.crd
+savepdb COM /mnt/Backup3/ID/protocolo_n5_10ns/calc_a_1t/LIG_degron_gbind/topo/LIG_vac_com.pdb
+quit
