@@ -113,6 +113,7 @@ for i in 1 2 3 4 5
 Going to extract coordinates starting at ${START}, ending at ${END} by offset ${OFFSET}"
         cp $SCRIPT_PATH/mmpbsa_files/${extract_coordinates} $MD_coords
         sed -i "s+TOPO_MD+${TOPO_MD}+g" $MD_coords/${extract_coordinates}
+        sed -i "s+MD_coords+${MD_coords}+g" $MD_coords/${extract_coordinates}
         sed -i "s/START/${START}/g" $MD_coords/${extract_coordinates}
         sed -i "s/END/${END}/g" $MD_coords/${extract_coordinates}
         sed -i "s/OFFSET/${OFFSET}/g" $MD_coords/${extract_coordinates}
