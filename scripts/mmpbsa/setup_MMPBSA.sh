@@ -80,19 +80,19 @@ for LIG in "${LIGANDS[@]}"
        	echo "DONE"
     fi
     
-    TOPO="${WDPATH}/MMPBSA/${LIG}_gbind/topo/"
+    TOPO="${WDPATH}/MMD/${LIG}_gbind/topo/"
     TOPO_MD=${WDPATH}/MD/${LIG}/topo
     
     echo "Doing for $LIG"
     echo "Creating directories"
     
-    mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
+    mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
     
-    echo "Copying files to $TOPO"  
-    echo "Copying ${leap_script} to $TOPO"
-    cp $SCRIPT_PATH/mmpbsa_files/${leap_script} $TOPO
-    sed -i "s+WD_PATH+${WDPATH}+g" $TOPO/${leap_script}	  
-    sed -i "s/LIG/${LIG}/g" $TOPO/${leap_script}	
+   # echo "Copying files to $TOPO"  
+   # echo "Copying ${leap_script} to $TOPO"
+   # cp $SCRIPT_PATH/mmpbsa_files/${leap_script} $TOPO
+   # sed -i "s+WD_PATH+${WDPATH}+g" $TOPO/${leap_script}	  
+   # sed -i "s/LIG/${LIG}/g" $TOPO/${leap_script}	
     
 # this is to obtain total atom from parmtop file of setupMD
    TOTAL_ATOM=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
