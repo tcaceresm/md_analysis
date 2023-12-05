@@ -166,6 +166,21 @@ Processing Equilibration Files
         else
             echo "No unsolvated coordinates available."
 	fi
+	
+	if test -f ${EQUI}/${LIG}_equi_noWAT.nc
+        then
+            echo "Correct unsolvated coordinates available!"
+            echo "Copying (and overwriting) $RMSD"
+	    cp $EQUI_FILES/$RMSD $PROD
+	    sed -i "s/LIG/${LIG}/g" "$EQUI/$RMSD"
+	    sed -i "s/NRES/${N_RES}/g" "$EQUI/$RMSD"
+	    sed -i "s+TOPO_PATH+${TOPO}+g" "$EQUI/$RMSD"
+		
+	    echo "Calculating RMSD from unsolvated trajectories"
+	    ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD}
+        else
+            echo "No unsolvated coordinates available."
+	fi
     
 done
 echo "DONE!"
