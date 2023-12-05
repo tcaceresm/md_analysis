@@ -147,8 +147,6 @@ Processing Equilibration Files
 	    
 	    cd $SCRIPT_PATH
     fi
-
-    done
     
     if [[ $rmsd -eq 1 ]]
         then
@@ -181,6 +179,6 @@ Processing Equilibration Files
         else
             echo "No unsolvated coordinates available."
 	fi
-    
+    done
 done
 echo "DONE!"
