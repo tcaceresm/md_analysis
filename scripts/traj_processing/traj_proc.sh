@@ -108,7 +108,7 @@ Processing Production Files
 	    	
 	    	echo "Removing WAT from trajectories"
 	        #cd $PROD
-	    	${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+	    	#${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
 	    	
             	echo "Copying (and overwriting) $RMSD"
 		cp $PROD_FILES/$RMSD $PROD
