@@ -52,7 +52,7 @@ WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
 setupMD_PATH=$(realpath ../setupMD/)
 
 # Analyzed ligands
-declare -a LIGANDS_MOL2=($(ls $setupMD_PATH/ligands/))
+declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 echo "
