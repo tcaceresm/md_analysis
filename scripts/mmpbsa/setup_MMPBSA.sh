@@ -87,13 +87,7 @@ for LIG in "${LIGANDS[@]}"
     echo "Creating directories"
     
     mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
-    
-   # echo "Copying files to $TOPO"  
-   # echo "Copying ${leap_script} to $TOPO"
-   # cp $SCRIPT_PATH/mmpbsa_files/${leap_script} $TOPO
-   # sed -i "s+WD_PATH+${WDPATH}+g" $TOPO/${leap_script}	  
-   # sed -i "s/LIG/${LIG}/g" $TOPO/${leap_script}	
-    
+     
 # this is to obtain total atom from parmtop file of setupMD
    TOTAL_ATOM=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
@@ -112,6 +106,7 @@ for i in 1 2 3 4 5
         echo "Correct coordinates not available!
 Going to extract coordinates starting at ${START}, ending at ${END} by offset ${OFFSET}"
         cp $SCRIPT_PATH/mmpbsa_files/${extract_coordinates} $MD_coords
+        cd $MD_coords 
         sed -i "s+TOPO_MD+${TOPO_MD}+g" $MD_coords/${extract_coordinates}
         sed -i "s+MD_coords+${MD_coords}+g" $MD_coords/${extract_coordinates}
         sed -i "s/START/${START}/g" $MD_coords/${extract_coordinates}
