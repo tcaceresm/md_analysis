@@ -152,17 +152,18 @@ Processing Equilibration Files
     then
         if test -f ${PROD}/${LIG}_prod_noWAT.nc
         then
-            echo "Correct unsolvated coordinates available!"
+            echo "Correct production unsolvated coordinates available!"
             echo "Copying (and overwriting) $RMSD"
 	    cp $PROD_FILES/$RMSD $PROD
 	    sed -i "s/LIG/${LIG}/g" "$PROD/$RMSD"
 	    sed -i "s/NRES/${N_RES}/g" "$PROD/$RMSD"
 	    sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RMSD"
-		
+	    cd $PROD
 	    echo "Calculating RMSD from unsolvated trajectories"
 	    ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
+	    cd $WDPATH
         else
-            echo "No unsolvated coordinates available."
+            echo "No production unsolvated coordinates available."
 	fi
 	
 	if test -f ${EQUI}/${LIG}_equi_noWAT.nc
