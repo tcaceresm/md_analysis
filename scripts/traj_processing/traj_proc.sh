@@ -149,7 +149,7 @@ Processing Equilibration Files
     fi
     
     if [[ $rmsd -eq 1 ]]
-        then
+    then
         if test -f ${PROD}/${LIG}_prod_noWAT.nc
         then
             echo "Correct unsolvated coordinates available!"
