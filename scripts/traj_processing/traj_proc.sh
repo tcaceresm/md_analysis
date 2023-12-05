@@ -10,7 +10,7 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|d|e|p]"
+   echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|d|e|p|r]"
    echo "options:"
    echo "h     Print help"
    echo "d     Working Directory."
@@ -24,7 +24,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":h:d:e:p:r:" option; do
+while getopts ":hd:e:p:r:" option; do
    case $option in
       h) # Print this help
          Help
