@@ -74,7 +74,7 @@ for i in 1 2 3 4 5
     EQUI="${WDPATH}/MD/${LIG}/setupMD/rep${i}/equi/"
     PROD="${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod/"
     TOPO="${WDPATH}/MD/${LIG}/topo/"
-    N_RES=$(cat ${TOPO}/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}')
+    N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep -v 'WAT' | tail -n 3 | grep 'ATOM' | awk '{print $5}')
     
     RM_HOH="remove_hoh_prod" #remove_hoh_prod
     RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
