@@ -75,9 +75,9 @@ COMPLEX               1
 RECEPTOR              1
 LIGAND                1
 #
-COMPT                 ../LIGND_gb0_pb3_com.top
-RECPT                 ../LIGND_gb0_pb3_rec.top
-LIGPT                 ../LIGND_gb0_pb3_lig.top
+COMPT                 ../LIGND_com.parm7
+RECPT                 ../LIGND_rec.parm7
+LIGPT                 ../LIGND_lig.parm7
 #
 GC                    1
 AS                    0
@@ -122,10 +122,12 @@ NTOTAL		      TOTAL_ATOM
 NSTART                1
 NSTOP                 100
 NFREQ                 1
-#
-NUMBER_REC_GROUPS     1
+# 
+NUMBER_REC_GROUPS     2
 RSTART                1
-RSTOP                 LAST_ATOM_REC
+RSTOP                 FIRST_LAST_ATOM_REC
+RSTART                SECOND_FIRST_ATOM_REC
+RSTOP                 SECOND_LAST_ATOM_REC
 NUMBER_LIG_GROUPS     1
 LSTART                FIRST_ATOM_LIG
 LSTOP                 LAST_ATOM_LIG
@@ -142,7 +144,7 @@ LSTOP                 LAST_ATOM_LIG
 #   To be able to identify the title line, it must be identical in all files.
 #
 #TRAJECTORY          RUTA/md_prod_001_img.mdcrd.gz
-TRAJECTORY           RUTA/LIGND_prod_noWAT_mmpbsa.nc
+TRAJECTORY           RUTA_MD/LIGND_prod_noWAT_mmpbsa.nc
 
 #
 ################################################################################

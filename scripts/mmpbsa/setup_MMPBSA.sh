@@ -89,9 +89,22 @@ for LIG in "${LIGANDS[@]}"
     mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
      
 # this is to obtain total atom from parmtop file of setupMD
-   TOTAL_ATOM=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
+   TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
-   LAST_ATOM=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
+   LAST_ATOM_COM=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
+   
+   FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
+   LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
+   
+   FIRST_LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
+   SECOND_FIRST_ATOM_REC=$(($LAST_ATOM_LIG + 1))
+   SECOND_LAST_ATOM_REC=$LAST_ATOM_COM
+   
+   # Hay dos "grupos de receptores"
+   # del átomo 1 hasta el primer átomo del ligando -1, es el primer receptor y corresponde a la proteína
+   # Luego del primer átomo del ligando hasta el ultimo, es el ligando
+   # Luego vienen 2 moleculas de agua, a eso le llamo el segundo grupo de atomo
+   
    
 for i in 1 2 3 4 5 	
     do
@@ -122,12 +135,12 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     cp $SCRIPT_PATH/mmpbsa_files/$extract_coord $SNAP
     sed -i "s/REP/${i}/g" $SNAP/$extract_coord
     sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_coord
-    sed -i "s/TOTAL_ATOM/${TOTAL_ATOM}/g" $SNAP/$extract_coord
-    sed -i "s/LAST_ATOM/${LAST_ATOM}/g" $SNAP/$extract_coord
-    sed -i "s+WD_PATH+${WDPATH}+g" $SNAP/$extract_coord
-    sed -i "s/START_FRAME/${START}/g" $SNAP/$extract_coord
-    sed -i "s/STOP_FRAME/${END}/g" $SNAP/$extract_coord
-    sed -i "s/OFFSET_FRAME/${OFFSET}/g" $SNAP/$extract_coord
+    sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_SOLVATED}/g" $SNAP/$extract_coord
+    sed -i "s/FIRST_LAST_ATOM_REC/${FIRST_LAST_ATOM_REC}/g" $SNAP/$extract_coord
+    sed -i "s/SECOND_FIRST_ATOM_REC/${SECOND_FIRST_ATOM_REC}/g" $SNAP/$extract_coord
+    sed -i "s/SECOND_LAST_ATOM_REC/${SECOND_LAST_ATOM_REC}/g" $SNAP/$extract_coord
+    sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_coord
+    sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
     sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_coord
     
     MMPBSA="${WDPATH}/${LIG}_gbind/pb4_gb1/rep${i}/"
