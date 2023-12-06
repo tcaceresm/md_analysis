@@ -128,6 +128,7 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     sed -i "s/START_FRAME/${START}/g" $SNAP/$extract_coord
     sed -i "s/STOP_FRAME/${END}/g" $SNAP/$extract_coord
     sed -i "s/OFFSET_FRAME/${OFFSET}/g" $SNAP/$extract_coord
+    sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_coord
     
     MMPBSA="${WDPATH}/${LIG}_gbind/pb4_gb1/rep${i}/"
     cp "$SCRIPT_PATH/$run_mmpbsa" $MMPBSA
