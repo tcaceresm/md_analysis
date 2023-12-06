@@ -133,7 +133,7 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
 
     SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
     cp $SCRIPT_PATH/mmpbsa_files/$extract_coord $SNAP
-    sed -i "s/TOPO/${TOPO_MD}/g" $SNAP/$extract_coord
+    sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_coord
     sed -i "s/REP/${i}/g" $SNAP/$extract_coord
     sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_coord
     sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_SOLVATED}/g" $SNAP/$extract_coord
