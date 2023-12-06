@@ -81,7 +81,7 @@ for LIG in "${LIGANDS[@]}"
     fi
     
     #TOPO="${WDPATH}/MD/${LIG}_gbind/topo/"
-    TOPO_MD=${WDPATH}/MD/${LIG}/topo
+    TOPO_MD="${WDPATH}/MD/${LIG}/topo"
     
     echo "Doing for $LIG"
     echo "Creating directories"
