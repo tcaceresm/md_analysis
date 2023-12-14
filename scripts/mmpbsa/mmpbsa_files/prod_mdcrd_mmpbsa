@@ -4,4 +4,4 @@ autoimage
 strip :WAT
 strip :Na+,Cl-
 rmsd mass first
-trajout LIG_prod_noWAT_mmpbsa.nc
+trajout LIG_prod_noWAT_mmpbsa.crd format crd
