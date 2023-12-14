@@ -1,7 +1,7 @@
 parm TOPO_PATH/LIG_solv_com.parm7
-trajin *.mdcrd
+trajin md_prod.nc
 autoimage
-strip :Na+
-strip :WAT&!(:571-572)
+strip :Na+,Cl-
+strip :WAT
 rms fit :1-NRES
 trajout LIG_prod_noWAT.nc format netcdf
