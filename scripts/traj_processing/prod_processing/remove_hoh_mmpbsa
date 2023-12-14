@@ -1,7 +1,7 @@
 parm ../../cryst/LIG_solv_com.parm7
-trajin *.mdcrd START END OFFSET
+trajin md_prod.nc START END OFFSET
 autoimage
 strip :WAT
-strip :Na+
+strip :Na+,Cl-
 rmsd mass first
 trajout LIG_prod_noWAT.crd
