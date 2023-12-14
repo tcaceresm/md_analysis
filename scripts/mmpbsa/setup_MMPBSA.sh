@@ -47,7 +47,7 @@ done
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 WDPATH=$(realpath $WDPATH) #Working directory, where MD is located in setupMD
-setupMD_PATH=$(realpath ../setupMD/)
+#setupMD_PATH=$(realpath ../setupMD/)
 
 # Analyzed ligands
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
@@ -59,7 +59,7 @@ extract_coordinates="prod_mdcrd_mmpbsa"
 extract_coord="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
 mmpbsa_in="mmpbsa_decomp.in"
-method='pb4_gb1'
+method='pb4_gb1' #method and mmpbsa_in should be concordant
 
 #LAST_ATOM=9279 # el último átomo considerado como receptor
 #TOTAL_ATOM=104595 #Todos los atomos, contando al solvente. Si no sabes, revisa la topologia solvatada del complejo
@@ -69,7 +69,7 @@ method='pb4_gb1'
 for LIG in "${LIGANDS[@]}"
     do
     
-    if test -f "${WDPATH}/MMPBSA/${LIG}_gbind/" 
+    if test -d "${WDPATH}/MMPBSA/${LIG}_gbind/" 
     then
         echo "${WDPATH}/MMPBSA/${LIG}_gbind/ exist"
         echo "CONTINUE"
@@ -108,11 +108,14 @@ for LIG in "${LIGANDS[@]}"
    
 for i in 1 2 3 4 5 	
     do
-    
+    echo "Doing for ${LIG} repetition ${i}"
     # MD
     MD_coords=${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod
     
     if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc
+    # Solvated coordinates -> unsolvated and specific snapshots for MMPBSA
+    # i.e, from 3000 snapshots trajectory, we choose only 100. Then, we
+    # will use mm_pbsa.pl to finally extract the snapshots used for MMPBSA.
     then
         echo "Correct coordinates available!"
     else
@@ -144,15 +147,36 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
     sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_coord
     
-    MMPBSA="${WDPATH}/${LIG}_gbind/pb4_gb1/rep${i}/"
-    cp "$SCRIPT_PATH/$run_mmpbsa" $MMPBSA
-    sed -i "s/LIG/${LIG}/g" $MMPBSA/${run_mmpbsa}
-    sed -i "s/repN/rep${i}/g" $MMPBSA/${run_mmpbsa}
-    sed -i "s/REP/${i}/g" $MMPBSA/${run_mmpbsa}
     
-    cp "$SCRIPT_PATH/$mmpbsa_in" $MMPBSA
+    echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
+    $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
+    echo "Done!"   
+    
+    MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${method}/rep${i}/"
+    cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
+    sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s/MMPBSA_IN/${mmpbsa_in}/g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MD_TOPO+${TOPO_MD}+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_SNAPS+${SNAP}+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_PATH+${MMPBSA}+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s/METHOD/${method}/g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_TMP_PATH+${WDPATH}/MMPBSA/${LIG}_gbind/+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    
+    cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
+    sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
+    sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
+    sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
+    
+    cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
     sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
     sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
+    sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
+    sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
+    
+    
+    
+    
     
     
  
