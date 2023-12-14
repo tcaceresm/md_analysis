@@ -137,10 +137,11 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
     sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_coord
     
-    
+    cd ${SNAP}
     echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
     $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
     echo "Done!"   
+    cd ${WDPATH}
     
     MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${method}/rep${i}/"
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
