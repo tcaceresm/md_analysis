@@ -123,11 +123,9 @@ NSTART                1
 NSTOP                 100
 NFREQ                 1
 # 
-NUMBER_REC_GROUPS     2
+NUMBER_REC_GROUPS     1
 RSTART                1
-RSTOP                 FIRST_LAST_ATOM_REC
-RSTART                SECOND_FIRST_ATOM_REC
-RSTOP                 SECOND_LAST_ATOM_REC
+RSTOP                 LAST_ATOM_REC
 NUMBER_LIG_GROUPS     1
 LSTART                FIRST_ATOM_LIG
 LSTOP                 LAST_ATOM_LIG
