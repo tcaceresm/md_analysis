@@ -122,13 +122,13 @@ DCTYPE                2
 #
 
 COMREC                1-582
-COMLIG                583
+COMLIG                583-583
 COMPRI                1-583
 RECRES                1-582
 RECPRI                1-582
 RECMAP                1-582
-LIGRES                1
-LIGPRI                1
+LIGRES                1-1
+LIGPRI                1-1
 LIGMAP                583
 ################################################################################
 @PB
