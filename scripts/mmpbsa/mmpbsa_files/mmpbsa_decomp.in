@@ -76,7 +76,7 @@ RECEPTOR              1
 LIGAND                1
 #
 COMPT                 ./topo/LIGND_com.parm7
-RECPT                 ./topo/LIGND/topo/LIGND_rec.parm7
+RECPT                 ./topo/LIGND_rec.parm7
 LIGPT                 ./topo/LIGND_lig.parm7
 #
 GC                    0
