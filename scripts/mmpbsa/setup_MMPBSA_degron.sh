@@ -69,7 +69,7 @@ method='pb4_gb1'
 for LIG in "${LIGANDS[@]}"
     do
     
-    if test -f "${WDPATH}/MMPBSA/${LIG}_degron_gbind/" 
+    if test -d "${WDPATH}/MMPBSA/${LIG}_degron_gbind/" 
     then
         echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/ exist"
         echo "CONTINUE"
@@ -105,7 +105,7 @@ for i in 1 2 3 4 5
     # MD
     MD_coords=${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod
     
-    if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc
+    if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.crd
     then
         echo "Correct coordinates available!"
     else
