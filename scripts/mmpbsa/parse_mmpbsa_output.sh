@@ -56,6 +56,6 @@ for LIG in "${LIGANDS[@]}"
     	do
         	echo "DOING FOR ${LIG}${i}"
         	OUT="${WDPATH}/MMPBSA/${LIG}_gbind/${SNAPSHOTS}/${METHOD}/rep${i}/"
-		grep -i 'delta' ${OUT}/${LIG}_statistics.out -A9999 | grep -iv 'delta' > ${OUT}/${LIG}_statistics_out
+		grep -i 'delta' ${OUT}/${LIG}_statistics.out -A9999 | grep -iv 'delta' > ${OUT}/${LIG}_statistics_parsed.out
     	done
     done
