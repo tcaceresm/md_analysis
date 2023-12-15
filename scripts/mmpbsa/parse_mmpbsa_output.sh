@@ -14,6 +14,8 @@ Help()
    echo "Options:"
    echo "h     Print help."
    echo "d     Working Directory."
+   echo "s     Snapshots used from MD. Example: s1_3000_30"
+   echo "m     Method used in MMPBSA. Example: pb4_gb1"
 }
 
 ############################################################
@@ -27,6 +29,7 @@ while getopts ":hd:s:m:" option; do
          exit;;
       d) # Enter the MD Directory
          WDPATH=$OPTARG;;
+         
       s) # Snapshots. Example:s1_3000_30
          SNAPSHOTS=$OPTARG;;
       
