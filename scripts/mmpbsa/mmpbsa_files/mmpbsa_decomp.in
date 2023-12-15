@@ -75,9 +75,9 @@ COMPLEX               1
 RECEPTOR              1
 LIGAND                1
 #
-COMPT                 ../../../../../MD/LIGND/LIGND_com.parm7
-RECPT                 ../../../../../MD/LIGND/LIGND_rec.parm7
-LIGPT                 ../../../../../MD/LIGND/LIGND_lig.parm7
+COMPT                 ../../../../../MD/LIGND/topo/LIGND_com.parm7
+RECPT                 ../../../../../MD/LIGND/topo/LIGND_rec.parm7
+LIGPT                 ../../../../../MD/LIGND/topo/LIGND_lig.parm7
 #
 GC                    0
 AS                    0
