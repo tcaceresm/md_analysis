@@ -1,5 +1,5 @@
 parm TOPO_MD/LIG_solv_com.parm7
-trajin MD_coords/md_prod.mdcrd START END OFFSET
+trajin MD_coords/md_prod.nc START END OFFSET
 autoimage
 strip :WAT
 strip :Na+,Cl-
