@@ -104,7 +104,7 @@ for i in 1 2 3 4 5
     # MD
     MD_coords=${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod
     
-    if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc
+    if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.crd
     # Solvated coordinates -> unsolvated and specific snapshots for MMPBSA
     # i.e, from 3000 snapshots trajectory, we choose only 100. Then, we
     # will use mm_pbsa.pl to finally extract the snapshots used for MMPBSA.
