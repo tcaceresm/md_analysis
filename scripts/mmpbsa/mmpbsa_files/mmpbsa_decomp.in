@@ -66,7 +66,7 @@ VERBOSE               1
 PARALLEL              20
 #
 PREFIX                LIGND_REP
-PATH                  SNAP_PATH
+PATH                  ../../../snapshots_repREP
 START                 1
 STOP                  100
 OFFSET                1
