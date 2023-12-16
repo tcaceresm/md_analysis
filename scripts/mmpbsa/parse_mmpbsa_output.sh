@@ -16,6 +16,7 @@ Help()
    echo "d     Working Directory."
    echo "s     Snapshots used from MD. Example: s1_3000_30"
    echo "m     Method used in MMPBSA. Example: pb4_gb1"
+   echo "f     Decomposition scheme? 0 no 1 yes"
 }
 
 ############################################################
