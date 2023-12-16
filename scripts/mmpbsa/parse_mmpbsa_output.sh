@@ -22,7 +22,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:s:m:" option; do
+while getopts ":hd:s:m:f:" option; do
    case $option in
       h) # Print this help
          Help
@@ -35,6 +35,9 @@ while getopts ":hd:s:m:" option; do
       
       m) # Method. Example: pb4_gb1
          METHOD=$OPTARG;;
+      
+      f) # Decomp?
+         DECOMP=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -54,8 +57,15 @@ for LIG in "${LIGANDS[@]}"
     do
 	for i in 1 2 3 4 5
     	do
-        	echo "DOING FOR ${LIG}${i}"
-        	OUT="${WDPATH}/MMPBSA/${LIG}_gbind/${SNAPSHOTS}/${METHOD}/rep${i}/"
-		grep -i 'delta' ${OUT}/${LIG}_statistics.out -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out
+    	echo "DOING FOR ${LIG}${i}"
+        OUT="${WDPATH}/MMPBSA/${LIG}_gbind/${SNAPSHOTS}/${METHOD}/rep${i}/"
+    	
+            	if [ "$DECOMP" -eq 1 ]
+            	then
+                	
+		grep -i 'delta' ${OUT}/${LIG}_statistics_decomp.out -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out
+		else
+		grep -i 'delta' ${OUT}/${LIG}_statistics.out.snap -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out
+	        fi
     	done
     done
