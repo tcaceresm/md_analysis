@@ -63,9 +63,9 @@ for i in 1 2 3 4 5
             	if [ "$DECOMP" -eq 1 ]
             	then
                 	
-		grep -i 'delta' ${OUT}/${LIG}_statistics_decomp.out -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out
+		grep -i 'delta' ${OUT}/${LIG}_statistics_decomp.out -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out || continue
 		else
-		grep -i 'delta' ${OUT}/${LIG}_statistics.out.snap -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_snap_parsed.out
+		grep -i 'delta' ${OUT}/${LIG}_statistics.out.snap -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_snap_parsed.out || continue
 	        fi
     	done
     done
