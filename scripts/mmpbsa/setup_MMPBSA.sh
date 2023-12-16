@@ -150,7 +150,7 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     sed -i "s/MMPBSA_IN/${mmpbsa_in}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MD_TOPO+~/2p1q/MD/${LIG}/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
-    sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_gbind/s1_3000_30/pb4_gb1/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_gbind/s1_3000_30/pb3_gb0/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/METHOD/${method}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
     
