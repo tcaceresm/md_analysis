@@ -53,10 +53,9 @@ WDPATH=$(realpath $WDPATH) #Working directory
 # Analyzed ligands
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
-for LIG in "${LIGANDS[@]}"
+for i in 1 2 3 4 5
     do
-	for i in 1 2 3 4 5
+        for LIG in "${LIGANDS[@]}"
     	do
     	echo "DOING FOR ${LIG}${i}"
         OUT="${WDPATH}/MMPBSA/${LIG}_gbind/${SNAPSHOTS}/${METHOD}/rep${i}/"
