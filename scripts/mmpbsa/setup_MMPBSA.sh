@@ -58,8 +58,8 @@ leap_script="leap_topo_gb1_pb4.in"
 extract_coordinates="prod_mdcrd_mmpbsa"
 extract_coord="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
-mmpbsa_in="mmpbsa_decomp.in"
-method='pb4_gb1' #method and mmpbsa_in should be concordant
+mmpbsa_in="mmpbsa.in"
+method='pb3_gb0' #method and mmpbsa_in should be concordant
 
 #LAST_ATOM=9279 # el último átomo considerado como receptor
 #TOTAL_ATOM=104595 #Todos los atomos, contando al solvente. Si no sabes, revisa la topologia solvatada del complejo

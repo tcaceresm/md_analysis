@@ -65,7 +65,7 @@
 VERBOSE               0
 PARALLEL              20
 #
-PREFIX                LIGND_REP
+PREFIX                LIGND
 PATH                  ./snapshots
 START                 1
 STOP                  100
@@ -75,9 +75,9 @@ COMPLEX               1
 RECEPTOR              1
 LIGAND                1
 #
-COMPT                 topo/LIGND1_gb0_pb3_com.top
-RECPT                 topo/LIGND1_gb0_pb3_rec.top
-LIGPT                 topo/LIGND1_gb0_pb3_lig.top
+COMPT                 ./topo/LIGND_vac_com.parm7
+RECPT                 ./topo/LIGND_vac_rec.parm7
+LIGPT                 ./topo/LIGND_vac_lig.parm7
 #
 GC                    0
 AS                    0
