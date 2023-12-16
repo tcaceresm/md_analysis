@@ -11,29 +11,32 @@ bash setupMD.sh -d working_directory
 ```
 Below there is an example of folder structure created with setupMD script.
 ```bash
-ID/
-└── MD
-    ├── cofactor_lib
-    ├── iaa
-    │   ├── lib
-    │   ├── setupMD
-    │   │   ├── rep1
-    │   │   │   ├── equi
-    │   │   │   └── prod
-    │   │   ├── rep2
-    │   │   │   ├── equi
-    │   │   │   └── prod
-    │   │   ├── rep3
-    │   │   │   ├── equi
-    │   │   │   └── prod
-    │   │   ├── rep4
-    │   │   │   ├── equi
-    │   │   │   └── prod
-    │   │   └── rep5
-    │   │       ├── equi
-    │   │       └── prod
-    │   └── topo
-    └── receptor
+ID
+├── cofactor
+├── ligands
+├── MD
+│   ├── LIG
+│   │   ├── lib
+│   │   ├── setupMD
+│   │   │   ├── rep1
+│   │   │   │   ├── equi
+│   │   │   │   └── prod
+│   │   │   ├── rep2
+│   │   │   │   ├── equi
+│   │   │   │   └── prod
+│   │   │   ├── rep3
+│   │   │   │   ├── equi
+│   │   │   │   └── prod
+│   │   │   ├── rep4
+│   │   │   │   ├── equi
+│   │   │   │   └── prod
+│   │   │   └── rep5
+│   │   │       ├── equi
+│   │   │       └── prod
+│   │   └── topo
+│   ├── cofactor_lib
+│   └── receptor
+└── receptor
 ```
 All input files are based on input_files, ligands, receptor and cofactor folders.
 ```bash
@@ -59,9 +62,9 @@ input_files/
     ├── leap_topo_solv.in
     └── leap_topo_vac.in
 ligands/
-└── iaa.mol2
+└── LIG.mol2
 receptor/
-└── 2p1q_receptor.pdb
+└── receptor.pdb
 ```
 ## traj_proc.sh
 This script is to remove water from coordinates, image, calculate RMSD and RMSF of all protein, ligand and binding site.
