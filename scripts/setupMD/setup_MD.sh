@@ -37,10 +37,10 @@ done
 
 #Ruta de la carpeta del script (donde se encuentra este script)
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#echo "SCRIPT PATH $SCRIPT_PATH"
 
 # Ruta de la carpeta de trabajo. Es SCRIPT_PATH / WD_PATH
-WDPATH=${SCRIPT_PATH}/$WD_PATH
+#WDPATH=${SCRIPT_PATH}/$WD_PATH
+WDPATH=$WD_PATH
 
 # Ligandos analizados
 declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
