@@ -2,7 +2,10 @@
 set -e
 set -u
 set -o pipefail
-
+##
+## Agregar method como flago
+##  Luego determinar el mmpbsa.in adecuado
+##
 ############################################################
 # Help                                                     #
 ############################################################
