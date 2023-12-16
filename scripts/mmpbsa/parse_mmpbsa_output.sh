@@ -66,7 +66,7 @@ for LIG in "${LIGANDS[@]}"
                 	
 		grep -i 'delta' ${OUT}/${LIG}_statistics_decomp.out -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out
 		else
-		grep -i 'delta' ${OUT}/${LIG}_statistics.out.snap -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_parsed.out
+		grep -i 'delta' ${OUT}/${LIG}_statistics.out.snap -A9999 | grep -iv 'delta' | grep -iv 'number' > ${OUT}/${LIG}_statistics_snap_parsed.out
 	        fi
     	done
     done
