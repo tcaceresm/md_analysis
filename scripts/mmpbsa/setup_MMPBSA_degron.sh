@@ -110,15 +110,15 @@ for LIG in "${LIGANDS[@]}"
 # Obtain correct topologies of degron and receptor.
    # Obtain degron as pdb from complex pdb. Complex pdb is obtained from setupMD, so it won't work
    # if setupMD folder is not prepared.
-   echo "Now creating degron.pdb and receptor.pdb"
+   echo "Now starting to create degron.pdb and receptor.pdb"
    echo "Creating degron.pdb"
       grep '8989' -A 232 ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb > ${TOPO_MMPBSA}/degron.pdb
-   echo "Done creating degron.pdb"
+   echo "Done creating degron.pdb!"
    
    echo "Creating receptor.pdb"
    # Obtain receptor.
       diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
-   echo "Done creating receptor.pdb"
+   echo "Done creating receptor.pdb!"
    # Obtain topologies of com, rec and degron
 
       # We need to load auxin and ihp lib files, and we obtain this from MD folder.
