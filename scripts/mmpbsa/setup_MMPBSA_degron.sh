@@ -128,11 +128,11 @@ for LIG in "${LIGANDS[@]}"
 
       # TLEaP script to finally obtain topologies.
       cp ${SCRIPT_PATH}/degron_mmpbsa_files/leap_topo_${METHOD}.in ${TOPO_MMPBSA}
-      sed -i 's+LIGAND_LIB_PATH+${LIGAND_LIB}+g' ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i 's+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g' ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i 's+LIGND+${LIG}+g' ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i 's+TOPO_PATH+${TOPO_MMPBSA}+g' ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i 's+TOPO_MD+${TOPO_MD}+g' ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
 
       
       ${AMBERHOME}/bin/tleap -f ${WDPATH}/MMPBSA/${LIG}/topo/leap_topo_${METHOD}.in
