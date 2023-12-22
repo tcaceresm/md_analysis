@@ -103,7 +103,7 @@ for LIG in "${LIGANDS[@]}"
    echo "Doing for $LIG"
    echo "Creating directories"
     
-   mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
+   mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
      
 # Obtain correct topologies of degron and receptor.
    # Obtain degron as pdb from complex pdb. Complex pdb is obtained from setupMD, so it won't work
