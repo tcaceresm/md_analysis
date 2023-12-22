@@ -13,7 +13,7 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: bash setup_MMPBSA.sh [-h|d|s]"
+   echo "Syntax: bash setup_MMPBSA.sh [-h|d|s|e|o|m]"
    echo "To save a log file and also print the status, run: bash setup_MMPBSA.sh -d \$DIRECTORY | tee -a \$LOGFILE"
    echo "Options:"
    echo "h     Print help."
@@ -21,7 +21,7 @@ Help()
    echo "s     START frame."
    echo "e     END frame."
    echo "o     OFFSET".
-   echo
+   echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0"
 }
 
 ############################################################
@@ -41,6 +41,8 @@ while getopts ":hd:s:e:o:" option; do
          END=$OPTARG;;
       o) #OFFSET
          OFFSET=$OPTARG;;
+      m) #Method
+         METHOD=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -56,16 +58,10 @@ WDPATH=$(realpath $WDPATH) #Working directory, where MD is located in setupMD
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
-degron=1 #procesar input para degron mmpbsa. Solo si ya existen las trayectorias
-leap_script="leap_topo_gb1_pb4.in"
 extract_coordinates="prod_mdcrd_mmpbsa"
 extract_coord="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
 mmpbsa_in="mmpbsa.in"
-method='pb3_gb0' #method and mmpbsa_in should be concordant
-
-#LAST_ATOM=9279 # el último átomo considerado como receptor
-#TOTAL_ATOM=104595 #Todos los atomos, contando al solvente. Si no sabes, revisa la topologia solvatada del complejo
 
 ##############################
 
@@ -91,7 +87,7 @@ for LIG in "${LIGANDS[@]}"
     
     mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
      
-# this is to obtain total atom from parmtop file of setupMD
+# this is to obtain total atom from pdb file of setupMD
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
@@ -167,13 +163,6 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
     sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
     sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
-    
-    
-    
-    
-    
-    
- 
 
     done
 done
