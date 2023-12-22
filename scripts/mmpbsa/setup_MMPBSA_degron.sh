@@ -91,13 +91,13 @@ for LIG in "${LIGANDS[@]}"
    TOPO_MD="${WDPATH}/MD/${LIG}/topo"
    TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ # We'll use this later. But I prefer to define here.
 
-   if test -d "${WDPATH}/MMPBSA/${LIG}_gbind_degron/topo" 
+   if test -d "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo" 
    then
-      echo "${WDPATH}/MMPBSA/${LIG}_gbind_degron/topo exist"
+      echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo exist"
       echo "CONTINUE"
    else
-     	echo "${WDPATH}/MMPBSA/${LIG}_gbind_degron/topo do not exist"
-     	echo "Creating ${WDPATH}/MMPBSA/${LIG}_gbind_degron/topo"
+     	echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo do not exist"
+     	echo "Creating ${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo"
 	   mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind_degron/topo
       echo "DONE"
    fi
