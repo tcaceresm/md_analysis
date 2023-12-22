@@ -67,8 +67,6 @@ extract_coordinates="prod_mdcrd_mmpbsa"
 extract_coord="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
 mmpbsa_in="mmpbsa_decomp.in"
-method='pb4_gb1'
-
 
 ##############################
 
@@ -135,7 +133,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
 
       
-      ${AMBERHOME}/bin/tleap -f ${WDPATH}/MMPBSA/${LIG}/topo/leap_topo_${METHOD}.in
+      #${AMBERHOME}/bin/tleap -f ${WDPATH}/MMPBSA/${LIG}/topo/leap_topo_${METHOD}.in
 
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
