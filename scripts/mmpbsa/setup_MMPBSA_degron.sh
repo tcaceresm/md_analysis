@@ -117,7 +117,7 @@ for LIG in "${LIGANDS[@]}"
    
    echo "Creating receptor.pdb"
    # Obtain receptor.
-      diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' ${TOPO_MMPBSA}/receptor.pdb
+      diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
    echo "Done creating receptor.pdb"
    # Obtain topologies of com, rec and degron
 
