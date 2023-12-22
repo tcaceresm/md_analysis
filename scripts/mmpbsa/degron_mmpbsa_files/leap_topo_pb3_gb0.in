@@ -11,9 +11,9 @@ LIG = loadpdb TOPO_PATH/degron.pdb
 REC = loadpdb TOPO_PATH/receptor.pdb
 COM = loadpdb TOPO_MD/LIGND_com.pdb
 
-#savepdb COM TOPO_PATH/LIGND_com.pdb
-#savepdb REC TOPO_PATH/LIGND_rec.pdb
-#savepdb LIG TOPO_PATH/LIGND_lig.pdb
+savepdb COM TOPO_PATH/LIGND_com.pdb
+savepdb REC TOPO_PATH/LIGND_rec.pdb
+savepdb LIG TOPO_PATH/LIGND_lig.pdb
 
 loadAmberParams /LIGAND_LIB_PATH/LIGND.frcmod
 
