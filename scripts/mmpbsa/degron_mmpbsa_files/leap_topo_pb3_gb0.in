@@ -19,6 +19,6 @@ loadAmberParams /LIGAND_LIB_PATH/LIGND.frcmod
 
 saveAmberParm LIG /TOPO_PATH/LIGND_vac_lig.parm7 /TOPO_PATH/LIGND_vac_lig.crd
 saveAmberParm REC /TOPO_PATH/LIGND_vac_rec.parm7 /TOPO_PATH/LIGND_vac_rec.crd
-#saveAmberParm COM /TOPO_PATH/LIGND_vac_com.parm7 /TOPO_PATH/LIGND_vac_com.crd
+saveAmberParm COM /TOPO_PATH/LIGND_vac_com.parm7 /TOPO_PATH/LIGND_vac_com.crd
 
 quit

@@ -75,9 +75,9 @@ COMPLEX               1
 RECEPTOR              1
 LIGAND                1
 #
-COMPT                 ../topo/LIGND_gb1_pb4_com.top
-RECPT                 ../topo/LIGND_gb1_pb4_rec.top
-LIGPT                 ../topo/LIGND_gb1_pb4_lig.top
+COMPT                 TOPO/LIGND_gb1_pb4_com.top
+RECPT                 TOPO/LIGND_gb1_pb4_rec.top
+LIGPT                 TOPO/LIGND_gb1_pb4_lig.top
 #
 GC                    1
 AS                    0
@@ -126,8 +126,8 @@ NFREQ                 1
 NUMBER_REC_GROUPS     2
 RSTART                1
 RSTOP                 8988
-RSTART		      9221
-RSTOP		      LAST_ATOM
+RSTART		          9221
+RSTOP		          LAST_ATOM
 NUMBER_LIG_GROUPS     1
 LSTART                8989
 LSTOP                 9220

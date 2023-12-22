@@ -1,0 +1,7 @@
+parm TOPO_MD/LIG_solv_com.parm7
+trajin MD_coords/md_prod.nc START END OFFSET
+autoimage
+strip :WAT
+strip :Na+,Cl-
+rmsd mass first
+trajout LIG_prod_noWAT_mmpbsa_degron.nc
