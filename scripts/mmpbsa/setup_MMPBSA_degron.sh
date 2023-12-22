@@ -58,12 +58,10 @@ declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 # Cofactor
 COFACTOR_MOL2=($(ls ${WDPATH}/cofactor/))
-#echo "COFACTOR mol2 $COFACTOR_MOL2"
 COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
-#echo "COFACTOR $COFACTOR"
 
 leap_script="leap_topo_pb3_gb0.in"
-extract_coordinates="prod_mdcrd_mmpbsa"
+extract_coordinates="prod_mdcrd_mmpbsa_degron"
 extract_coord="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
 mmpbsa_in="mmpbsa_decomp.in"
@@ -137,16 +135,16 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
 
       
-      #${AMBERHOME}/bin/tleap -f ${WDPATH}/MMPBSA/${LIG}/topo/leap_topo_${METHOD}.in
+      ${AMBERHOME}/bin/tleap -f ${WDPATH}/MMPBSA/${LIG}/topo/leap_topo_${METHOD}.in
 
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
-   FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
-   LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
+   FIRST_ATOM_LIG=8989
+   LAST_ATOM_LIG=9220
    
-   LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
+   LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
         
    for i in 1 2 3 4 5 	
       do
@@ -154,7 +152,7 @@ for LIG in "${LIGANDS[@]}"
       # MD
       MD_coords=${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod
       
-      if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.crd
+      if test -f ${MD_coords}/${LIG}_prod_noWAT_mmpbsa_degron.crd
       # Solvated coordinates -> unsolvated and specific snapshots for MMPBSA
       # i.e, from 3000 snapshots trajectory, we choose only 100. Then, we
       # will use mm_pbsa.pl to finally extract the snapshots used for MMPBSA.
