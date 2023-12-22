@@ -115,8 +115,10 @@ for LIG in "${LIGANDS[@]}"
    
    echo "Creating receptor.pdb"
    # Obtain receptor.
+   set +e
       diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
    echo "Done creating receptor.pdb!"
+   set -e
    # Obtain topologies of com, rec and degron
 
       # We need to load auxin and ihp lib files, and we obtain this from MD folder.
