@@ -193,7 +193,7 @@ for LIG in "${LIGANDS[@]}"
       echo "Done!"   
       cd ${WDPATH}
       
-      MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${method}/rep${i}/"
+      MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
       cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
@@ -201,7 +201,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s+MD_TOPO+~/2p1q/MD/${LIG}/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_gbind/s1_3000_30/pb3_gb0/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
-      sed -i "s/METHOD/${method}/g" "$MMPBSA/run_mmpbsa_lig.sh"
+      sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       
       cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
