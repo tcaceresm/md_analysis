@@ -75,14 +75,14 @@ method='pb4_gb1'
 for LIG in "${LIGANDS[@]}"
     do
     
-    if test -d "${WDPATH}/MMPBSA/${LIG}_gbind_degron/" 
+    if test -d "${WDPATH}/MMPBSA/${LIG}_degron_gbind/" 
     then
-        echo "${WDPATH}/MMPBSA/${LIG}_gbind_degron/ exist"
+        echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/ exist"
         echo "CONTINUE"
     else
-     	echo "${WDPATH}/MMPBSA/${LIG}_gbind_degron/ do not exist"
-       	echo "Creating ${WDPATH}/MMPBSA/${LIG}_gbind_degron/"
-	mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind_degron/
+     	echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/ do not exist"
+       	echo "Creating ${WDPATH}/MMPBSA/${LIG}_degron_gbind/"
+	mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/
        	echo "DONE"
     fi
     
@@ -98,7 +98,7 @@ for LIG in "${LIGANDS[@]}"
    else
      	echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo do not exist"
      	echo "Creating ${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo"
-	   mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind_degron/topo
+	   mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo
       echo "DONE"
    fi
     
