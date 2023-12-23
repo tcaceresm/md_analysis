@@ -64,7 +64,6 @@ leap_script="leap_topo_pb3_gb0.in"
 extract_coordinates="prod_mdcrd_mmpbsa_degron"
 extract_snapshots="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
-mmpbsa_in="mmpbsa_decomp.in"
 
 ##############################
 
@@ -190,22 +189,22 @@ for LIG in "${LIGANDS[@]}"
       cd ${WDPATH}
       
       MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
-      cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
+      cp "$SCRIPT_PATH/degron_mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/MMPBSA_IN/${mmpbsa_in}/g" "$MMPBSA/run_mmpbsa_lig.sh"
-      sed -i "s+MD_TOPO+~/2p1q/MD/${LIG}/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
+      sed -i "s+MMPBSA_TOPO+~/2p1q/MMPBSA/${LIG}_degron_gbind/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_degron_gbind/s1_3000_30/pb3_gb0/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       
-      cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
+      cp "$SCRIPT_PATH/degron_mmpbsa_file/run_mmpbsa_slurm.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       
-      cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
+      cp "$SCRIPT_PATH/degron_mmpbsa_file/mmpbsa_in" $MMPBSA
       sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
       sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
       sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}

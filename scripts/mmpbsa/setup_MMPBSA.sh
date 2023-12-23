@@ -60,7 +60,6 @@ declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 extract_coordinates="prod_mdcrd_mmpbsa"
 extract_coord="extract_coordinates_com.in"
-run_mmpbsa="run_mmpbsa.pbs"
 mmpbsa_in="mmpbsa.in"
 
 ##############################
