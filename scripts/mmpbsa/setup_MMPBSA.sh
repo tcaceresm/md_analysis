@@ -90,7 +90,7 @@ for LIG in "${LIGANDS[@]}"
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    echo "Assuming that you don't want to consider explicit waters in MMPBSA calculations"
-   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | grep 'ATOM' | awk '{print $2}')
+   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
    
    FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
    LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
@@ -111,7 +111,7 @@ for i in 1 2 3 4 5
         echo "Correct coordinates available!"
     else
         echo "Correct coordinates not available!
-Going to extract coordinates starting at ${START}, ending at ${END} by offset ${OFFSET}"
+        Going to extract coordinates starting at ${START}, ending at ${END} by offset ${OFFSET}"
         cp $SCRIPT_PATH/mmpbsa_files/${extract_coordinates} $MD_coords
         cd $MD_coords 
         sed -i "s+TOPO_MD+${TOPO_MD}+g" $MD_coords/${extract_coordinates}
