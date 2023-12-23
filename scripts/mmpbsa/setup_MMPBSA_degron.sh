@@ -63,7 +63,6 @@ COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 leap_script="leap_topo_pb3_gb0.in"
 extract_coordinates="prod_mdcrd_mmpbsa_degron"
 extract_snapshots="extract_coordinates_com.in"
-run_mmpbsa="run_mmpbsa.pbs"
 
 ##############################
 
