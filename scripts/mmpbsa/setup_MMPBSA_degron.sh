@@ -185,7 +185,7 @@ for LIG in "${LIGANDS[@]}"
       
       cd ${SNAP}
       echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
-      #$AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
+      $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
       echo "Done!"   
       cd ${WDPATH}
       
