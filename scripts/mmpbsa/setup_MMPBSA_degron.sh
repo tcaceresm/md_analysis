@@ -180,7 +180,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/REP/${i}/g" $SNAP/$extract_coord
       sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_coord
       sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_coord
-      sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_coord
+      sed -i "s/LAST_ATOM/${LAST_ATOM}/g" $SNAP/$extract_coord
       sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_coord
       sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
       sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_coord
