@@ -58,8 +58,13 @@ for i in 1 2 3 4 5
         for LIG in "${LIGANDS[@]}"
     	do
     	echo "DOING FOR ${LIG}${i}"
+    	if [ "$DEGRON" -eq 1 ]
+    	then
+        OUT="${WDPATH}/MMPBSA/${LIG}_degron_gbind/${SNAPSHOTS}/${METHOD}/rep${i}/"   	
+    	else    	
         OUT="${WDPATH}/MMPBSA/${LIG}_gbind/${SNAPSHOTS}/${METHOD}/rep${i}/"
-    	
+        
+    	fi
             	if [ "$DECOMP" -eq 1 ]
             	then
                 	
