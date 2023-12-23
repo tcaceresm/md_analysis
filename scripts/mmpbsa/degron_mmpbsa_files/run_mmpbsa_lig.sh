@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SCRIPT=/home/tcaceres/calc_a_1t/LIG/s1_3000_30/pb3_gb0/run_mmpbsa.pbs
-SY=LIG
-CALC=LIG_repN_METHOD
+SY=LIG_degron
+CALC=LIG_degron_repN_METHOD
 PARAMS=MMPBSA_IN
 TOPO=MMPBSA_TOPO
 SNAPS=MMPBSA_SNAPS
