@@ -16,6 +16,7 @@ Help()
    echo "d     Working Directory."
    echo "s     Snapshots used from MD. Example: s1_3000_30"
    echo "m     Method used in MMPBSA. Example: pb4_gb1"
+   echo "p     Degron MMPBSA. 0 no 1 yes"
    echo "f     Decomposition scheme? 0 no 1 yes"
 }
 
@@ -23,7 +24,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:s:m:f:" option; do
+while getopts ":hd:s:m:p:f:" option; do
    case $option in
       h) # Print this help
          Help
@@ -36,7 +37,8 @@ while getopts ":hd:s:m:f:" option; do
       
       m) # Method. Example: pb4_gb1
          METHOD=$OPTARG;;
-      
+      p) # Degron?
+         DEGRON=$OPTARG;;
       f) # Decomp?
          DECOMP=$OPTARG;;
      \?) # Invalid option
