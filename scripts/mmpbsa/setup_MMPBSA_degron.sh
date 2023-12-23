@@ -161,7 +161,7 @@ for LIG in "${LIGANDS[@]}"
       else
          echo "Correct coordinates not available!
    Going to extract coordinates starting at ${START}, ending at ${END} by offset ${OFFSET}"
-         cp $SCRIPT_PATH/mmpbsa_files/${extract_coordinates} $MD_coords
+         cp $SCRIPT_PATH/degron_mmpbsa_files/${extract_coordinates} $MD_coords
          cd $MD_coords 
          sed -i "s+TOPO_MD+${TOPO_MD}+g" $MD_coords/${extract_coordinates}
          sed -i "s+MD_coords+${MD_coords}+g" $MD_coords/${extract_coordinates}
