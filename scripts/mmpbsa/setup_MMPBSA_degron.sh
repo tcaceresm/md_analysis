@@ -137,8 +137,6 @@ for LIG in "${LIGANDS[@]}"
       
       ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
 
-   TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
-   
    TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    FIRST_ATOM_LIG=8989
