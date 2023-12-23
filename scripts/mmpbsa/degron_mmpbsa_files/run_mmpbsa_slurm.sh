@@ -1,6 +1,6 @@
 #!/bin/bash
 #---------------Script SBATCH - NLHPC ----------------
-#SBATCH -J ID_LIG_mmpbsa
+#SBATCH -J ID_LIG_degron_mmpbsa
 #SBATCH -p general
 #SBATCH -n 20
 #SBATCH -c 1

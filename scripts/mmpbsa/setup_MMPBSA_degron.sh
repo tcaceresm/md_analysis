@@ -204,7 +204,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       
-      cp "$SCRIPT_PATH/degron_mmpbsa_file/mmpbsa.in" $MMPBSA
+      cp "$SCRIPT_PATH/degron_mmpbsa_files/mmpbsa.in" $MMPBSA
       sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa.in
       sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa.in
       sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa.in
