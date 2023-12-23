@@ -199,7 +199,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp_degron/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       
-      cp "$SCRIPT_PATH/degron_mmpbsa_file/run_mmpbsa_slurm.sh" $MMPBSA
+      cp "$SCRIPT_PATH/degron_mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
