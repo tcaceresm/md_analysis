@@ -59,7 +59,7 @@ declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 extract_coordinates="prod_mdcrd_mmpbsa"
-extract_coord="extract_coordinates_com.in"
+extract_snapshots="extract_coordinates_com.in"
 mmpbsa_in="mmpbsa.in"
 
 ##############################
@@ -125,19 +125,19 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     fi
 
     SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
-    cp $SCRIPT_PATH/mmpbsa_files/$extract_coord $SNAP
-    sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_coord
-    sed -i "s/REP/${i}/g" $SNAP/$extract_coord
-    sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_coord
-    sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_coord
-    sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_coord
-    sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_coord
-    sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
-    sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_coord
+    cp $SCRIPT_PATH/mmpbsa_files/$extract_snapshots $SNAP
+    sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_snapshots
+    sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
+    sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_snapshots
+    sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
+    sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_snapshots
+    sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
+    sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
+    sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_snapshots
     
     cd ${SNAP}
     echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
-    $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
+    $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
     echo "Done!"   
     cd ${WDPATH}
     
