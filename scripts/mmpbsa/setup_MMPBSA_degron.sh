@@ -10,7 +10,7 @@ Help()
 {
    # Display Help
 
-   echo "Syntax: bash setup_MMPBSA.sh [-h|d|s]"
+   echo "Syntax: bash setup_MMPBSA.sh [-h|d|s|e|o|m|i]"
    echo "To save a log file and also print the status, run: bash setup_MMPBSA.sh -d \$DIRECTORY | tee -a \$LOGFILE"
    echo "Options:"
    echo "h     Print help."
@@ -25,7 +25,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:s:e:o:m:" option; do
+while getopts ":hd:s:e:o:m" option; do
    case $option in
       h) # Print this help
          Help
@@ -191,7 +191,7 @@ for LIG in "${LIGANDS[@]}"
       cp "$SCRIPT_PATH/degron_mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
-      sed -i "s/MMPBSA_IN/mmpbsa.in/g" "$MMPBSA/run_mmpbsa_lig.sh"
+      sed -i "s/MMPBSA_IN/mmpbsa_${METHOD}.in/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TOPO+~/2p1q/MMPBSA/${LIG}_degron_gbind/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_degron_gbind/s1_3000_30/pb3_gb0/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
@@ -203,11 +203,11 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       
-      cp "$SCRIPT_PATH/degron_mmpbsa_files/mmpbsa.in" $MMPBSA
-      sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa.in
-      sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa.in
-      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa.in
-      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa.in
+      cp "$SCRIPT_PATH/degron_mmpbsa_files/mmpbsa_${METHOD}.in" $MMPBSA
+      sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa_${METHOD}.in
 
       done
 done
