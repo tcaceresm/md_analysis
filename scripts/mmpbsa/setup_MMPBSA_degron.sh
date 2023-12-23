@@ -204,11 +204,11 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       
-      cp "$SCRIPT_PATH/degron_mmpbsa_file/mmpbsa_in" $MMPBSA
-      sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
-      sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
-      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
-      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
+      cp "$SCRIPT_PATH/degron_mmpbsa_file/mmpbsa.in" $MMPBSA
+      sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa.in
+      sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa.in
+      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa.in
+      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa.in
 
       done
 done
