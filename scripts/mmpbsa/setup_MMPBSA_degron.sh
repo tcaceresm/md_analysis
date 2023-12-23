@@ -139,8 +139,8 @@ for LIG in "${LIGANDS[@]}"
 
    TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
-   FIRST_ATOM_LIG=8989
-   LAST_ATOM_LIG=9220
+   FIRST_ATOM_LIG="8989"
+   LAST_ATOM_LIG="9220"
    
    LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
         
