@@ -184,7 +184,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_snapshots
       
       cd ${SNAP}
-      echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
+      echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa_degron.crd"
       $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
       echo "Done!"   
       cd ${WDPATH}
