@@ -75,9 +75,9 @@ COMPLEX               1
 RECEPTOR              1
 LIGAND                1
 #
-COMPT                 TOPO/LIGND_gb1_pb4_com.top
-RECPT                 TOPO/LIGND_gb1_pb4_rec.top
-LIGPT                 TOPO/LIGND_gb1_pb4_lig.top
+COMPT                 TOPO/LIGND_com.parm7
+RECPT                 TOPO/LIGND_rec.parm7
+LIGPT                 TOPO/LIGND_lig.parm7
 #
 GC                    1
 AS                    0
@@ -129,8 +129,8 @@ RSTOP                 8988
 RSTART		          9221
 RSTOP		          LAST_ATOM
 NUMBER_LIG_GROUPS     1
-LSTART                8989
-LSTOP                 9220
+LSTART                FIRST_ATOM_LIG
+LSTOP                 LAST_ATOM_LIG
 #
 ################################################################################
 @TRAJECTORY
@@ -143,7 +143,7 @@ LSTOP                 9220
 #     in ascii as well as in .gz format.
 #   To be able to identify the title line, it must be identical in all files.
 #
-TRAJECTORY          WD_PATH/MD/LIGND/setupMD/repREP/LIGND_prod_noWAT_mmpbsa.nc
+TRAJECTORY          MDCOORDS/LIGND_prod_noWAT_mmpbsa_degron.crd
 #
 ################################################################################
 @PROGRAMS

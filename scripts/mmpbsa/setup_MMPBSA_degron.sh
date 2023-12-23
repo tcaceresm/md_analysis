@@ -183,11 +183,11 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_coord
       sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_coord
       sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
-      sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_coord
+      sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_coord
       
       cd ${SNAP}
       echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
-      $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
+      #$AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
       echo "Done!"   
       cd ${WDPATH}
       

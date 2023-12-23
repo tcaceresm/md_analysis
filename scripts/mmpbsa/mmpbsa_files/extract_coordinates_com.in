@@ -118,7 +118,7 @@ NM                    0
 #         parameters (NUMBER_REC_GROUPS, RSTART, RSTOP).
 #
 BOX                   YES
-NTOTAL		      TOTAL_ATOM
+NTOTAL		          TOTAL_ATOM
 NSTART                1
 NSTOP                 100
 NFREQ                 1
