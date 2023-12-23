@@ -62,7 +62,7 @@ COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
 leap_script="leap_topo_pb3_gb0.in"
 extract_coordinates="prod_mdcrd_mmpbsa_degron"
-extract_coord="extract_coordinates_com.in"
+extract_snapshots="extract_coordinates_com.in"
 run_mmpbsa="run_mmpbsa.pbs"
 mmpbsa_in="mmpbsa_decomp.in"
 
@@ -173,19 +173,19 @@ for LIG in "${LIGANDS[@]}"
       fi
 
       SNAP="${WDPATH}/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}/"
-      cp $SCRIPT_PATH/degron_mmpbsa_files/$extract_coord $SNAP
-      sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_coord
-      sed -i "s/REP/${i}/g" $SNAP/$extract_coord
-      sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_coord
-      sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_coord
-      sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_coord
-      sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_coord
-      sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_coord
-      sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_coord
+      cp $SCRIPT_PATH/degron_mmpbsa_files/$extract_snapshots $SNAP
+      sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_snapshots
+      sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
+      sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_snapshots
+      sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
+      sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_snapshots
+      sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
+      sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
+      sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_snapshots
       
       cd ${SNAP}
       echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
-      $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_coord} > ${SNAP}/extract_coordinates_com.log
+      $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
       echo "Done!"   
       cd ${WDPATH}
       
