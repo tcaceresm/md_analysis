@@ -84,7 +84,7 @@ for LIG in "${LIGANDS[@]}"
     echo "Doing for $LIG"
     echo "Creating directories"
     
-    mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${method}/{rep1,rep2,rep3,rep4,rep5}}
+    mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
      
 # this is to obtain total atom from pdb file of setupMD
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
@@ -141,7 +141,7 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     echo "Done!"   
     cd ${WDPATH}
     
-    MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${method}/rep${i}/"
+    MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
     sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
@@ -149,7 +149,7 @@ Going to extract coordinates starting at ${START}, ending at ${END} by offset ${
     sed -i "s+MD_TOPO+~/2p1q/MD/${LIG}/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_gbind/s1_3000_30/pb3_gb0/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
-    sed -i "s/METHOD/${method}/g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
     
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
