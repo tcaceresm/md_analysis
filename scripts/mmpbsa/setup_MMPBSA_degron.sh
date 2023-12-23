@@ -176,7 +176,7 @@ for LIG in "${LIGANDS[@]}"
 
       SNAP="${WDPATH}/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}/"
       cp $SCRIPT_PATH/mmpbsa_files/$extract_coord $SNAP
-      sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_coord
+      sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_coord
       sed -i "s/REP/${i}/g" $SNAP/$extract_coord
       sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_coord
       sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_coord
