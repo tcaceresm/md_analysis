@@ -181,10 +181,14 @@ echo "
 Preparing ligand ${LIG}
 ####################################
 "
+
+    cd $LIGAND_LIB
+    
     echo "Computing net charge from partial charges of mol2 file"
     LIGAND_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' ${LIG}.mol2 | awk '{sum += $9} END {printf "%.0f\n", sum}')
-echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}"
-    cd $LIGAND_LIB
+    echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}"
+
+
     $AMBERHOME/bin/antechamber -i $LIGAND_LIB/$LIG.mol2 -fi mol2 -o $LIGAND_LIB/$LIG.mol2 -fo mol2 -c bcc -rn LIG -nc $LIGAND_NET_CHARGE
     $AMBERHOME/bin/antechamber -i $LIGAND_LIB/$LIG.mol2 -fi mol2 -o $LIGAND_LIB/${LIG}_lig.pdb -fo pdb -dr n -rn LIG
     $AMBERHOME/bin/parmchk2 -i $LIGAND_LIB/$LIG.mol2 -f mol2 -o "$LIGAND_LIB/$LIG.frcmod"
