@@ -181,6 +181,7 @@ for i in 1 2 3 4 5
     sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
     sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
     
+    SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
     cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
     sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
     sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
