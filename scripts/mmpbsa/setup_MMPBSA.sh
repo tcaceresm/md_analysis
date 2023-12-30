@@ -97,9 +97,9 @@ for LIG in "${LIGANDS[@]}"
     sed -i 's/PBRADII/${PBRadii}/g' ${TOPO_MMPBSA}/*modify*
     sed -i 's/LIG/${LIG}/g' ${TOPO_MMPBSA}/*modify*
     
-    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MD}/modify_pbradii_vac_com.txt
-    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MD}/modify_pbradii_vac_rec.txt
-    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MD}/modify_pbradii_vac_lig.txt
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_com.txt
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_rec.txt
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_lig.txt
 # this is to obtain total atom from pdb file of setupMD, a necessary value.
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
