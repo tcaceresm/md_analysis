@@ -96,6 +96,7 @@ for LIG in "${LIGANDS[@]}"
        echo "Not considering explicit waters in MMPBSA calculations"
        echo "Computing Total Atoms in Unsolvated complex"
        TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
+       LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
        echo "Please check prepared input files for MMPBSA are correct!"
    else
        echo "Assuming that you do want to consider explicit waters in MMPBSA calculations"
@@ -119,8 +120,8 @@ for i in 1 2 3 4 5
     then
         echo "Coordinates for snapshots extraction available!"
     else
-        echo "Correct coordinates for snapshots extraction not available!
-        Going to extract coordinates from production trajectory starting at ${START}, ending at ${END} by offset ${OFFSET}"
+        echo "Correct coordinates for snapshots extraction not available!"
+        echo "Going to extract coordinates from production trajectory starting at ${START}, ending at ${END} by offset ${OFFSET}"
         cp $SCRIPT_PATH/mmpbsa_files/${extract_coordinates} $MD_coords
         cd $MD_coords 
         sed -i "s+TOPO_MD+${TOPO_MD}+g" $MD_coords/${extract_coordinates}
