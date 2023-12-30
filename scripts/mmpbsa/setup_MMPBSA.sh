@@ -21,14 +21,15 @@ Help()
    echo "s     START frame."
    echo "e     END frame."
    echo "o     OFFSET".
-   echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0"
+   echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0."
+   echo "w     Use explicit waters in MMPBSA calculations. This feature has not been tested."
 }
 
 ############################################################
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:s:e:o:m:" option; do
+while getopts ":hd:s:e:o:m:w:" option; do
    case $option in
       h) # Print this help
          Help
@@ -43,6 +44,8 @@ while getopts ":hd:s:e:o:m:" option; do
          OFFSET=$OPTARG;;
       m) #Method
          METHOD=$OPTARG;;
+      w) # Use explicit waters
+         WATERS=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -52,7 +55,6 @@ done
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 WDPATH=$(realpath $WDPATH) #Working directory, where MD is located in setupMD
-#setupMD_PATH=$(realpath ../setupMD/)
 
 # Analyzed ligands
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
@@ -60,7 +62,7 @@ declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 extract_coordinates="prod_mdcrd_mmpbsa"
 extract_snapshots="extract_coordinates_com.in"
-mmpbsa_in="mmpbsa.in"
+mmpbsa_in="mmpbsa_${METHOD}.in"
 
 ##############################
 
@@ -89,16 +91,21 @@ for LIG in "${LIGANDS[@]}"
 # this is to obtain total atom from pdb file of setupMD
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
-   echo "Assuming that you don't want to consider explicit waters in MMPBSA calculations"
-   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
-   
-   echo "Assuming that you do want to consider explicit waters in MMPBSA calculations"
-   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 1 | grep 'ATOM' | awk '{print $2}')
-   FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
-   LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
-   
-   LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
-        
+   if [[ $WATERS -eq 0 ]]
+   then
+       echo "Not considering explicit waters in MMPBSA calculations"
+       echo "Computing Total Atoms in Unsolvated complex"
+       TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
+       echo "Please check prepared input files for MMPBSA are correct!"
+   else
+       echo "Assuming that you do want to consider explicit waters in MMPBSA calculations"
+       echo "Computing Total Atoms in Unsolvated complex considering explicit waters"
+       TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 1 | grep 'ATOM' | awk '{print $2}')
+       FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
+       LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
+       LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
+       echo "Please check prepared input files for MMPBSA are correct!"
+    fi 
 for i in 1 2 3 4 5 	
     do
     echo "Doing for ${LIG} repetition ${i}"
@@ -110,10 +117,10 @@ for i in 1 2 3 4 5
     # i.e, from 3000 snapshots trajectory, we choose only 100. Then, we
     # will use mm_pbsa.pl to finally extract the snapshots used for MMPBSA.
     then
-        echo "Correct coordinates available!"
+        echo "Coordinates for snapshots extraction available!"
     else
-        echo "Correct coordinates not available!
-        Going to extract coordinates starting at ${START}, ending at ${END} by offset ${OFFSET}"
+        echo "Correct coordinates for snapshots extraction not available!
+        Going to extract coordinates from production trajectory starting at ${START}, ending at ${END} by offset ${OFFSET}"
         cp $SCRIPT_PATH/mmpbsa_files/${extract_coordinates} $MD_coords
         cd $MD_coords 
         sed -i "s+TOPO_MD+${TOPO_MD}+g" $MD_coords/${extract_coordinates}
