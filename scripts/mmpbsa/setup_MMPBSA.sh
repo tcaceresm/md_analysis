@@ -22,6 +22,7 @@ Help()
    echo "e     END frame."
    echo "o     OFFSET".
    echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0."
+   echo "r     PBRadii. This will modify the topology PBRadii to desired one. This need to match with correct mmpbsa.in. Example: mbondi"
    echo "l     Extract snapshots from production trajectories?"
    echo "w     Use explicit waters in MMPBSA calculations. This feature has not been tested."
 }
@@ -45,6 +46,8 @@ while getopts ":hd:s:e:o:m:w:l:" option; do
          OFFSET=$OPTARG;;
       m) #Method
          METHOD=$OPTARG;;
+      r) #PBRadii
+         PBRadii=$OPTARG;;
       w) # Use explicit waters
          WATERS=$OPTARG;;
       l) # Extract snapshots
@@ -71,7 +74,7 @@ mmpbsa_in="mmpbsa_${METHOD}.in"
 
 for LIG in "${LIGANDS[@]}"
     do
-    
+    echo "Doing for $LIG"
     if test -d "${WDPATH}/MMPBSA/${LIG}_gbind/" 
     then
         echo "${WDPATH}/MMPBSA/${LIG}_gbind/ exist"
@@ -80,18 +83,21 @@ for LIG in "${LIGANDS[@]}"
      	echo "${WDPATH}/MMPBSA/${LIG}_gbind/ do not exist"
        	echo "Creating ${WDPATH}/MMPBSA/${LIG}_gbind/"
 	mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/
+        echo "Creating sub-directories"    
+        mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
        	echo "DONE"
     fi
     
-    #TOPO="${WDPATH}/MD/${LIG}_gbind/topo/"
-    TOPO_MD="${WDPATH}/MD/${LIG}/topo"
+    TOPO_MD="${WDPATH}/MD/${LIG}/topo" # Necessary for coordinates extraction
+    TOPO_MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/topo" # Necessary to set correct PBRadii in topology file used in MMPBSA calculations
     
-    echo "Doing for $LIG"
-    echo "Creating directories"
+    # Preparation of topology files for MMPBSA calculations. We will modify the topology of lig, rec and com of MD topology files
+    echo "Modifying PBRadii using ParmEd utility"
+    cp ${SCRIPT_PATH}/mmpbsa_files/$
     
-    mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
-     
-# this is to obtain total atom from pdb file of setupMD
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_com.parm7 
+    
+# this is to obtain total atom from pdb file of setupMD, a necessary value.
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    if [[ $WATERS -eq 0 ]]
@@ -162,9 +168,18 @@ for i in 1 2 3 4 5
         cd ${WDPATH}
     else
     echo "Not extracting snapshots"
+    SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
     echo "Done!"
     fi
     
+    # Edit mmpbsa.in file
+    cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
+    sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
+    sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
+    sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
+    sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
+    
+    # Edit run_mmpbsa_lig.sh file, to run in NLHPC cluster
     MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
     sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
@@ -176,18 +191,12 @@ for i in 1 2 3 4 5
     sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_TMP_PATH+${WDPATH}/MMPBSA/tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
     
+    # Edit run_ppbsa_slurm.sh file, to run in NLHPC cluster
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
     sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
     sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
     sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
     
-    SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
-    cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
-    sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
-    sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
-    sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
-    sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
-
     done
 done
 echo "DONE!"

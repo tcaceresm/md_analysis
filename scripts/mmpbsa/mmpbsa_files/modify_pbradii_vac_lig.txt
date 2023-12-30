@@ -1,0 +1,2 @@
+changeRadii PBRADII
+parmout LIG_vac_lig_PBRADII.parm7
