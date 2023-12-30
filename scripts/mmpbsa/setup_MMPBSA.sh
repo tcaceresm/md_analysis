@@ -23,8 +23,8 @@ Help()
    echo "o     OFFSET".
    echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0."
    echo "r     PBRadii. This will modify the topology PBRadii to desired one. This need to match with correct mmpbsa.in. Example: mbondi"
-   echo "l     Extract snapshots from production trajectories?"
-   echo "w     Use explicit waters in MMPBSA calculations. This feature has not been tested."
+   echo "l     Extract snapshots from production trajectories? 0|1"
+   echo "w     Use explicit waters in MMPBSA calculations. 0|1 This feature has not been tested."
 }
 
 ############################################################
@@ -189,7 +189,7 @@ for i in 1 2 3 4 5
     sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
     sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
     sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
-    sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
+    sed -i "s+TOPO+${TOPO_MMPBSA}+g" $MMPBSA/${mmpbsa_in}
     
     # Edit run_mmpbsa_lig.sh file, to run in NLHPC cluster
 
@@ -197,7 +197,7 @@ for i in 1 2 3 4 5
     sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/MMPBSA_IN/${mmpbsa_in}/g" "$MMPBSA/run_mmpbsa_lig.sh"
-    sed -i "s+MD_TOPO+${WDPATH}/MD/${LIG}/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_TOPO+${TOPO_MMPBSA}+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_SNAPS+${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_PATH+${WDPATH}/MMPBSA/${LIG}_gbind/s1_3000_30/${METHOD}/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
