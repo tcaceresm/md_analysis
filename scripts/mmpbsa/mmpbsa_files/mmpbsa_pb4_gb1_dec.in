@@ -118,7 +118,7 @@ NM                    0
 #   {REC,LIG}MAP - Residues in the complex which are equivalent to the residues
 #                  in the receptor molecule or the ligand molecule.
 #
-DCTYPE                2
+DCTYPE                1
 #
 
 COMREC                1-582
@@ -227,8 +227,8 @@ RADIOPT               0
 ARCRES                0.0625
 INP                   0
 #
-SURFTEN               0.00542
-SURFOFF               0.92
+SURFTEN               0.00720
+SURFOFF               0.0
 #
 IVCAP                 0
 CUTCAP                -1.0
