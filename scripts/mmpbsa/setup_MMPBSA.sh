@@ -22,6 +22,7 @@ Help()
    echo "e     END frame."
    echo "o     OFFSET".
    echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0."
+   echo "l     Extract snapshots from production trajectories?"
    echo "w     Use explicit waters in MMPBSA calculations. This feature has not been tested."
 }
 
@@ -46,6 +47,8 @@ while getopts ":hd:s:e:o:m:w:" option; do
          METHOD=$OPTARG;;
       w) # Use explicit waters
          WATERS=$OPTARG;;
+      l) # Extract snapshots
+         EXTRACT_SNAP=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -136,7 +139,10 @@ for i in 1 2 3 4 5
         ${AMBERHOME}/bin/cpptraj -i $MD_coords/${extract_coordinates}
         
     fi
-
+    
+    if [[ $EXTRACT_SNAP -eq 1 ]]
+    then
+    echo "Going to extract snapshots"
     SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
     cp $SCRIPT_PATH/mmpbsa_files/$extract_snapshots $SNAP
     sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_snapshots
@@ -153,6 +159,7 @@ for i in 1 2 3 4 5
     $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
     echo "Done!"   
     cd ${WDPATH}
+    fi
     
     MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
