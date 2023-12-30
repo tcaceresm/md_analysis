@@ -94,8 +94,8 @@ for LIG in "${LIGANDS[@]}"
     # Preparation of topology files for MMPBSA calculations. We will modify the topology of lig, rec and com of MD topology files
     echo "Modifying PBRadii using ParmEd utility"
     cp ${SCRIPT_PATH}/mmpbsa_files/*modify* ${TOPO_MMPBSA}
-    sed -i 's/PBRADII/${PBRadii}/g' ${TOPO_MMPBSA}/*modify*
-    sed -i 's/LIG/${LIG}/g' ${TOPO_MMPBSA}/*modify*
+    sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/*modify*
+    sed -i "s/LIG/${LIG}/g" ${TOPO_MMPBSA}/*modify*
     
     ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_com.txt
     ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_rec.txt
