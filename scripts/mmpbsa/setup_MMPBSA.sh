@@ -60,8 +60,8 @@ WDPATH=$(realpath $WDPATH) #Working directory, where MD is located in setupMD
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
-extract_coordinates="prod_mdcrd_mmpbsa"
-extract_snapshots="extract_coordinates_com.in"
+extract_coordinates="extract_coordinates_prod_mmpbsa"
+extract_snapshots="extract_snapshots_com.in"
 mmpbsa_in="mmpbsa_${METHOD}.in"
 
 ##############################
