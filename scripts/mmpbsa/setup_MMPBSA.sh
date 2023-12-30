@@ -152,6 +152,8 @@ for i in 1 2 3 4 5
     
     if [[ $EXTRACT_SNAP -eq 1 ]]
     then
+        #Snapshot extraction
+        
         echo "Going to extract snapshots"
         SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
         cp $SCRIPT_PATH/mmpbsa_files/$extract_snapshots $SNAP
@@ -175,6 +177,10 @@ for i in 1 2 3 4 5
     echo "Done!"
     fi
     
+
+    # MMPBSA files location
+    MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
+    
     # Edit mmpbsa.in file
     cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
     sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
@@ -183,7 +189,7 @@ for i in 1 2 3 4 5
     sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
     
     # Edit run_mmpbsa_lig.sh file, to run in NLHPC cluster
-    MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
+
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
     sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
