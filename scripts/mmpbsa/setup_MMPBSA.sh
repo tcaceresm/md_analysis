@@ -31,7 +31,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:s:e:o:m:w:l:" option; do
+while getopts ":hd:s:e:o:m:w:r:l:" option; do
    case $option in
       h) # Print this help
          Help
@@ -93,10 +93,13 @@ for LIG in "${LIGANDS[@]}"
     
     # Preparation of topology files for MMPBSA calculations. We will modify the topology of lig, rec and com of MD topology files
     echo "Modifying PBRadii using ParmEd utility"
-    cp ${SCRIPT_PATH}/mmpbsa_files/$
+    cp ${SCRIPT_PATH}/mmpbsa_files/*modify* ${TOPO_MMPBSA}
+    sed -i 's/PBRADII/${PBRadii}/g' ${TOPO_MMPBSA}/*modify*
+    sed -i 's/LIG/${LIG}/g' ${TOPO_MMPBSA}/*modify*
     
-    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_com.parm7 
-    
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MD}/modify_pbradii_vac_com.txt
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MD}/modify_pbradii_vac_rec.txt
+    ${AMBERHOME}/bin/parmed -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MD}/modify_pbradii_vac_lig.txt
 # this is to obtain total atom from pdb file of setupMD, a necessary value.
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
