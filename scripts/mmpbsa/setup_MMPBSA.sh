@@ -101,7 +101,7 @@ for LIG in "${LIGANDS[@]}"
     ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_com.txt
     ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_rec.txt
     ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_lig.txt
-    cp ${WDPATH}
+    cd ${WDPATH}
     
 # this is to obtain total atom from pdb file of setupMD, a necessary value forr.
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
