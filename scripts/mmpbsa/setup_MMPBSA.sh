@@ -190,6 +190,7 @@ for i in 1 2 3 4 5
     sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
     sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
     sed -i "s+TOPO+${TOPO_MMPBSA}+g" $MMPBSA/${mmpbsa_in}
+    sed -i "s/PBRADII/${PBRadii}/g" $MMPBSA/${mmpbsa_in}
     
     # Edit run_mmpbsa_lig.sh file, to run in NLHPC cluster
 
