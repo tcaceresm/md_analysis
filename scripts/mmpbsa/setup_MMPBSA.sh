@@ -98,6 +98,7 @@ for LIG in "${LIGANDS[@]}"
        TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
        FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
        LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
+       LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
        echo "Please check prepared input files for MMPBSA are correct!"
    else
        echo "Assuming that you do want to consider explicit waters in MMPBSA calculations"
