@@ -116,6 +116,7 @@ for LIG in "${LIGANDS[@]}"
 
       # TLEaP script to finally obtain topologies.
       # leap_topo_{}.in is used to create new topologies of ligand (degron), and receptor (TIR1 + auxin)
+      echo "Preparing ${leap_topo} file"
       cp ${SCRIPT_PATH}/degron_mmpbsa_files/${leap_topo} ${TOPO_MMPBSA}
       sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
       sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
