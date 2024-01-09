@@ -122,7 +122,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
       sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
       sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s/PBRADII/${PBRadii}/g" {$TOPO_MMPBSA/${leap_topo}
+      sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/${leap_topo}
 
       sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
       sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
