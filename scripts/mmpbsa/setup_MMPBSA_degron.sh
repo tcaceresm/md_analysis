@@ -21,7 +21,7 @@ Help()
    echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0"
    echo "r     PBRadii used. This must match with correct parameters of mmpbsa.in. Example: parse, mbondi"
    echo "l     Extract snapshots from production trajectories? 0|1"
-   echo "w     Use explicit waters in MMPBSA calculations. 0|1 This feature has not been tested."
+   echo "w     Use explicit waters in MMPBSA calculations. 0|1"
 }
 
 ############################################################
@@ -72,7 +72,7 @@ declare -a COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 extract_coordinates="extract_coordinates_prod_mmpbsa_degron"
 extract_snapshots="extract_snapshots.in"
 mmpbsa_in="mmpbsa_${METHOD}.in"
-leap_topo="leap_topo.in"
+#leap_topo="leap_topo.in"
 
 ##############################
 
@@ -107,31 +107,39 @@ for LIG in "${LIGANDS[@]}"
    echo "Done creating receptor.pdb!"
    set -e
 
-   # Obtain topologies of com, rec and degron
+   # Obtain topologies of com, rec and degron.
 
       # We need to load auxin and ihp lib files, and we obtain this from MD folder.
       # This script won't work if MD folder don't exist and lib files don't exist.
       LIGAND_LIB=${WDPATH}/MD/${LIG}/lib #lib file of auxin
       COFACTOR_LIB=${WDPATH}/MD/cofactor_lib #lib file of cofactor
 
-      # TLEaP script to finally obtain topologies.
-      # leap_topo_{}.in is used to create new topologies of ligand (degron), and receptor (TIR1 + auxin)
-      echo "Preparing ${leap_topo} file"
-      cp ${SCRIPT_PATH}/degron_mmpbsa_files/${leap_topo} ${TOPO_MMPBSA}
-      sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/${leap_topo}
+      if [[ $WATERS -eq 0 ]] # No hay aguas
+      # Primero eliminaremos las aguas de 
+      then
+       
+      else # Hay aguas. Por tanto, no hay que crear nuevas topologías porque las de setupMD ya incluyen
+           # esas aguas.
+         leap_topo="leap_topo.in"
+         # TLEaP script to finally obtain topologies.
+         # leap_topo_{}.in is used to create new topologies of ligand (degron), and receptor (TIR1 + auxin)
+         echo "Preparing ${leap_topo} file"
+         cp ${SCRIPT_PATH}/degron_mmpbsa_files/${leap_topo} ${TOPO_MMPBSA}
+         sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
+         sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
+         sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
+         sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
+         sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/${leap_topo}
 
-      sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
+         sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
+         sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
 
-      echo "Creating topologies"
-      cd ${TOPO_MMPBSA}
-      ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/${leap_topo}
-      cd ${WDPATH}
-      echo "Done!"
+         echo "Creating topologies"
+         cd ${TOPO_MMPBSA}
+         ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/${leap_topo}
+         cd ${WDPATH}
+         echo "Done!"
+      fi
 
    # Prepare MMPBSA coordinates extraction and snapshots extraction
     #Coordinate extraction refer to create a subset (or the complete set) of coordinates
@@ -141,9 +149,15 @@ for LIG in "${LIGANDS[@]}"
     # before with cpptraj, removing waters.
     # Then, we will extract snapshots with mm_pbsa.pl of this 100 frames unsolvated prod.mdcrd.
    
-   
-   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
-   echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
+   if [[ $WATERS -eq 0 ]]
+   then
+      TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
+      echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
+   else
+      echo "Considering waters present in complex"
+      TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
+      echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
+   fi
 
    LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
    echo "The last atom of receptor is ${LAST_ATOM_REC}"
@@ -214,6 +228,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa_${METHOD}.in
       sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa_${METHOD}.in
       sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s/PBRADII/${PBRadii}/g" $MMPBSA/mmpbsa_${METHOD}.in
 
 
       # Prepare run_mmpbsa_lig.sh file, to run in NLHPC cluster
