@@ -20,7 +20,7 @@ Help()
    echo "o     OFFSET".
    echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0"
    echo "r     PBRadii used. This must match with correct parameters of mmpbsa.in. Example: parse, mbondi"
-   echo "l     Extract snapshots from production trajectories? 0|1"
+   echo "l     Extract snapshots from prepared production trajectories? 0|1"
    echo "w     Use explicit waters in MMPBSA calculations. 0|1"
 }
 
@@ -130,7 +130,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
       sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
       sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/${leap_topo}
-      sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+TOPO_MMPBSA+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
       #sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
 
       echo "Creating topologies"
