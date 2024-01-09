@@ -5,7 +5,7 @@ source leaprc.gaff
 set default PBradii PBRADII
 
 LIG = loadpdb TOPO_PATH/degron.pdb
-saveAmberParm LIG /TOPO_PATH/LIGND_vac_lig.parm7 /TOPO_PATH/LIGND_vac_lig.crd
+saveAmberParm LIG /TOPO_PATH/LIGND_vac_lig_PBRADII.parm7 /TOPO_PATH/LIGND_vac_lig.crd
 savepdb LIG TOPO_PATH/LIGND_lig.pdb
 
 loadoff LIGAND_LIB_PATH/LIGND.lib
@@ -19,7 +19,7 @@ savepdb REC TOPO_PATH/LIGND_rec.pdb
 
 loadAmberParams /LIGAND_LIB_PATH/LIGND.frcmod
 
-saveAmberParm REC /TOPO_PATH/LIGND_vac_rec.parm7 /TOPO_PATH/LIGND_vac_rec.crd
-saveAmberParm COM /TOPO_PATH/LIGND_vac_com.parm7 /TOPO_PATH/LIGND_vac_com.crd
+saveAmberParm REC /TOPO_PATH/LIGND_vac_rec_PBRADII.parm7 /TOPO_PATH/LIGND_vac_rec.crd
+saveAmberParm COM /TOPO_PATH/LIGND_vac_com_PBRADII.parm7 /TOPO_PATH/LIGND_vac_com.crd
 
 quit
