@@ -65,6 +65,9 @@ WDPATH=$(realpath $WDPATH)
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
+# cofactor
+declare -a COFACTOR_MOL2=($(ls $WDPATH/cofactor/))
+declare -a COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
 extract_coordinates="extract_coordinates_prod_mmpbsa_degron"
 extract_snapshots="extract_snapshots_com.in"
