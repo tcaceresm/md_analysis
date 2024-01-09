@@ -19,6 +19,9 @@ Help()
    echo "e     END frame."
    echo "o     OFFSET".
    echo "m     Method. Use alias used in FEW. Check AMBER23 manual page 880. Example: pb3_gb0"
+   echo "r     PBRadii used. This must match with correct parameters of mmpbsa.in. Example: parse, mbondi"
+   echo "l     Extract snapshots from production trajectories? 0|1"
+   echo "w     Use explicit waters in MMPBSA calculations. 0|1 This feature has not been tested."
 }
 
 ############################################################
@@ -175,22 +178,28 @@ for LIG in "${LIGANDS[@]}"
          
       fi
 
+      # Snapshot extraction of prepared production coordinates.
       SNAP="${WDPATH}/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}/"
-      cp $SCRIPT_PATH/degron_mmpbsa_files/$extract_snapshots $SNAP
-      sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_snapshots
-      sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
-      sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_snapshots
-      sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
-      sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_snapshots
-      sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
-      sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
-      sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_snapshots
-      
-      cd ${SNAP}
-      echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa_degron.crd"
-      $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
-      echo "Done!"   
-      cd ${WDPATH}
+      if [[ $EXTRACT_SNAP -eq 1 ]]
+      then
+         cp $SCRIPT_PATH/degron_mmpbsa_files/$extract_snapshots $SNAP
+         sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_snapshots
+         sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
+         sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_snapshots
+         sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
+         sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_snapshots
+         sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
+         sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
+         sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_snapshots
+         
+         cd ${SNAP}
+         echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa_degron.crd"
+         $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
+         echo "Done!"   
+         cd ${WDPATH}
+      else
+      echo "Not extracting snapshots"
+      fi
       
       # MMPBSA folder of ligand
       MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
