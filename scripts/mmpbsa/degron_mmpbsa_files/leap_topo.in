@@ -2,7 +2,7 @@ source leaprc.protein.ff14SB
 source leaprc.water.tip3p
 source leaprc.gaff
 
-set default PBradii parse
+set default PBradii PBRADII
 
 LIG = loadpdb TOPO_PATH/degron.pdb
 saveAmberParm LIG /TOPO_PATH/LIGND_vac_lig.parm7 /TOPO_PATH/LIGND_vac_lig.crd
