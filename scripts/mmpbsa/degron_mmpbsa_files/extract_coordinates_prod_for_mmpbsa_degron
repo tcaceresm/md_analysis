@@ -2,6 +2,6 @@ parm TOPO_MD/LIG_solv_com.parm7
 trajin MD_coords/md_prod.nc START END OFFSET
 autoimage
 strip :Na+,Cl-
-strip !(:1-TOTAL_ATOM)
+strip !(@1-TOTAL_ATOM)
 rmsd mass first
 trajout LIG_prod_noWAT_mmpbsa_degron.crd format crd
