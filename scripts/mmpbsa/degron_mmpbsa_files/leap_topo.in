@@ -4,15 +4,15 @@ source leaprc.gaff
 
 set default PBradii PBRADII
 
-LIG = loadpdb TOPO_MMPBSA/degron.pdb
-saveAmberParm LIG /TOPO_MMPBSA/LIGND_vac_lig_PBRADII.parm7 /TOPO_MMPBSA/LIGND_vac_lig.crd
-savepdb LIG TOPO_MMPBSA/LIGND_lig.pdb
+DEG = loadpdb TOPO_MMPBSA/degron.pdb
+saveAmberParm DEG /TOPO_MMPBSA/LIGND_vac_lig_PBRADII.parm7 /TOPO_MMPBSA/LIGND_vac_lig.crd
+savepdb DEG TOPO_MMPBSA/LIGND_lig.pdb
 
 loadoff LIGAND_LIB_PATH/LIGND.lib
 loadoff COFACTOR_LIB_PATH/COF.lib
 
 REC = loadpdb TOPO_MMPBSA/receptor.pdb
-COM = combine {REC LIG}
+COM = combine {REC DEG}
 
 savepdb COM TOPO_MMPBSA/LIGND_com.pdb
 savepdb REC TOPO_MMPBSA/LIGND_rec.pdb
