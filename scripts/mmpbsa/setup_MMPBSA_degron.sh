@@ -147,16 +147,10 @@ for LIG in "${LIGANDS[@]}"
     # before with cpptraj, removing waters.
     # Then, we will extract snapshots with mm_pbsa.pl of this 100 frames unsolvated prod.mdcrd.
    
-   if [[ $WATERS -eq 0 ]] 
-   then
-      #Si es que el complejo preparado previamente tiene
-      TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
-      echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
-   else
-      echo "Considering waters present in complex"
-      TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
-      echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
-   fi
+
+   TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
+   echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
+
 
    LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
    echo "The last atom of receptor is ${LAST_ATOM_REC}"
