@@ -148,7 +148,7 @@ for LIG in "${LIGANDS[@]}"
     # Then, we will extract snapshots with mm_pbsa.pl of this 100 frames unsolvated prod.mdcrd.
    
 
-   TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
+   TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MMPBSA}/${LIG}_com.pdb | grep -v 'TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
    echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
 
 
