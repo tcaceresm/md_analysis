@@ -25,7 +25,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:s:e:o:m" option; do
+while getopts ":hd:s:e:o:m:r:w:l:" option; do
    case $option in
       h) # Print this help
          Help
@@ -40,6 +40,12 @@ while getopts ":hd:s:e:o:m" option; do
          OFFSET=$OPTARG;;
       m) #Method
          METHOD=$OPTARG;;
+      r) #PBRadii
+         PBRadii=$OPTARG;;
+      w) # Use explicit waters
+         WATERS=$OPTARG;;
+      l) # Extract snapshots
+         EXTRACT_SNAP=$OPTARG;;         
       \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -56,65 +62,46 @@ WDPATH=$(realpath $WDPATH)
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
-# Cofactor
-COFACTOR_MOL2=($(ls ${WDPATH}/cofactor/))
-COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
-leap_script="leap_topo_pb3_gb0.in"
-extract_coordinates="prod_mdcrd_mmpbsa_degron"
-extract_snapshots="extract_coordinates_com.in"
+extract_coordinates="extract_coordinates_prod_mmpbsa_degron"
+extract_snapshots="extract_snapshots_com.in"
+mmpbsa_in="mmpbsa_${METHOD}.in"
+leap_topo="leap_topo.in"
 
 ##############################
 
 for LIG in "${LIGANDS[@]}"
-    do
+   do
     
-    if test -d "${WDPATH}/MMPBSA/${LIG}_degron_gbind/" 
-    then
-        echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/ exist"
-        echo "CONTINUE"
-    else
-     	echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/ do not exist"
-       	echo "Creating ${WDPATH}/MMPBSA/${LIG}_degron_gbind/"
-	mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/
-       	echo "DONE"
-    fi
-    
+ 
    # Degron as ligand requires new topologies, so we can't use same topologies
    # from setupMD folder. 
+   
    TOPO_MD="${WDPATH}/MD/${LIG}/topo"
-   TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ # We'll use this later. But I prefer to define here.
-
-   if test -d "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo" 
-   then
-      echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo exist"
-      echo "CONTINUE"
-   else
-     	echo "${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo do not exist"
-     	echo "Creating ${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo"
-	   mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo
-      echo "DONE"
-   fi
+   TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ 
     
    echo "Doing for $LIG"
    echo "Creating directories"
-    
+   
+   # Creation of directories. To Do: Create only if not exists.
    mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
      
 # Obtain correct topologies of degron and receptor.
    # Obtain degron as pdb from complex pdb. Complex pdb is obtained from setupMD, so it won't work
    # if setupMD folder is not prepared.
-   echo "Now starting to create degron.pdb and receptor.pdb"
-   echo "Creating degron.pdb"
-      grep '8989' -A 232 ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb > ${TOPO_MMPBSA}/degron.pdb
+   echo "Now starting to create degron.pdb and receptor.pdb from complex.pdb from setupMD"
+   echo "Creating degron.pdb. Assuming that Degron starts at Atom 8989 of complex pdb, and is 232 atoms long"
+      grep '8989' -A 232 ${TOPO_MD}/${LIG}_com.pdb > ${TOPO_MMPBSA}/degron.pdb
    echo "Done creating degron.pdb!"
    
    echo "Creating receptor.pdb"
    # Obtain receptor.
+   # Idea: The receptor is the difference between degron and complex.
    set +e
       diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
    echo "Done creating receptor.pdb!"
    set -e
+
    # Obtain topologies of com, rec and degron
 
       # We need to load auxin and ihp lib files, and we obtain this from MD folder.
@@ -123,25 +110,43 @@ for LIG in "${LIGANDS[@]}"
       COFACTOR_LIB=${WDPATH}/MD/cofactor_lib #lib file of cofactor
 
       # TLEaP script to finally obtain topologies.
-      cp ${SCRIPT_PATH}/degron_mmpbsa_files/leap_topo_${METHOD}.in ${TOPO_MMPBSA}
-      sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      # leap_topo_{}.in is used to create new topologies of ligand (degron), and receptor (TIR1 + auxin)
+      cp ${SCRIPT_PATH}/degron_mmpbsa_files/${leap_topo} ${TOPO_MMPBSA}
+      sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s/PBRADII/${PBRadii}/g" {$TOPO_MMPBSA/${leap_topo}
 
-      sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
-      sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
 
-      
-      ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/leap_topo_${METHOD}.in
+      echo "Creating topologies"
+      cd ${TOPO_MMPBSA}
+      ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/${leap_topo}
+      cd ${WDPATH}
+      echo "Done!"
 
-   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
+   # Prepare MMPBSA coordinates extraction and snapshots extraction
+    #Coordinate extraction refer to create a subset (or the complete set) of coordinates
+    #from solvated MD trajectories. For example, if we have 3000 frames of solvated MD (prod.mdcrd) and we
+    # will analyze only 100 frames, we process prod.mdcrd to only have 100 frames of UNSOLVATED prod.mdcrd.
+    # If we let mm_pbsa.pl use solvated trajectories, it's too slow. That's why I process solvated prod.mdcrd
+    # before with cpptraj, removing waters.
+    # Then, we will extract snapshots with mm_pbsa.pl of this 100 frames unsolvated prod.mdcrd.
    
+   
+   TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
+   echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
+
+   LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
+   echo "The last atom of receptor is ${LAST_ATOM_REC}"
+
    FIRST_ATOM_LIG="8989"
    LAST_ATOM_LIG="9220"
-   
-   LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
-        
+   echo "Assuming first atom of degron in complex is ${FIRST_ATOM_LIG}"
+   echo "Assuming last atom of degron in complex is ${LAST_ATOM_LIG}"
+
    for i in 1 2 3 4 5 	
       do
       echo "Doing for ${LIG} repetition ${i}"
@@ -187,7 +192,18 @@ for LIG in "${LIGANDS[@]}"
       echo "Done!"   
       cd ${WDPATH}
       
+      # MMPBSA folder of ligand
       MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
+
+      # Prepare MMPBSA.in file
+      cp "$SCRIPT_PATH/degron_mmpbsa_files/mmpbsa_${METHOD}.in" $MMPBSA
+      sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa_${METHOD}.in
+      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa_${METHOD}.in
+
+
+      # Prepare run_mmpbsa_lig.sh file, to run in NLHPC cluster
       cp "$SCRIPT_PATH/degron_mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
@@ -198,17 +214,12 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp_degron/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       
+      # Prepare run_ppbsa_slurm.sh file, to run in NLHPC cluster
       cp "$SCRIPT_PATH/degron_mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       sed -i "s/REP/${i}/g" "$MMPBSA/run_mmpbsa_slurm.sh"
       
-      cp "$SCRIPT_PATH/degron_mmpbsa_files/mmpbsa_${METHOD}.in" $MMPBSA
-      sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa_${METHOD}.in
-
       done
 done
 echo "DONE!"
