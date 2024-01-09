@@ -185,6 +185,7 @@ for LIG in "${LIGANDS[@]}"
       SNAP="${WDPATH}/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}/"
       if [[ $EXTRACT_SNAP -eq 1 ]]
       then
+         echo "Preparing ${extract_snapshots} file"
          cp $SCRIPT_PATH/degron_mmpbsa_files/$extract_snapshots $SNAP
          sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_snapshots
          sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
