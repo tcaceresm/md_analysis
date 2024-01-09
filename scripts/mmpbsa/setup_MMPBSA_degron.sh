@@ -183,6 +183,7 @@ for LIG in "${LIGANDS[@]}"
          sed -i "s/END/${END}/g" $MD_coords/${extract_coordinates}
          sed -i "s/OFFSET/${OFFSET}/g" $MD_coords/${extract_coordinates}
          sed -i "s/LIG/${LIG}/g" $MD_coords/${extract_coordinates}
+         sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $MD_coords/${extract_coordinates}
          
          ${AMBERHOME}/bin/cpptraj -i $MD_coords/${extract_coordinates}
          
