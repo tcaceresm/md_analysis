@@ -232,7 +232,7 @@ for LIG in "${LIGANDS[@]}"
       sed -i "s/MMPBSA_IN/mmpbsa_${METHOD}.in/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TOPO+~/2p1q/MMPBSA/${LIG}_degron_gbind/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
-      sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_degron_gbind/s1_3000_30/pb3_gb0/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
+      sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_degron_gbind/s${START}_${END}_${OFFSET}/${METHOD}/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TMP_PATH+~/2p1q/MMPBSA/tmp_degron/+g" "$MMPBSA/run_mmpbsa_lig.sh"
       
