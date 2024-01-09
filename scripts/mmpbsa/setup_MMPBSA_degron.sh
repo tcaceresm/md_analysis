@@ -70,7 +70,7 @@ declare -a COFACTOR_MOL2=($(ls $WDPATH/cofactor/))
 declare -a COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
 extract_coordinates="extract_coordinates_prod_mmpbsa_degron"
-extract_snapshots="extract_snapshots_com.in"
+extract_snapshots="extract_snapshots.in"
 mmpbsa_in="mmpbsa_${METHOD}.in"
 leap_topo="leap_topo.in"
 
