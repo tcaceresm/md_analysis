@@ -100,10 +100,16 @@ for LIG in "${LIGANDS[@]}"
    echo "Done creating degron.pdb!"
    
    echo "Creating receptor.pdb"
-   # Obtain receptor.
+   # Obtain receptor. It may contain waters
    # Idea: The receptor is the difference between degron and complex.
    set +e
+   if [[ $WATERS -eq 0 ]] #It means that we don't want any waters. So
+                          # the topologies created in the next step wont contain waters.
+   then
+      diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' | grep -v 'WAT' > ${TOPO_MMPBSA}/receptor.pdb
+   else
       diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
+   fi
    echo "Done creating receptor.pdb!"
    set -e
 
@@ -114,33 +120,25 @@ for LIG in "${LIGANDS[@]}"
       LIGAND_LIB=${WDPATH}/MD/${LIG}/lib #lib file of auxin
       COFACTOR_LIB=${WDPATH}/MD/cofactor_lib #lib file of cofactor
 
-      if [[ $WATERS -eq 0 ]] # No hay aguas
-      # Primero eliminaremos las aguas de 
-      then
-       
-      else # Hay aguas. Por tanto, no hay que crear nuevas topologías porque las de setupMD ya incluyen
-           # esas aguas.
-         leap_topo="leap_topo.in"
-         # TLEaP script to finally obtain topologies.
-         # leap_topo_{}.in is used to create new topologies of ligand (degron), and receptor (TIR1 + auxin)
-         echo "Preparing ${leap_topo} file"
-         cp ${SCRIPT_PATH}/degron_mmpbsa_files/${leap_topo} ${TOPO_MMPBSA}
-         sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
-         sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
-         sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
-         sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
-         sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/${leap_topo}
+      leap_topo="leap_topo.in"
+      # TLEaP script to finally obtain topologies.
+      # leap_topo.in is used to create new topologies of ligand (degron), and receptor (TIR1 + auxin)
+      echo "Preparing ${leap_topo} file"
+      cp ${SCRIPT_PATH}/degron_mmpbsa_files/${leap_topo} ${TOPO_MMPBSA}
+      sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+LIGND+${LIG}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+COF+${COFACTOR}+g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s/PBRADII/${PBRadii}/g" ${TOPO_MMPBSA}/${leap_topo}
+      sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
+      #sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
 
-         sed -i "s+TOPO_PATH+${TOPO_MMPBSA}+g" ${TOPO_MMPBSA}/${leap_topo}
-         sed -i "s+TOPO_MD+${TOPO_MD}+g" ${TOPO_MMPBSA}/${leap_topo}
-
-         echo "Creating topologies"
-         cd ${TOPO_MMPBSA}
-         ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/${leap_topo}
-         cd ${WDPATH}
-         echo "Done!"
-      fi
-
+      echo "Creating topologies"
+      cd ${TOPO_MMPBSA}
+      ${AMBERHOME}/bin/tleap -f ${TOPO_MMPBSA}/${leap_topo}
+      cd ${WDPATH}
+      echo "Done!"
+      
    # Prepare MMPBSA coordinates extraction and snapshots extraction
     #Coordinate extraction refer to create a subset (or the complete set) of coordinates
     #from solvated MD trajectories. For example, if we have 3000 frames of solvated MD (prod.mdcrd) and we
@@ -149,8 +147,9 @@ for LIG in "${LIGANDS[@]}"
     # before with cpptraj, removing waters.
     # Then, we will extract snapshots with mm_pbsa.pl of this 100 frames unsolvated prod.mdcrd.
    
-   if [[ $WATERS -eq 0 ]]
+   if [[ $WATERS -eq 0 ]] 
    then
+      #Si es que el complejo preparado previamente tiene
       TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
       echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
    else

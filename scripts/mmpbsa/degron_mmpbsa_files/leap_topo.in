@@ -4,22 +4,22 @@ source leaprc.gaff
 
 set default PBradii PBRADII
 
-LIG = loadpdb TOPO_PATH/degron.pdb
-saveAmberParm LIG /TOPO_PATH/LIGND_vac_lig_PBRADII.parm7 /TOPO_PATH/LIGND_vac_lig.crd
-savepdb LIG TOPO_PATH/LIGND_lig.pdb
+LIG = loadpdb TOPO_MMPBSA/degron.pdb
+saveAmberParm LIG /TOPO_MMPBSA/LIGND_vac_lig_PBRADII.parm7 /TOPO_MMPBSA/LIGND_vac_lig.crd
+savepdb LIG TOPO_MMPBSA/LIGND_lig.pdb
 
 loadoff LIGAND_LIB_PATH/LIGND.lib
 loadoff COFACTOR_LIB_PATH/COF.lib
 
-REC = loadpdb TOPO_PATH/receptor.pdb
-COM = loadpdb TOPO_MD/LIGND_com.pdb
+REC = loadpdb TOPO_MMPBSA/receptor.pdb
+COM = combine {REC LIG}
 
-savepdb COM TOPO_PATH/LIGND_com.pdb
-savepdb REC TOPO_PATH/LIGND_rec.pdb
+savepdb COM TOPO_MMPBSA/LIGND_com.pdb
+savepdb REC TOPO_MMPBSA/LIGND_rec.pdb
 
 loadAmberParams /LIGAND_LIB_PATH/LIGND.frcmod
 
-saveAmberParm REC /TOPO_PATH/LIGND_vac_rec_PBRADII.parm7 /TOPO_PATH/LIGND_vac_rec.crd
-saveAmberParm COM /TOPO_PATH/LIGND_vac_com_PBRADII.parm7 /TOPO_PATH/LIGND_vac_com.crd
+saveAmberParm REC /TOPO_MMPBSA/LIGND_vac_rec_PBRADII.parm7 /TOPO_MMPBSA/LIGND_vac_rec.crd
+saveAmberParm COM /TOPO_MMPBSA/LIGND_vac_com_PBRADII.parm7 /TOPO_MMPBSA/LIGND_vac_com.crd
 
 quit
