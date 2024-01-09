@@ -76,7 +76,6 @@ leap_topo="leap_topo.in"
 for LIG in "${LIGANDS[@]}"
    do
     
- 
    # Degron as ligand requires new topologies, so we can't use same topologies
    # from setupMD folder. 
    
