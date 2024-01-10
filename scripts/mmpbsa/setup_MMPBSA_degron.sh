@@ -159,26 +159,46 @@ for LIG in "${LIGANDS[@]}"
 
    TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MMPBSA}/${LIG}_com.pdb | grep -v 'TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
    echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
-   
+      
    LAST_ATOM_AUX=$(cat ${TOPO_MMPBSA}/${LIG}_com.pdb | grep 'LIG' | tail -n 1  | awk '{print $2}')
 
-   #LIG is degron
-   FIRST_ATOM_LIG=$(($LAST_ATOM_AUX + 1))
-   LAST_ATOM_LIG=$(($FIRST_ATOM_LIG + 231))
 
-   RSTART_1=1
-   RSTOP_1=${LAST_ATOM_AUX}
-   RSTART_2=$(($LAST_ATOM_LIG + 1))
-   RSTOP_2=${TOTAL_ATOM_UNSOLVATED}
-   echo "Asumming RSTART1 is ${RSTART_1}"
-   echo "Asumming RSTOP1 is ${RSTOP_1}"
-   
-   echo "Assuming first atom of degron in complex is ${FIRST_ATOM_LIG}"
-   echo "Assuming last atom of degron in complex is ${LAST_ATOM_LIG}"
+   if [[ $WATERS -eq 1 ]]
+   then
+      extract_coordinates="extract_coordinates_prod_for_mmpbsa_degron_withWAT"
+      extract_snapshots="extract_snapshots_withWAT.in"
+      #LIG is degron
+      FIRST_ATOM_LIG=$(($LAST_ATOM_AUX + 1))
+      LAST_ATOM_LIG=$(($FIRST_ATOM_LIG + 231))
 
-   echo "Asumming RSTART2 is ${RSTART_2}"
-   echo "Asumming RSTOP2 is ${RSTOP_2}"
+      RSTART_1=1
+      RSTOP_1=${LAST_ATOM_AUX}
+      RSTART_2=$(($LAST_ATOM_LIG + 1))
+      RSTOP_2=${TOTAL_ATOM_UNSOLVATED}
+      echo "Asumming RSTART1 is ${RSTART_1}"
+      echo "Asumming RSTOP1 is ${RSTOP_1}"
+      
+      echo "Assuming first atom of degron in complex is ${FIRST_ATOM_LIG}"
+      echo "Assuming last atom of degron in complex is ${LAST_ATOM_LIG}"
 
+      echo "Asumming RSTART2 is ${RSTART_2}"
+      echo "Asumming RSTOP2 is ${RSTOP_2}"
+   else
+      extract_coordinates="extract_coordinates_prod_for_mmpbsa_degron"
+      extract_snapshots="extract_snapshots.in"
+      FIRST_ATOM_LIG=$(($LAST_ATOM_AUX + 1))
+      LAST_ATOM_LIG=$(($FIRST_ATOM_LIG + 231))
+
+      RSTART_1=1
+      RSTOP_1=${LAST_ATOM_AUX}      
+      
+      echo "Asumming RSTART1 is ${RSTART_1}"
+      echo "Asumming RSTOP1 is ${RSTOP_1}"
+
+      echo "Assuming first atom of degron in complex is ${FIRST_ATOM_LIG}"
+      echo "Assuming last atom of degron in complex is ${LAST_ATOM_LIG}"
+
+   fi
 
    for i in 1 2 3 4 5 	
       do
