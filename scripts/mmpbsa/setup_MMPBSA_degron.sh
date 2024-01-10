@@ -158,15 +158,25 @@ for LIG in "${LIGANDS[@]}"
 
    TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MMPBSA}/${LIG}_com.pdb | grep -v 'TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
    echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
+ 
+   RSTART_1=1
+   RSTOP_1=$(($FIRST_ATOM_LIG - 1))
+   
+   #LIG is degron
+   FIRST_ATOM_LIG="9051"
+   LAST_ATOM_LIG="9282"
 
-
-   LAST_ATOM_REC=${TOTAL_ATOM_UNSOLVATED}
-   echo "The last atom of receptor is ${LAST_ATOM_REC}"
-
-   FIRST_ATOM_LIG="8989"
-   LAST_ATOM_LIG="9220"
+   RSTART_2=$(($LAST_ATOM_LIG + 1))
+   RSTOP_2=${TOTAL_ATOM_UNSOLVATED}
+   echo "Asumming RSTART1 is ${RSTART_1}"
+   echo "Asumming RSTOP1 is ${RSTOP_1}"
+   
    echo "Assuming first atom of degron in complex is ${FIRST_ATOM_LIG}"
    echo "Assuming last atom of degron in complex is ${LAST_ATOM_LIG}"
+
+   echo "Asumming RSTART2 is ${RSTART_2}"
+   echo "Asumming RSTOP2 is ${RSTOP_2}"
+
 
    for i in 1 2 3 4 5 	
       do
@@ -207,7 +217,10 @@ for LIG in "${LIGANDS[@]}"
          sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
          sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_snapshots
          sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
-         sed -i "s/LAST_ATOM_REC/${LAST_ATOM_REC}/g" $SNAP/$extract_snapshots
+         sed -i "s/RSTART_1/${RSTART_1}/g" $SNAP/$extract_snapshots
+         sed -i "s/RSTOP_1/${RSTOP_1}/g" $SNAP/$extract_snapshots
+         sed -i "s/RSTART_2/${RSTART_2}/g" $SNAP/$extract_snapshots
+         sed -i "s/RSTOP_2/${RSTOP_2}/g" $SNAP/$extract_snapshots
          sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
          sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
          sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_snapshots

@@ -124,10 +124,10 @@ NSTOP                 100
 NFREQ                 1
 #
 NUMBER_REC_GROUPS     2
-RSTART                1
-RSTOP                 8988
-RSTART		      9221
-RSTOP		      LAST_ATOM_REC
+RSTART                RSTART_1
+RSTOP                 RSTOP_1
+RSTART		          RSTART_2
+RSTOP		          RSTOP_2
 NUMBER_LIG_GROUPS     1
 LSTART                FIRST_ATOM_LIG
 LSTOP                 LAST_ATOM_LIG
