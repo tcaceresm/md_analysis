@@ -89,13 +89,16 @@ for LIG in "${LIGANDS[@]}"
    # Creation of directories. To Do: Create only if not exists.
    if [[ $WATERS -eq 0 ]]
    then
-      mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
-      TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ 
+      MMPBSA_FOLDER='MMPBSA'
 
    else
-      mkdir -p ${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
-      TOPO_MMPBSA=${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/topo/ 
+      MMPBSA_FOLDER='MMPBSA_withWAT'
    fi
+   
+   mkdir -p ${WDPATH}/${MMPBSA_FOLDER}/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
+   TOPO_MMPBSA=${WDPATH}/${MMPBSA_FOLDER}/${LIG}_degron_gbind/topo/ 
+
+
 # Obtain correct topologies of degron and receptor.
    # Obtain degron as pdb from complex pdb. Complex pdb is obtained from setupMD, so it won't work
    # if setupMD folder is not prepared.
@@ -195,7 +198,7 @@ for LIG in "${LIGANDS[@]}"
       fi
 
       # Snapshot extraction of prepared production coordinates.
-      SNAP="${WDPATH}/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}/"
+      SNAP="${WDPATH}/${MMPBSA_FOLDER}/${LIG}_degron_gbind/snapshots_rep${i}/"
       if [[ $EXTRACT_SNAP -eq 1 ]]
       then
          echo "Preparing ${extract_snapshots} file"
@@ -221,12 +224,13 @@ for LIG in "${LIGANDS[@]}"
       # MMPBSA folder of ligand
       if [[ $WATERS -eq 0 ]]
       then
-         MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
          mmpbsa_in="mmpbsa_${METHOD}.in"
       else
-         MMPBSA="${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
          mmpbsa_in="mmpbsa_${METHOD}_withWAT.in"
       fi
+
+      MMPBSA="${WDPATH}/${MMPBSA_FOLDER}/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
+
       # Prepare MMPBSA.in file
       cp "$SCRIPT_PATH/degron_mmpbsa_files/${mmpbsa_in}" $MMPBSA
       sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
