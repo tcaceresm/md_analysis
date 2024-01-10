@@ -87,7 +87,7 @@ for LIG in "${LIGANDS[@]}"
    echo "Creating directories"
    
    # Creation of directories. To Do: Create only if not exists.
-   if if [[ $WATERS -eq 0 ]]
+   if [[ $WATERS -eq 0 ]]
    then
       mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
       TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ 
@@ -95,7 +95,7 @@ for LIG in "${LIGANDS[@]}"
    else
       mkdir -p ${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
       TOPO_MMPBSA=${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/topo/ 
-      
+   fi
 # Obtain correct topologies of degron and receptor.
    # Obtain degron as pdb from complex pdb. Complex pdb is obtained from setupMD, so it won't work
    # if setupMD folder is not prepared.
