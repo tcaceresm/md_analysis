@@ -76,7 +76,7 @@ for LIG in "${LIGANDS[@]}"
 
     echo "Doing for $LIG"
 
-    if [[ $WATERS -eq 0]]
+    if [[ $WATERS -eq 0 ]]
     then
       MMPBSA_FOLDER='MMPBSA'
     else
