@@ -66,7 +66,7 @@ declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 extract_coordinates="extract_coordinates_prod_mmpbsa"
-extract_snapshots="extract_snapshots_com.in"
+extract_snapshots="extract_snapshots.in"
 mmpbsa_in="mmpbsa_${METHOD}.in"
 
 ##############################
@@ -115,6 +115,7 @@ for LIG in "${LIGANDS[@]}"
    
    if [[ $WATERS -eq 0 ]]
    then
+       extract_coordinates="extract_coordinates_mmpbsa_noWAT"
        echo "Not considering explicit waters in MMPBSA calculations"
        echo "Modifying MMPSA input file"
        echo "Computing Total Atoms in Unsolvated complex"
@@ -124,6 +125,7 @@ for LIG in "${LIGANDS[@]}"
        LAST_ATOM_LIG=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
        echo "Please check prepared input files for MMPBSA are correct!"
    else
+       extract_coordinates="extract_coordinates_mmpbsa_withWAT"
        echo "Assuming that you do want to consider explicit waters in MMPBSA calculations"
        echo "Computing Total Atoms in Unsolvated complex considering explicit waters"
        TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | tail -n 1 | grep 'ATOM' | awk '{print $2}')
@@ -160,13 +162,13 @@ for i in 1 2 3 4 5
         
     fi
     
-    SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
+    SNAP="${WDPATH}/${MMBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}/"
     if [[ $EXTRACT_SNAP -eq 1 ]]
     then
         #Snapshot extraction
         
         echo "Going to extract snapshots"
-        #SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
+        #SNAP="${WDPATH}/${MMBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}/"
         cp $SCRIPT_PATH/mmpbsa_files/$extract_snapshots $SNAP
         sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_snapshots
         sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
@@ -184,13 +186,13 @@ for i in 1 2 3 4 5
         cd ${WDPATH}
     else
     echo "Not extracting snapshots"
-    #SNAP="${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}/"
+    #SNAP="${WDPATH}/${MMBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}/"
     echo "Done!"
     fi
     
 
     # MMPBSA files location in target location (not input files)
-    MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
+    MMPBSA="${WDPATH}/${MMPBSA_FOLDER}/${LIG}_gbind/s${START}_${END}_${OFFSET}/${METHOD}/rep${i}/"
     
     # To prepare mmpbsa.in file
     cp "$SCRIPT_PATH/mmpbsa_files/$mmpbsa_in" $MMPBSA
@@ -207,10 +209,10 @@ for i in 1 2 3 4 5
     sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/MMPBSA_IN/${mmpbsa_in}/g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s+MMPBSA_TOPO+${TOPO_MMPBSA}+g" "$MMPBSA/run_mmpbsa_lig.sh"
-    sed -i "s+MMPBSA_SNAPS+${WDPATH}/MMPBSA/${LIG}_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
-    sed -i "s+MMPBSA_PATH+${WDPATH}/MMPBSA/${LIG}_gbind/s1_3000_30/${METHOD}/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_SNAPS+${WDPATH}/${MMPBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_PATH+${MMPBSA}+g" "$MMPBSA/run_mmpbsa_lig.sh"
     sed -i "s/METHOD/${METHOD}/g" "$MMPBSA/run_mmpbsa_lig.sh"
-    sed -i "s+MMPBSA_TMP_PATH+${WDPATH}/MMPBSA/tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
+    sed -i "s+MMPBSA_TMP_PATH+${WDPATH}/${MMPBSA_FOLDER}tmp/+g" "$MMPBSA/run_mmpbsa_lig.sh"
     
     # Edit run_ppbsa_slurm.sh file, to run in NLHPC cluster
     cp "$SCRIPT_PATH/mmpbsa_files/run_mmpbsa_slurm.sh" $MMPBSA
