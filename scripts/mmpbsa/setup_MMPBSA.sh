@@ -73,22 +73,22 @@ mmpbsa_in="mmpbsa_${METHOD}.in"
 
 for LIG in "${LIGANDS[@]}"
     do
+
     echo "Doing for $LIG"
-    if test -d "${WDPATH}/MMPBSA/${LIG}_gbind/" 
+
+    if [[ $WATERS -eq 0]]
     then
-        echo "${WDPATH}/MMPBSA/${LIG}_gbind/ exist"
-        echo "CONTINUE"
+      MMPBSA_FOLDER='MMPBSA'
     else
-     	echo "${WDPATH}/MMPBSA/${LIG}_gbind/ do not exist"
-       	echo "Creating ${WDPATH}/MMPBSA/${LIG}_gbind/"
-	mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/
-        echo "Creating sub-directories"    
-        mkdir -p ${WDPATH}/MMPBSA/${LIG}_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
-       	echo "DONE"
+      MMPBSA_FOLDER='MMPBSA_withWAT'
     fi
     
+    mkdir -p ${WDPATH}/${MMPBSA_FOLDER}/${LIG}_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
+    echo "DONE"
+    
+    
     TOPO_MD="${WDPATH}/MD/${LIG}/topo" # Necessary for coordinates extraction
-    TOPO_MMPBSA="${WDPATH}/MMPBSA/${LIG}_gbind/topo" # Necessary to set correct PBRadii in topology file used in MMPBSA calculations
+    TOPO_MMPBSA="${WDPATH}/${MMPBSA_FOLDER}/${LIG}_gbind/topo" # Necessary to set correct PBRadii in topology file used in MMPBSA calculations
     
     # Preparation of topology files for MMPBSA calculations. We will modify the topology of lig, rec and com of MD topology files
     echo "Modifying PBRadii using ParmEd utility"
@@ -111,24 +111,24 @@ for LIG in "${LIGANDS[@]}"
     #
 
 # this is to obtain total atom from pdb file of setupMD, a necessary value for nothing lol
-   TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
+   TOTAL_ATOM_SOLVATED=$(cat ${TOPO_MD}/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    if [[ $WATERS -eq 0 ]]
    then
        echo "Not considering explicit waters in MMPBSA calculations"
        echo "Modifying MMPSA input file"
        echo "Computing Total Atoms in Unsolvated complex"
-       TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
-       FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
+       TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep -v 'WAT\|TER\|END' | tail -n 1 | grep 'ATOM' | awk '{print $2}')
+       FIRST_ATOM_LIG=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
        LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
-       LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
+       LAST_ATOM_LIG=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
        echo "Please check prepared input files for MMPBSA are correct!"
    else
        echo "Assuming that you do want to consider explicit waters in MMPBSA calculations"
        echo "Computing Total Atoms in Unsolvated complex considering explicit waters"
-       TOTAL_ATOM_UNSOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | tail -n 1 | grep 'ATOM' | awk '{print $2}')
-       FIRST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
-       LAST_ATOM_LIG=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
+       TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MD}/${LIG}_com.pdb | tail -n 1 | grep 'ATOM' | awk '{print $2}')
+       FIRST_ATOM_LIG=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | head -n 1)
+       LAST_ATOM_LIG=$(cat ${TOPO_MD}/${LIG}_com.pdb | grep 'LIG' | awk '{print $2}' | tail -n 1)
        LAST_ATOM_REC=$(($FIRST_ATOM_LIG - 1))
        echo "Please check prepared input files for MMPBSA are correct!"
     fi 
