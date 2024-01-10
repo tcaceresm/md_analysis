@@ -4,4 +4,4 @@ autoimage
 strip :Na+,Cl-
 strip !(@1-TOTAL_ATOM)
 rmsd mass first
-trajout LIG_prod_noWAT_mmpbsa_degron.crd format crd
+trajout LIG_prod_withWAT_mmpbsa_degron.crd format crd
