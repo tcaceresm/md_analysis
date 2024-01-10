@@ -65,7 +65,7 @@
 VERBOSE               1
 PARALLEL              20
 #
-PREFIX                LIGND
+PREFIX                LIGND_degronREP
 PATH                  ./snapshots
 START                 1
 STOP                  100
