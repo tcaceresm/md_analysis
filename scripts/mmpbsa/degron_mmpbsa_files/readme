@@ -1,0 +1,13 @@
+Archivos de entrada para el cálculo de energía libre de unión
+del degrón.
+La simulación de MD se realizó manteniendo dos aguas cristalográficas
+en la base del bolsillo de TIR1.
+
+Por tanto, tuve que preparar dos tipos de setup
+ 1) Uno considerando esas dos aguas para el cálculo mm_pbsa
+    Esto conlleva la preparación de topologias, coordenadas, snapshots,
+    mmpbsa.in (en el caso del esquema de decomposición).
+ 2) Ignorando esas dos aguas. Se deben remover las dos aguas, preparar las topologías,
+    coordenadas, snapshots, mmpbsa.in
+
+Más adelante indicaré el workflow.
