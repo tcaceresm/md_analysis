@@ -142,7 +142,7 @@ LSTOP                 LAST_ATOM_LIG
 #   To be able to identify the title line, it must be identical in all files.
 #
 #TRAJECTORY          RUTA/md_prod_001_img.mdcrd.gz
-TRAJECTORY           RUTA_MD/LIGND_prod_noWAT_mmpbsa.crd
+TRAJECTORY           RUTA_MD/LIGND_prod_WAT_mmpbsa.crd
 
 #
 ################################################################################

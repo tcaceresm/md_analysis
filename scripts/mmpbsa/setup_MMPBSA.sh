@@ -79,8 +79,10 @@ for LIG in "${LIGANDS[@]}"
     if [[ $WATERS -eq 0 ]]
     then
       MMPBSA_FOLDER='MMPBSA'
+      PROD_MMPBSA_COORD='noWAT'
     else
       MMPBSA_FOLDER='MMPBSA_withWAT'
+      PROD_MMPBSA_COORD='withWAT'
     fi
     
     mkdir -p ${WDPATH}/${MMPBSA_FOLDER}/${LIG}_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
@@ -170,7 +172,7 @@ for i in 1 2 3 4 5
         echo "Going to extract snapshots"
         #SNAP="${WDPATH}/${MMBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}/"
         cp $SCRIPT_PATH/mmpbsa_files/$extract_snapshots $SNAP
-        sed -i "s+TOPO+${TOPO_MD}+g" $SNAP/$extract_snapshots
+        sed -i "s+TOPO+${TOPO_MMPBSA}+g" $SNAP/$extract_snapshots
         sed -i "s/REP/${i}/g" $SNAP/$extract_snapshots
         sed -i "s/LIGND/${LIG}/g" $SNAP/$extract_snapshots
         sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
@@ -178,7 +180,7 @@ for i in 1 2 3 4 5
         sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
         sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
         sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_snapshots
-    
+        sed -i "s/WAT/${PROD_MMPBSA_COORD}/g" $SNAP/$extract_snapshots
         cd ${SNAP}
         echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
         $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
