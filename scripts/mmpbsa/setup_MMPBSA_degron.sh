@@ -71,7 +71,6 @@ declare -a COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
 extract_coordinates="extract_coordinates_prod_for_mmpbsa_degron"
 extract_snapshots="extract_snapshots.in"
-mmpbsa_in="mmpbsa_${METHOD}.in"
 #leap_topo="leap_topo.in"
 
 ##############################
@@ -216,20 +215,26 @@ for LIG in "${LIGANDS[@]}"
       # MMPBSA folder of ligand
       MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
 
+      if [[ $WATERS -eq 0 ]]
+      then
+         mmpbsa_in="mmpbsa_${METHOD}.in"
+      else
+         mmpbsa_in="mmpbsa_${METHOD}_withWAT.in"
+      fi
       # Prepare MMPBSA.in file
-      cp "$SCRIPT_PATH/degron_mmpbsa_files/mmpbsa_${METHOD}.in" $MMPBSA
-      sed -i "s/LIGND/${LIG}/g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s/REP/${i}/g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/mmpbsa_${METHOD}.in
-      sed -i "s/PBRADII/${PBRadii}/g" $MMPBSA/mmpbsa_${METHOD}.in
+      cp "$SCRIPT_PATH/degron_mmpbsa_files/${mmpbsa_in}" $MMPBSA
+      sed -i "s/LIGND/${LIG}/g" $MMPBSA/${mmpbsa_in}
+      sed -i "s/REP/${i}/g" $MMPBSA/${mmpbsa_in}
+      sed -i "s+SNAP_PATH+${SNAP}+g" $MMPBSA/${mmpbsa_in}
+      sed -i "s+TOPO+${TOPO_MD}+g" $MMPBSA/${mmpbsa_in}
+      sed -i "s/PBRADII/${PBRadii}/g" $MMPBSA/${mmpbsa_in}
 
 
       # Prepare run_mmpbsa_lig.sh file, to run in NLHPC cluster
       cp "$SCRIPT_PATH/degron_mmpbsa_files/run_mmpbsa_lig.sh" $MMPBSA
       sed -i "s/LIG/${LIG}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s/repN/rep${i}/g" "$MMPBSA/run_mmpbsa_lig.sh"
-      sed -i "s/MMPBSA_IN/mmpbsa_${METHOD}.in/g" "$MMPBSA/run_mmpbsa_lig.sh"
+      sed -i "s/MMPBSA_IN/${mmpbsa_in}/g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_TOPO+~/2p1q/MMPBSA/${LIG}_degron_gbind/topo+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_SNAPS+~/2p1q/MMPBSA/${LIG}_degron_gbind/snapshots_rep${i}+g" "$MMPBSA/run_mmpbsa_lig.sh"
       sed -i "s+MMPBSA_PATH+~/2p1q/MMPBSA/${LIG}_degron_gbind/s${START}_${END}_${OFFSET}/${METHOD}/rep${i}/+g" "$MMPBSA/run_mmpbsa_lig.sh"
