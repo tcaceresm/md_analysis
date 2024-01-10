@@ -82,14 +82,20 @@ for LIG in "${LIGANDS[@]}"
    # from setupMD folder. 
    
    TOPO_MD="${WDPATH}/MD/${LIG}/topo"
-   TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ 
     
    echo "Doing for $LIG"
    echo "Creating directories"
    
    # Creation of directories. To Do: Create only if not exists.
-   mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
-     
+   if if [[ $WATERS -eq 0 ]]
+   then
+      mkdir -p ${WDPATH}/MMPBSA/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
+      TOPO_MMPBSA=${WDPATH}/MMPBSA/${LIG}_degron_gbind/topo/ 
+
+   else
+      mkdir -p ${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/{topo,snapshots_rep1,snapshots_rep2,snapshots_rep3,snapshots_rep4,snapshots_rep5,"s${START}_${END}_${OFFSET}"/${METHOD}/{rep1,rep2,rep3,rep4,rep5}}
+      TOPO_MMPBSA=${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/topo/ 
+      
 # Obtain correct topologies of degron and receptor.
    # Obtain degron as pdb from complex pdb. Complex pdb is obtained from setupMD, so it won't work
    # if setupMD folder is not prepared.
@@ -105,9 +111,9 @@ for LIG in "${LIGANDS[@]}"
    if [[ $WATERS -eq 0 ]] #It means that we don't want any waters. So
                           # the topologies created in the next step wont contain waters.
    then
-      diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' | grep -v 'WAT' > ${TOPO_MMPBSA}/receptor.pdb
+      diff ${TOPO_MD}/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' | grep -v 'WAT' > ${TOPO_MMPBSA}/receptor.pdb
    else
-      diff ${WDPATH}/MD/${LIG}/topo/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
+      diff ${TOPO_MD}/${LIG}_com.pdb ${TOPO_MMPBSA}/degron.pdb | grep '^[<>]' | sed -E 's/(< |> )//g' > ${TOPO_MMPBSA}/receptor.pdb
    fi
    echo "Done creating receptor.pdb!"
    set -e
@@ -213,12 +219,12 @@ for LIG in "${LIGANDS[@]}"
       fi
       
       # MMPBSA folder of ligand
-      MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
-
       if [[ $WATERS -eq 0 ]]
       then
+         MMPBSA="${WDPATH}/MMPBSA/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
          mmpbsa_in="mmpbsa_${METHOD}.in"
       else
+         MMPBSA="${WDPATH}/MMPBSA_withWAT/${LIG}_degron_gbind/"s${START}_${END}_${OFFSET}"/${METHOD}/rep${i}/"
          mmpbsa_in="mmpbsa_${METHOD}_withWAT.in"
       fi
       # Prepare MMPBSA.in file
