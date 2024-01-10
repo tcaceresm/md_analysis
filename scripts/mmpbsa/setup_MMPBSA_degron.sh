@@ -241,8 +241,11 @@ for LIG in "${LIGANDS[@]}"
          sed -i "s/TOTAL_ATOM/${TOTAL_ATOM_UNSOLVATED}/g" $SNAP/$extract_snapshots
          sed -i "s/RSTART_1/${RSTART_1}/g" $SNAP/$extract_snapshots
          sed -i "s/RSTOP_1/${RSTOP_1}/g" $SNAP/$extract_snapshots
-         sed -i "s/RSTART_2/${RSTART_2}/g" $SNAP/$extract_snapshots
-         sed -i "s/RSTOP_2/${RSTOP_2}/g" $SNAP/$extract_snapshots
+         if [[ $WATERS -e 1 ]]
+            then
+            sed -i "s/RSTART_2/${RSTART_2}/g" $SNAP/$extract_snapshots
+            sed -i "s/RSTOP_2/${RSTOP_2}/g" $SNAP/$extract_snapshots
+            fi
          sed -i "s/FIRST_ATOM_LIG/${FIRST_ATOM_LIG}/g" $SNAP/$extract_snapshots
          sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
          sed -i "s+MDCOORDS+${MD_coords}+g" $SNAP/$extract_snapshots
