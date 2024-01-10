@@ -1,0 +1,3 @@
+changeRadii PBRADII
+strip :WAT
+parmout LIG_vac_com_PBRADII.parm7

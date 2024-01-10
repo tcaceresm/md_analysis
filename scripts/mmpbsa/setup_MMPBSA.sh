@@ -97,13 +97,20 @@ for LIG in "${LIGANDS[@]}"
     sed -i "s/LIG/${LIG}/g" ${TOPO_MMPBSA}/*modify*
     
     cd ${TOPO_MMPBSA}
-    ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_com.txt
-    ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_rec.txt
-    ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_lig.txt
+    if [[ $WATERS -eq 1 ]]
+    then
+      ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_com.txt
+      ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_rec.txt
+      ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_lig.txt
+   else
+      ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_com.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_com_noWAT.txt
+      ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_rec.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_rec_noWAT.txt
+      ${AMBERHOME}/bin/parmed --overwrite -p ${TOPO_MD}/${LIG}_vac_lig.parm7 -i ${TOPO_MMPBSA}/modify_pbradii_vac_lig_noWAT.txt
+
     cd ${WDPATH}
     #
 
-# this is to obtain total atom from pdb file of setupMD, a necessary value for 
+# this is to obtain total atom from pdb file of setupMD, a necessary value for nothing lol
    TOTAL_ATOM_SOLVATED=$(cat ${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $2}')
    
    if [[ $WATERS -eq 0 ]]
