@@ -155,16 +155,16 @@ for LIG in "${LIGANDS[@]}"
     # before with cpptraj, removing waters.
     # Then, we will extract snapshots with mm_pbsa.pl of this 100 frames unsolvated prod.mdcrd.
    
+   #TIR1 luego IHP luego Aux luego Degron y luego agua en caso de tener.
 
    TOTAL_ATOM_UNSOLVATED=$(cat ${TOPO_MMPBSA}/${LIG}_com.pdb | grep -v 'TER\|END' | tail -n 1  | grep 'ATOM' | awk '{print $2}')
    echo "Total Atoms in unsolvated complex is ${TOTAL_ATOM_UNSOLVATED}"
- 
-   RSTART_1=1
-   RSTOP_1=$(($FIRST_ATOM_LIG - 1))
    
+   LAST_ATOM_AUX=$(cat ${TOPO_MMPBSA}/${LIG}_com.pdb | grep 'LIG' | tail -n 1  | awk '{print $2}')
+
    #LIG is degron
-   FIRST_ATOM_LIG="9051"
-   LAST_ATOM_LIG="9282"
+   FIRST_ATOM_LIG=$(($LAST_ATOM_AUX + 1))
+   LAST_ATOM_LIG=$(($FIST_ATOM_LIG + 231))
 
    RSTART_2=$(($LAST_ATOM_LIG + 1))
    RSTOP_2=${TOTAL_ATOM_UNSOLVATED}
