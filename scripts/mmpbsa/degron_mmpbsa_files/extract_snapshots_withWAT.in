@@ -143,7 +143,7 @@ LSTOP                 LAST_ATOM_LIG
 #     in ascii as well as in .gz format.
 #   To be able to identify the title line, it must be identical in all files.
 #
-TRAJECTORY          MDCOORDS/LIGND_prod_noWAT_mmpbsa_degron.crd
+TRAJECTORY          MDCOORDS/LIGND_prod_withWAT_mmpbsa_degron.crd
 #
 ################################################################################
 @PROGRAMS
