@@ -162,7 +162,7 @@ for i in 1 2 3 4 5
         
     fi
     
-    SNAP="${WDPATH}/${MMBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}/"
+    SNAP="${WDPATH}/${MMPBSA_FOLDER}/${LIG}_gbind/snapshots_rep${i}/"
     if [[ $EXTRACT_SNAP -eq 1 ]]
     then
         #Snapshot extraction
