@@ -75,9 +75,9 @@ COMPLEX               1
 RECEPTOR              1
 LIGAND                1
 #
-COMPT                 TOPO/LIGND_com.parm7
-RECPT                 TOPO/LIGND_rec.parm7
-LIGPT                 TOPO/LIGND_lig.parm7
+COMPT                 TOPO/LIGND_com_PBRADII.parm7
+RECPT                 TOPO/LIGND_rec_PBRADII.parm7
+LIGPT                 TOPO/LIGND_lig_PBRADII.parm7
 #
 GC                    1
 AS                    0

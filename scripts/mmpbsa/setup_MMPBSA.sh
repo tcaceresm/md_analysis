@@ -160,6 +160,7 @@ for i in 1 2 3 4 5
         sed -i "s/OFFSET/${OFFSET}/g" $MD_coords/${extract_coordinates}
         sed -i "s/LIG/${LIG}/g" $MD_coords/${extract_coordinates}
         
+        
         ${AMBERHOME}/bin/cpptraj -i $MD_coords/${extract_coordinates}
         
     fi
@@ -181,6 +182,8 @@ for i in 1 2 3 4 5
         sed -i "s/LAST_ATOM_LIG/${LAST_ATOM_LIG}/g" $SNAP/$extract_snapshots
         sed -i "s+RUTA_MD+${MD_coords}+g" $SNAP/$extract_snapshots
         sed -i "s/WAT/${PROD_MMPBSA_COORD}/g" $SNAP/$extract_snapshots
+        sed -i "s/PBRADII/${PBRadii}/" $SNAP/$extract_snapshots
+
         cd ${SNAP}
         echo "Extracting snapshots from ${MD_coords}/${LIG}_prod_noWAT_mmpbsa.nc"
         $AMBERHOME/bin/mm_pbsa.pl ${SNAP}/${extract_snapshots} > ${SNAP}/extract_coordinates_com.log
