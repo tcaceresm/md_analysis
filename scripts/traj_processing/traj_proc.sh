@@ -37,6 +37,8 @@ while getopts ":hd:e:p:r:" option; do
          prod=$OPTARG;;
       r) # Compute RMSD
          rmsd=$OPTARG;;
+      w) # Remove waters?
+         WAT=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -85,31 +87,34 @@ for i in 1 2 3 4 5
    
     if [[ $prod -eq 1 ]]
     then
-            echo "
+       echo "
 ##############################
 Processing Production Files
 ##############################
 "
 	    echo "Copying files to $PROD"
 	    echo "Copying process_mdout.perl to ${PROD}"   
-            cp $PROD_FILES/process_mdout.perl $PROD
+         cp $PROD_FILES/process_mdout.perl $PROD
 
-            cd $PROD
+         cd $PROD
             
-            /usr/bin/perl ${PROD}/process_mdout.perl *.out
+         /usr/bin/perl ${PROD}/process_mdout.perl *.out
             
-            echo "Copying (and overwriting) $RM_HOH"
-	    cp $PROD_FILES/$RM_HOH $PROD
-	    sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
-	    sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
-	    sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
+       echo "Copying (and overwriting) $RM_HOH"
+   	    cp $PROD_FILES/$RM_HOH $PROD
+	       sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
+	       sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
+	       sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
 	    	
-	    echo "Removing WAT from trajectories"
-	    #cd $PROD
-	    ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
-	    
-
-            cd $SCRIPT_PATH
+       if [[ $WAT -eq 1]]
+       then  
+	      echo "Removing WAT from trajectories"
+	      #cd $PROD
+	      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+	    else
+         echo "Not removin WAT from trajectories"
+       fi
+         cd $SCRIPT_PATH
 
     fi
     
