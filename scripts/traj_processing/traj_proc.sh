@@ -107,7 +107,7 @@ Processing Production Files
 	       sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
 	       sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
 	    	
-       if [[ $WAT -eq 1]]
+       if [[ $WAT -eq 1 ]]
        then  
 	      echo "Removing WAT from trajectories"
 	      #cd $PROD
