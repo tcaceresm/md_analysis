@@ -17,6 +17,7 @@ Help()
    echo "e     0|1. Process equilibration output."
    echo "p     0|1. Process production output"
    echo "r     0|1. Compute RMSD from trajectories"
+   echo "W     0|1. Remove WAT from trajectories?"
    echo
 }
 
@@ -24,7 +25,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:e:p:r:" option; do
+while getopts ":hd:e:p:r:w:" option; do
    case $option in
       h) # Print this help
          Help
