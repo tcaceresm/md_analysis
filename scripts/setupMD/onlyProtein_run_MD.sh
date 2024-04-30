@@ -132,7 +132,7 @@ Starting Equilibration $RECEPTOR $rep
 Starting Production phase of ${RECEPTOR} rep${rep}
 ##############################
 "
-    PROD_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/equi/
+    PROD_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/prod/
     cd $PROD_PATH
     $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/md_nvt_red_06.rst7 -x md_prod.nc -inf md_prod.info
 
