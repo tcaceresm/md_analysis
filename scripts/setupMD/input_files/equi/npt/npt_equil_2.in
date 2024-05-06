@@ -1,17 +1,17 @@
-NVT MD w/ position restraints (5 kcal/molA) and PME (sander)
+NPT MD w/ position restraints (5 kcal/molA) and PME (sander)
  &cntrl
   ntx    = 5,
-  irest  = 1, 
+  irest  = 1,
   ntpr   = 100,
   ntwx   = 1000,
   ntwr   = 1000,
 
-  ntf    = 2,
-  ntb    = 1,
+  ntf    = 2, 
+  ntp    = 1, 
   cut    = 9.0,
-  nsnb   = 10,
+  nsnb   = 10, 
 
-  ntr    = 1, 
+  ntr    = 1,  
 
   nstlim = 25000,
   nscm   = 0,
