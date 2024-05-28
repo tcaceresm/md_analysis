@@ -65,7 +65,7 @@ Starting MD simulations
 ##############################
 "
 
-for rep in 1 # Repetitions
+for rep in 5 # Repetitions
   do
   # Run Equilibration
     echo "
@@ -102,27 +102,27 @@ Starting Equilibration $RECEPTOR $rep
     $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
-    NEW=md_nvt_red_01
+    NEW=npt_equil_1
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
-    NEW=md_nvt_red_02
+    NEW=npt_equil_2
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
-    NEW=md_nvt_red_03
+    NEW=npt_equil_3
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
-    NEW=md_nvt_red_04
+    NEW=npt_equil_4
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
-    NEW=md_nvt_red_05
+    NEW=npt_equil_5
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
-    NEW=md_nvt_red_06
+    NEW=npt_equil_6
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
           
     # Run Production
@@ -134,7 +134,7 @@ Starting Production phase of ${RECEPTOR} rep${rep}
 "
     PROD_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/prod/
     cd $PROD_PATH
-    $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/md_nvt_red_06.rst7 -x md_prod.nc -inf md_prod.info
+    $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt_equil_6.rst7 -x md_prod.nc -inf md_prod.info
 
     echo "
 ##############################
