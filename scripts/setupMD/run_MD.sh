@@ -38,20 +38,19 @@ done
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #echo "SCRIPT PATH $SCRIPT_PATH"
 
-# Ruta de la carpeta de trabajo. Es SCRIPT_PATH / WD_PATH
-WDPATH=${SCRIPT_PATH}/$WD_PATH
+#Ruta de la carpeta de trabajo
+WDPATH=($(realpath $WD_PATH))
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
+declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
+# Receptor
+
+RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
+RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
+
 CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
-
-# Equi input
-
-#declare -a EQUI_IN=("min_ntr_h" "min_ntr_l" "md_nvt_ntr" "md_npt_ntr"
-#                    "md_nvt_red_01"  "md_nvt_red_02"  "md_nvt_red_03"  "md_nvt_red_04"  "md_nvt_red_05" "md_nvt_red_06"    
-#                    )
 
 echo "
 ##############################
@@ -92,13 +91,13 @@ do
     
         echo "Checking existence of MD/${LIG} folder"
     
-        if test -e ${WDPATH}/MD/${LIG} 
+        if test -e ${WDPATH}/MD/${RECEPTOR}/${LIG} 
         then
-            echo "${WDPATH}/MD/${LIG} exist"
+            echo "${WDPATH}/MD/${RECEPTOR}/${LIG} exist"
             echo "CONTINUE
             "
         else
-     	    echo "${WDPATH}/MD/${LIG} do not exist
+     	    echo "${WDPATH}/MD/${RECEPTOR}/${LIG} do not exist
      	    "
        	    exit 1
         fi   	
@@ -112,7 +111,8 @@ Starting Equilibration $LIG $rep
 ##############################
 "
 
-        EQUI_PATH=${WDPATH}/MD/${LIG}/setupMD/rep${rep}/equi/
+        EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
+
         cd $EQUI_PATH
         
         #CRD=${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.crd
@@ -138,27 +138,27 @@ Starting Equilibration $LIG $rep
           $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
-        NEW=md_nvt_red_01
+        NEW=npt_equil_1
           $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
-        NEW=md_nvt_red_02
+        NEW=npt_equil_2
           $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
-        NEW=md_nvt_red_03
+        NEW=npt_equil_3
           $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
-        NEW=md_nvt_red_04
+        NEW=npt_equil_4
           $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
-        NEW=md_nvt_red_05
+        NEW=npt_equil_5
           $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
-        NEW=md_nvt_red_06
+        NEW=npt_equil_6
           $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
           
         # Run Production
@@ -168,9 +168,9 @@ Starting Equilibration $LIG $rep
 Starting Production $LIG $rep
 ##############################
 "
-        PROD_PATH=${WDPATH}/MD/${LIG}/setupMD/rep${rep}/equi/
+        PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
         cd $PROD_PATH
-        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/md_nvt_red_06.rst7 -x md_prod.nc -inf md_prod.info
+        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt_equil_6.rst7 -x md_prod.nc -r md_prod.rst7 -inf md_prod.info
 
     done
         echo "
