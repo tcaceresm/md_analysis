@@ -38,14 +38,12 @@ done
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #echo "SCRIPT PATH $SCRIPT_PATH"
 
-#Ruta de la carpeta de trabajo
+# Ruta de la carpeta de trabajo. Es SCRIPT_PATH / WD_PATH
 WDPATH=($(realpath $WD_PATH))
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
+declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
-# Receptor
 
 RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
@@ -89,7 +87,7 @@ do
     for LIG in "${LIGANDS[@]}" #Run equi and prod for each lig
     do
     
-        echo "Checking existence of MD/${LIG} folder"
+        echo "Checking existence of MD/${RECEPTOR}/${LIG} folder"
     
         if test -e ${WDPATH}/MD/${RECEPTOR}/${LIG} 
         then
@@ -103,6 +101,10 @@ do
         fi   	
     
     
+        CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv_com.crd
+        # #CRD="../../../topo/${LIG}_solv_com.crd"
+        TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv_com.parm7
+        # #TOPO="../../../topo/${LIG}_solv_com.parm7"
         
         # Run Equilibration
         echo "
@@ -112,14 +114,9 @@ Starting Equilibration $LIG $rep
 "
 
         EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
-
         cd $EQUI_PATH
         
-        #CRD=${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.crd
-        CRD="../../../topo/${LIG}_solv_com.crd"
-        #TOPO=${WDPATH}/MD/${LIG}/topo/${LIG}_solv_com.parm7
-        TOPO="../../../topo/${LIG}_solv_com.parm7"
-        
+      
         echo "Running equilibration for ${LIG} $rep" 
         OLD=$CRD
         NEW=min_ntr_h
@@ -137,25 +134,29 @@ Starting Equilibration $LIG $rep
         NEW=md_npt_ntr
           $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
 
+
+        # NPT Simulation
+        cd ${EQUI_PATH}/npt
+
         OLD=${NEW}.rst7
         NEW=npt_equil_1
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
         NEW=npt_equil_2
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
         NEW=npt_equil_3
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
         NEW=npt_equil_4
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
         NEW=npt_equil_5
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
         OLD=${NEW}.rst7
         NEW=npt_equil_6
@@ -168,9 +169,9 @@ Starting Equilibration $LIG $rep
 Starting Production $LIG $rep
 ##############################
 "
-        PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
+        PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
         cd $PROD_PATH
-        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt_equil_6.rst7 -x md_prod.nc -r md_prod.rst7 -inf md_prod.info
+        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt/npt_equil_6.rst7 -x md_prod.nc -inf md_prod.info
 
     done
         echo "
