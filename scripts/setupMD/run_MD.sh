@@ -82,7 +82,7 @@ Starting MD simulations
 ##############################
 "
 
-for rep in 1 2 3 4 5 # Repetitions
+for rep in  2 3 4 5 # Repetitions
 do
     for LIG in "${LIGANDS[@]}" #Run equi and prod for each lig
     do
@@ -171,7 +171,7 @@ Starting Production $LIG $rep
 "
         PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
         cd $PROD_PATH
-        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt/npt_equil_6.rst7 -x md_prod.nc -inf md_prod.info
+        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt/npt_equil_6.rst7 -x md_prod.nc -r md_prod.rst7 -inf md_prod.info
 
     done
         echo "
