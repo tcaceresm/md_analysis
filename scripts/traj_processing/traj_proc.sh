@@ -48,15 +48,18 @@ done
 
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 PROD_FILES=$SCRIPT_PATH/prod_processing/
 EQUI_FILES=$SCRIPT_PATH/equi_processing/
 
 WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
-setupMD_PATH=$(realpath ../setupMD/)
 
 # Analyzed ligands
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+
+RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
+RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 echo "
 ##############################
@@ -68,125 +71,131 @@ https://github.com/tcaceresm/md_analysis
 "
 
 for LIG in "${LIGANDS[@]}"
-    do
-    echo "Doing for $LIG"
+   do
+      echo "Doing for $LIG"
     
-for i in 1 2 3 4 5
-    do
+      for i in 1 2 3 4 5
+         do
 
-    EQUI="${WDPATH}/MD/${LIG}/setupMD/rep${i}/equi/"
-    PROD="${WDPATH}/MD/${LIG}/setupMD/rep${i}/prod/"
-    TOPO="${WDPATH}/MD/${LIG}/topo/"
-    N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep 'LIG' | tail -n 1 | awk '{print $5}')
-    
-    RM_HOH="remove_hoh_prod" #remove_hoh_prod
-    RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
-    RM_HOH_equi="remove_hoh_equi" #remove_hoh_equi
-    
-    RMSD="prod_rmsd"
-    RMSD_equi="equi_rmsd"
-   
-    if [[ $prod -eq 1 ]]
-    then
-       echo "
-##############################
-Processing Production Files
-##############################
-"
-	    echo "Copying files to $PROD"
-	    echo "Copying process_mdout.perl to ${PROD}"   
-         cp $PROD_FILES/process_mdout.perl $PROD
-
-         cd $PROD
+            EQUI="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
+            PROD="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
+            TOPO="${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/"
+            N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep 'LIG' | tail -n 1 | awk '{print $5}')
             
-         /usr/bin/perl ${PROD}/process_mdout.perl *.out
+            RM_HOH="remove_hoh_prod" #remove_hoh_prod
+            RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
+            RM_HOH_equi="remove_hoh_equi" #remove_hoh_equi
             
-       echo "Copying (and overwriting) $RM_HOH"
-   	    cp $PROD_FILES/$RM_HOH $PROD
-	       sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
-	       sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
-	       sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
-	    	
-       if [[ $WAT -eq 1 ]]
-       then  
-	      echo "Removing WAT from trajectories"
-	      #cd $PROD
-	      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
-	    else
-         echo "Not removin WAT from trajectories"
-       fi
-         cd $SCRIPT_PATH
+            RMSD="prod_rmsd"
+            RMSD_equi="equi_rmsd"
+         
+            if [[ $prod -eq 1 ]]
+               then
+                  echo "
+                  ##############################
+                  Processing Production Files
+                  ##############################
+                  "
+                  echo "Copying files to $PROD"
+                  echo "Copying process_mdout.perl to ${PROD}"   
+                  cp $PROD_FILES/process_mdout.perl $PROD
 
-    fi
-    
-    
-    if [[ $equi -eq 1 ]]
-    then
-            echo "
-##############################
-Processing Equilibration Files
-##############################
-"
-        
-	    echo "Copying files to $EQUI"
-	    
-	    cd $EQUI
-	    
-	    echo "Copying (and overwriting) $RM_HOH_equi"
-	    cp $EQUI_FILES/$RM_HOH_equi $EQUI
-	    sed -i "s/LIGN/${LIG}/g" "$EQUI/$RM_HOH_equi"
-	    sed -i "s/NRES/${N_RES}/g" "$EQUI/$RM_HOH_equi"
+                  cd $PROD
+                     
+                  /usr/bin/perl ${PROD}/process_mdout.perl *.out
+                     
+                  echo "Copying (and overwriting) $RM_HOH"
+                  cp $PROD_FILES/$RM_HOH $PROD
+                  sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
+                  sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
+                  sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
+                  
+               if [[ $WAT -eq 1 ]]
+                  then  
+                     echo "Removing WAT from trajectories"
+                     cd $PROD
+                     ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+                  else
+                     echo "Not removing WAT from trajectories"
+               fi
+                  #cd $SCRIPT_PATH
 
-	    echo "Removing WAT from trajectories"
-	    ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RM_HOH_equi}	    
-	    
-	    echo "Copying (and overwriting) $RMSD_equi"
-	    cp $EQUI_FILES/$RMSD_equi $EQUI
-	    sed -i "s/LIGN/${LIG}/g" "$EQUI/$RMSD_equi"
-	    sed -i "s/NRES/${N_RES}/g" "$EQUI/$RMSD_equi"
-	    
+               if [[ $rmsd -eq 1 ]]
+                  then
+                     if test -f ${PROD}/${LIG}_prod_noWAT.nc
+                        then
+                           echo "Correct production unsolvated coordinates available!"
+                           echo "Copying (and overwriting) $RMSD"
+                           cp $PROD_FILES/$RMSD $PROD
+                           sed -i "s/LIG/${LIG}/g" "$PROD/$RMSD"
+                           sed -i "s/NRES/${N_RES}/g" "$PROD/$RMSD"
+                           sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RMSD"
+                           cd $PROD
+                           echo "Calculating RMSD from unsolvated trajectories"
+                           ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
+                           cd $WDPATH
+                        else
+                           echo "No production unsolvated coordinates available."
+                     fi
+               fi
+            fi 
+         
+            if [[ $equi -eq 1 ]]
+               then
+                  echo "
+                  ##############################
+                  Processing Equilibration Files
+                  ##############################
+                  "
+               
+                  echo "Copying files to $EQUI"
+                  
+                  cd $EQUI
 
-	        
-	    echo "Copying (and overwriting) process_mdout.perl"
-	    cp $SCRIPT_PATH/process_mdout.perl $EQUI
-	    /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out md_nvt_red_**.out
-	    
-	    cd $SCRIPT_PATH
-    fi
-    
-    if [[ $rmsd -eq 1 ]]
-    then
-        if test -f ${PROD}/${LIG}_prod_noWAT.nc
-        then
-            echo "Correct production unsolvated coordinates available!"
-            echo "Copying (and overwriting) $RMSD"
-	    cp $PROD_FILES/$RMSD $PROD
-	    sed -i "s/LIG/${LIG}/g" "$PROD/$RMSD"
-	    sed -i "s/NRES/${N_RES}/g" "$PROD/$RMSD"
-	    sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RMSD"
-	    cd $PROD
-	    echo "Calculating RMSD from unsolvated trajectories"
-	    ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
-	    cd $WDPATH
-        else
-            echo "No production unsolvated coordinates available."
-	fi
-	
-	if test -f ${EQUI}/${LIG}_equi_noWAT.nc
-        then
-            echo "Correct unsolvated coordinates available!"
-            echo "Copying (and overwriting) $RMSD"
-	    cp $EQUI_FILES/$RMSD $PROD
-	    sed -i "s/LIG/${LIG}/g" "$EQUI/$RMSD"
-	    sed -i "s/NRES/${N_RES}/g" "$EQUI/$RMSD"
-	    sed -i "s+TOPO_PATH+${TOPO}+g" "$EQUI/$RMSD"
-		
-	    echo "Calculating RMSD from unsolvated trajectories"
-	    ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD}
-        else
-            echo "No unsolvated coordinates available."
-	fi
-    fi
-    done
-done
+                  echo "Copying (and overwriting) process_mdout.perl"
+                  cp $EQUI_FILES/process_mdout.perl $EQUI
+                  echo "Processing *.out files with process_mdout.perl"
+                  #/usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out md_nvt_red_**.out
+                  /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
+               
+                  ### REMOVE HOH
+                  if [[ $WAT -eq 1 ]]
+                     then 
+                        echo "Copying (and overwriting) $RM_HOH_equi"
+                        cp $EQUI_FILES/$RM_HOH_equi $EQUI/npt/
+                        sed -i "s/LIGN/${LIG}/g" "$EQUI/npt/$RM_HOH_equi"
+                        sed -i "s/NRES/${N_RES}/g" "$EQUI/npt/$RM_HOH_equi"
+                        sed -i "s+TOPO_PATH+${TOPO}+g" $EQUI/npt/$RM_HOH_equi
+
+                        echo "Removing WAT from trajectories"
+                        cd $EQUI/npt
+                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
+                  fi
+
+                  ### Calculate RMSD
+                  if  test -f ${EQUI}/npt/${LIG}_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
+                     then
+                        echo "Correct unsolvated coordinates available!"
+                        echo "Copying (and overwriting) $RMSD_equi"
+                        cp $EQUI_FILES/$RMSD_equi $EQUI/npt/
+                        sed -i "s/LIGN/${LIG}/g" "$EQUI/npt/$RMSD_equi"
+                        sed -i "s/NRES/${N_RES}/g" "$EQUI/npt/$RMSD_equi"
+                        sed -i "s+TOPO_PATH+${TOPO}+g" "$EQUI/npt/$RMSD_equi"
+
+                        cd $EQUI/npt
+                        echo "Calculating RMSD from unsolvated trajectories"
+                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
+                     else
+                        echo "No unsolvated coordinates available. Can't calculate RMSD"
+                  fi
+               #  echo "Copying (and overwriting) $RMSD_equi"
+               #  cp $EQUI_FILES/$RMSD_equi $EQUI/npt/
+               #  sed -i "s/LIGN/${LIG}/g" "$EQUI/npt/$RMSD_equi"
+               #  sed -i "s/NRES/${N_RES}/g" "$EQUI/npt/$RMSD_equi"
+               
+               cd $SCRIPT_PATH
+            fi
+
+         done
+   done
 echo "DONE!"
