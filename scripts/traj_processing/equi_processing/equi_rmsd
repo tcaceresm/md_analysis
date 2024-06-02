@@ -1,13 +1,13 @@
 #Actualizado al 8-02-23. Debería borrar los scripts que no ocupo en la carpeta de los li gandos
 #Calcula el RMSD/F de todos los residuos y del pocket (incluyendo a la auxina)
 
-parm ../../cryst/LIGN_vac_com.parm7
+parm TOPO_PATH/LIGN_vac_com.parm7
 
 trajin LIGN_equi.nc
 autoimage
 
 #RMSD. La referencia es el primer frame
-rms first out LIGN_rmsd_noWAT.data :1-NRES@CA,C,N perres perresout LIGN_rmsd_noWAT_aux.data range NRES-NRES perresmask &!(@H=)
+rms first out LIGN_rmsd_noWAT.data :1-NRES@CA,C,N perres perresout LIGN_rmsd_noWAT_ligand.data range NRES-NRES perresmask &!(@H=)
 
 #Calcula el promedio de las coordenadas del trajin. Nos servirá para el RMSF con referencia a la estructura promedio
 average crdset Avg

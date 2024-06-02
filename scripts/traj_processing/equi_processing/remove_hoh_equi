@@ -1,5 +1,5 @@
-parm ../../cryst/LIGN_solv_com.parm7
-trajin *md_nvt_red_**.mdcrd*
+parm TOPO_PATH/LIGN_solv_com.parm7
+trajin *.nc
 autoimage
 strip :WAT
 strip :Na+

@@ -3,7 +3,7 @@
 
 parm TOPO_PATH/LIG_vac_com.parm7
 trajin LIG_prod_noWAT.nc
-autoimage
+autoimage :1-NRES
 
 #RMSD. La referencia es el primer frame
 rms first out LIG_rmsd_noWAT.data :1-NRES@CA,C,N perres perresout LIG_rmsd_noWAT_aux.data range NRES-NRES perresmask &!(@H=)
