@@ -6,20 +6,51 @@ set -o pipefail
 ############################################################
 # Help                                                     #
 ############################################################
-Help()
+function Help
 {
    # Display Help
 
-   echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|d|e|p|r]"
+   #echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|d|e|p|r]"
+   echo "Syntax: traj_proc.sh OPTIONS"
    echo "options:"
    echo "h     Print help"
    echo "d     Working Directory."
    echo "e     0|1. Process equilibration output."
    echo "p     0|1. Process production output"
    echo "r     0|1. Compute RMSD from trajectories"
-   echo "W     0|1. Remove WAT from trajectories?"
+   echo "W     0|1. Remove WAT from trajectories"
    echo
 }
+
+################################################################
+# Remove waters from molecular dynamics trajectories function. #
+################################################################
+
+function removeWater
+{
+   #ARG1: PROD|EQUI
+   #ARG2: (PROD|EQUI)_FILES
+   #ARG3: RM_HOH
+   #ARG4: LIG
+   #ARG5: N_RES
+   #ARG6: TOPO
+   #              1       2         3      4    5       6
+   #removeWater $PROD $PROD_FILES $RM_HOH $LIG $N_RES $TOPO
+
+   echo "Removing WAT from trajectories"
+   echo "Copying input $3 file"
+      
+   cp $2/$3 $1
+
+   sed -i "s/LIG/${4}/g" "$1/$3"
+   sed -i "s/NRES/${5}/g" "$1/$3"
+   sed -i "s+TOPO_PATH+${6}+g" "$1/$3"
+
+   cd $1
+
+   ${AMBERHOME}/bin/cpptraj -i ${1}/${3}
+}
+
 
 ############################################################
 # Process the input options. Add options as needed.        #
@@ -46,6 +77,9 @@ while getopts ":hd:e:p:r:w:" option; do
    esac
 done
 
+############################################################
+#                       Main                               #
+############################################################
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -76,12 +110,12 @@ for LIG in "${LIGANDS[@]}"
     
       for i in 1 2 3 4 5
          do
-
+            
             EQUI="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
             PROD="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
             TOPO="${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/"
-            N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep 'LIG' | tail -n 1 | awk '{print $5}')
-            
+            N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep "LIG" | tail -n 1 | awk '{print $5}')
+
             RM_HOH="remove_hoh_prod" #remove_hoh_prod
             RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
             RM_HOH_equi="remove_hoh_equi" #remove_hoh_equi
@@ -92,9 +126,9 @@ for LIG in "${LIGANDS[@]}"
             if [[ $prod -eq 1 ]]
                then
                   echo "
-                  ##############################
-                  Processing Production Files
-                  ##############################
+################################
+# Processing Production Files  #
+################################
                   "
                   echo "Copying files to $PROD"
                   echo "Copying process_mdout.perl to ${PROD}"   
@@ -102,19 +136,19 @@ for LIG in "${LIGANDS[@]}"
 
                   cd $PROD
                      
-                  /usr/bin/perl ${PROD}/process_mdout.perl *.out
-                     
-                  echo "Copying (and overwriting) $RM_HOH"
-                  cp $PROD_FILES/$RM_HOH $PROD
-                  sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
-                  sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
-                  sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
-                  
+                  #/usr/bin/perl ${PROD}/process_mdout.perl *.out
+                                   
                if [[ $WAT -eq 1 ]]
-                  then  
-                     echo "Removing WAT from trajectories"
-                     cd $PROD
-                     ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+                  then
+                     removeWater ${PROD} ${PROD_FILES} ${RM_HOH} ${LIG} ${N_RES} ${TOPO}
+                     # echo "Removing WAT from trajectories"
+                     # echo "Copying (and preparing) $RM_HOH file"
+                     # cp $PROD_FILES/$RM_HOH $PROD
+                     # sed -i "s/LIG/${LIG}/g" "$PROD/$RM_HOH"
+                     # sed -i "s/NRES/${N_RES}/g" "$PROD/$RM_HOH"
+                     # sed -i "s+TOPO_PATH+${TOPO}+g" "$PROD/$RM_HOH"
+                     # cd $PROD
+                     # ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
                   else
                      echo "Not removing WAT from trajectories"
                fi
@@ -161,15 +195,16 @@ for LIG in "${LIGANDS[@]}"
                   ### REMOVE HOH
                   if [[ $WAT -eq 1 ]]
                      then 
-                        echo "Copying (and overwriting) $RM_HOH_equi"
-                        cp $EQUI_FILES/$RM_HOH_equi $EQUI/npt/
-                        sed -i "s/LIGN/${LIG}/g" "$EQUI/npt/$RM_HOH_equi"
-                        sed -i "s/NRES/${N_RES}/g" "$EQUI/npt/$RM_HOH_equi"
-                        sed -i "s+TOPO_PATH+${TOPO}+g" $EQUI/npt/$RM_HOH_equi
+                        removeWater $EQUI $EQUI_FILES $RM_HOH $LIG $N_RES $TOPO
+                        # echo "Copying (and overwriting) $RM_HOH_equi"
+                        # cp $EQUI_FILES/$RM_HOH_equi $EQUI/npt/
+                        # sed -i "s/LIGN/${LIG}/g" "$EQUI/npt/$RM_HOH_equi"
+                        # sed -i "s/NRES/${N_RES}/g" "$EQUI/npt/$RM_HOH_equi"
+                        # sed -i "s+TOPO_PATH+${TOPO}+g" $EQUI/npt/$RM_HOH_equi
 
-                        echo "Removing WAT from trajectories"
-                        cd $EQUI/npt
-                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
+                        # echo "Removing WAT from trajectories"
+                        # cd $EQUI/npt
+                        # ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
                   fi
 
                   ### Calculate RMSD
