@@ -35,9 +35,10 @@ while getopts ":hd:" option; do
    esac
 done
 
-#Ruta de la carpeta del script (donde se encuentra este script)
-WDPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#Ruta de la carpeta del script (donde se encuentra este script y demás input files)
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Ruta de la carpeta de trabajo: /path/to/MD.
 WDPATH=($(realpath $WDPATH))
 
 RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
@@ -73,9 +74,9 @@ if test -e "${WDPATH}/MD/${RECEPTOR}"
         mkdir -p "${WDPATH}/MD/${RECEPTOR}/receptor/"
         echo "DONE!
         "
-    fi 
+    fi
 
-# Prepare receptor. 
+# Prepare receptor.
 echo "
 ####################################
 Preparing receptor ${RECEPTOR}
@@ -91,17 +92,17 @@ echo "Done preparing receptor: ${RECEPTOR}"
 echo "Creating directories"
 mkdir -p ${WDPATH}/MD/${RECEPTOR}/{topo,setupMD/{rep1/{equi,prod},rep2/{equi,prod},rep3/{equi,prod},rep4/{equi,prod},rep5/{equi,prod}}}
 echo "Done creating directories"
-   	
+
 TOPO=${WDPATH}/MD/${RECEPTOR}/topo
-echo "Copying files to $TOPO  
+echo "Copying files to $TOPO
       Copying ${LEAP_SCRIPT} to $TOPO
      "
-    
-cp $WDPATH/input_files/topo/onlyProtein/${LEAP_SCRIPT} $TOPO #TODO: check if file exists
+
+cp $SCRIPT_PATH/input_files/topo/onlyProtein/${LEAP_SCRIPT} $TOPO #TODO: check if file exists
 
 echo "Done copying files to $TOPO"
 
-sed -i "s+TOPO_PATH+${TOPO}+g" ${TOPO}/${LEAP_SCRIPT} 
+sed -i "s+TOPO_PATH+${TOPO}+g" ${TOPO}/${LEAP_SCRIPT}
 sed -i "s/RECEPTOR/${RECEPTOR}/g" ${TOPO}/${LEAP_SCRIPT}
 sed -i "s+REC_PATH+${RECEPTOR_PATH}+g" ${TOPO}/${LEAP_SCRIPT}
 
@@ -116,12 +117,12 @@ for rep in 1 2 3 4 5
     sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/*.in \
                                       $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/npt/*.in \
                                       $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/nvt/*.in
-        
+
     cp $WDPATH/input_files/prod/md_prod.in $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/prod/
-        
+
     done
     echo "Done copying files for MD"
 
 echo "DONE!"
-done
+
 
