@@ -3,16 +3,16 @@ source leaprc.water.tip3p
 
 REC = loadpdb REC_PATH/RECEPTOR_prep.pdb
 
-savepdb REC TOPO_PATH/RECEPTOR_rec.pdb
+savepdb REC TOPO_PATH/RECEPTOR.pdb
 
-saveAmberParm REC TOPO_PATH/RECEPTOR_vac_rec.parm7 /TOPO_PATH/RECEPTOR_vac_rec.crd
+saveAmberParm REC TOPO_PATH/RECEPTOR_vac.parm7 /TOPO_PATH/RECEPTOR_vac.crd
 charge REC
 
 addIons REC Na+ 0
 addions REC Cl- 0
 
-solvatebox REC TIP3PBOX 11.0
-savepdb REC TOPO_PATH/RECEPTOR_solv_com.pdb
-saveAmberParm REC TOPO_PATH/RECEPTOR_solv_com.parm7 TOPO_PATH/RECEPTOR_solv_com.crd
+solvatebox REC TIP3PBOX 14.0
+savepdb REC TOPO_PATH/RECEPTOR_solv.pdb
+saveAmberParm REC TOPO_PATH/RECEPTOR_solv.parm7 TOPO_PATH/RECEPTOR_solv.crd
 
 quit
