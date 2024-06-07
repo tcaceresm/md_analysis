@@ -36,15 +36,15 @@ done
 
 #Ruta de la carpeta del script (donde se encuentra este script)
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#echo "SCRIPT PATH $SCRIPT_PATH"
 
 # Ruta de la carpeta de trabajo. Es SCRIPT_PATH / WD_PATH
 WDPATH=($(realpath $WD_PATH))
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
+declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
+# Receptores analizados
 RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
@@ -59,22 +59,6 @@ https://github.com/tcaceresm/md_analysis
 Powered by high fat food and procrastination
 ##############################
 "
-echo "
-##############################
-Checking existence of MD folder
-##############################
-"
-if test -e "${WDPATH}/MD"
-    then
-        echo "${WDPATH}/MD/ exists"
-        echo "CONTINUE
-        "
-    else
-        echo "${WDPATH}/MD/ do not exist
-        "
-        exit 1
-    fi 
-    
 
 echo "
 ##############################
@@ -82,41 +66,35 @@ Starting MD simulations
 ##############################
 "
 
-for rep in  2 3 4 5 # Repetitions
-do
+for rep in 1 2 3 4 5 # Repetitions
+  do
     for LIG in "${LIGANDS[@]}" #Run equi and prod for each lig
-    do
-    
-        echo "Checking existence of MD/${RECEPTOR}/${LIG} folder"
-    
+      do
+        echo "Checking existence of MD/${RECEPTOR}/${LIG} folder."
+      
         if test -e ${WDPATH}/MD/${RECEPTOR}/${LIG} 
-        then
-            echo "${WDPATH}/MD/${RECEPTOR}/${LIG} exist"
-            echo "CONTINUE
-            "
-        else
-     	    echo "${WDPATH}/MD/${RECEPTOR}/${LIG} do not exist
-     	    "
-       	    exit 1
+          then
+            echo "${WDPATH}/MD/${RECEPTOR}/${LIG} exist."
+            echo "CONTINUE"
+          else
+            echo "${WDPATH}/MD/${RECEPTOR}/${LIG} does not exist. Please check it."
+            exit 1
         fi   	
-    
-    
+        
         CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv_com.crd
-        # #CRD="../../../topo/${LIG}_solv_com.crd"
         TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv_com.parm7
-        # #TOPO="../../../topo/${LIG}_solv_com.parm7"
         
         # Run Equilibration
         echo "
-##############################
-Starting Equilibration $LIG $rep
-##############################
-"
+        ##############################
+        Starting Equilibration $LIG $rep
+        ##############################
+        "
 
         EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
+
         cd $EQUI_PATH
-        
-      
+
         echo "Running equilibration for ${LIG} $rep" 
         OLD=$CRD
         NEW=min_ntr_h
@@ -165,18 +143,18 @@ Starting Equilibration $LIG $rep
         # Run Production
 
         echo "
-##############################
-Starting Production $LIG $rep
-##############################
-"
+        ##############################
+        Starting Production $LIG $rep
+        ##############################
+        "
         PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
         cd $PROD_PATH
         $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt/npt_equil_6.rst7 -x md_prod.nc -r md_prod.rst7 -inf md_prod.info
 
-    done
+      done
         echo "
-##############################
-Done rep $rep for all ligands
-##############################
+  ##############################
+  Done rep $rep for all ligands
+  ##############################
 "
-done
+  done

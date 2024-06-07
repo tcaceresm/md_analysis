@@ -36,18 +36,16 @@ done
 
 #Ruta de la carpeta del script (donde se encuentra este script)
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#echo "SCRIPT PATH $SCRIPT_PATH"
 
 # Ruta de la carpeta de trabajo.
-#WDPATH=${SCRIPT_PATH}/$WD_PATH
 WDPATH=($(realpath $WD_PATH))
-#echo $WDPATH
 
+# Archivo de receptor
 RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
+# CUDA ejecutable
 CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
-
 
 echo "
 ##############################
@@ -65,25 +63,24 @@ Starting MD simulations
 ##############################
 "
 
-for rep in 5 # Repetitions
+for rep in 1 2 3 4 5 # Repetitions
   do
-  # Run Equilibration
+    #Run Equilibration
     echo "
-##############################
-Starting Equilibration $RECEPTOR $rep
-##############################
-"   
+    ##############################
+    Starting Equilibration $RECEPTOR $rep
+    ##############################
+    "   
+    # Topology and coord file
+    CRD=${WDPATH}/MD/${RECEPTOR}/topo/${RECEPTOR}_solv.crd
+    TOPO=${WDPATH}/MD/${RECEPTOR}/topo/${RECEPTOR}_solv.parm7
+
     #Receptor folder may vary if you are running different receptor molecular dynamics.
     # Directory path /WDPATH/MD/${RECEPTOR_FOLDER}/setupMD/repX/equi/
     EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/equi/
-    
+      
     cd $EQUI_PATH
-    # We are now in /WDPATH/MD/${RECEPTOR_FOLDER}/setupMD/repX/equi/
-    # ../../../ is WDPATH/MD/RECEPTOR/
-    CRD="../../../topo/${RECEPTOR}_solv.crd"
 
-    TOPO="../../../topo/${RECEPTOR}_solv.parm7"
-        
     echo "Running equilibration for ${RECEPTOR} $rep" 
     OLD=$CRD
     NEW=min_ntr_h
@@ -100,6 +97,8 @@ Starting Equilibration $RECEPTOR $rep
     OLD=${NEW}.rst7
     NEW=md_npt_ntr
     $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
+    
+    cd ${EQUI_PATH}/npt
 
     OLD=${NEW}.rst7
     NEW=npt_equil_1
@@ -124,21 +123,21 @@ Starting Equilibration $RECEPTOR $rep
     OLD=${NEW}.rst7
     NEW=npt_equil_6
     $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
-          
+            
     # Run Production
 
     echo "
-##############################
-Starting Production phase of ${RECEPTOR} rep${rep}
-##############################
-"
+    ##############################
+    Starting Production phase of ${RECEPTOR} rep${rep}
+    ##############################
+    "
     PROD_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/prod/
     cd $PROD_PATH
-    $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt_equil_6.rst7 -x md_prod.nc -inf md_prod.info
+    $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ${EQUI_PATH}/npt/npt_equil_6.rst7 -x md_prod.nc -inf md_prod.info
 
     echo "
-##############################
-Done rep $rep for $RECEPTOR
-##############################
-"
-done
+    ##############################
+    Done rep $rep for $RECEPTOR
+    ##############################
+    "
+  done

@@ -63,18 +63,16 @@ Checking existence of MD folder
 ##############################
 "
 if test -e "${WDPATH}/MD/${RECEPTOR}"
-    then
-        echo "${WDPATH}/MD/${RECEPTOR} exists"
-        echo "CONTINUE
-        "
-    else
-        echo "${WDPATH}/MD/${RECEPTOR} do not exists"
-        echo "Creating MD folder at ${WDPATH}"
-        echo "Creating receptor folders"
-        mkdir -p "${WDPATH}/MD/${RECEPTOR}/receptor/"
-        echo "DONE!
-        "
-    fi
+  then
+    echo "${WDPATH}/MD/${RECEPTOR} exists"
+    echo "CONTINUE"
+  else
+    echo "${WDPATH}/MD/${RECEPTOR} do not exists"
+    echo "Creating MD folder at ${WDPATH}"
+    echo "Creating receptor folders"
+    mkdir -p "${WDPATH}/MD/${RECEPTOR}/receptor/"
+    echo "DONE!"
+fi
 
 # Prepare receptor.
 echo "
@@ -95,8 +93,7 @@ echo "Done creating directories"
 
 TOPO=${WDPATH}/MD/${RECEPTOR}/topo
 echo "Copying files to $TOPO
-      Copying ${LEAP_SCRIPT} to $TOPO
-     "
+      Copying ${LEAP_SCRIPT} to $TOPO"
 
 cp $SCRIPT_PATH/input_files/topo/onlyProtein/${LEAP_SCRIPT} $TOPO #TODO: check if file exists
 
@@ -110,8 +107,7 @@ ${AMBERHOME}/bin/tleap -f $TOPO/${LEAP_SCRIPT} # Obtain complex.pdb
 
 
 for rep in 1 2 3 4 5
-    do
-
+  do
     TOTALRES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
     cp -r $WDPATH/input_files/equi/*  $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/
     sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/*.in \
@@ -119,10 +115,9 @@ for rep in 1 2 3 4 5
                                       $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/nvt/*.in
 
     cp $WDPATH/input_files/prod/md_prod.in $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/prod/
-
-    done
+    
     echo "Done copying files for MD"
-
+  done
 echo "DONE!"
 
 
