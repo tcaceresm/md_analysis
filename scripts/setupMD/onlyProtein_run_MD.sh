@@ -102,23 +102,23 @@ for rep in 1 2 3 4 5 # Repetitions
 
     OLD=${NEW}.rst7
     NEW=npt_equil_1
-    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
     NEW=npt_equil_2
-    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
     NEW=npt_equil_3
-    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
     NEW=npt_equil_4
-    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
     NEW=npt_equil_5
-    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+    $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
 
     OLD=${NEW}.rst7
     NEW=npt_equil_6
