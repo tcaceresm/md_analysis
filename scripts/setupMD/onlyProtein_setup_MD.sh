@@ -111,15 +111,16 @@ ${AMBERHOME}/bin/tleap -f $TOPO/${LEAP_SCRIPT} # Obtain complex.pdb
 for rep in 1 2 3 4 5
     do
 
-    TOTALRES=$(cat ${TOPO}/${RECEPTOR}_vac_rec.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
-    cp $WDPATH/input_files/equi/*  $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/
-    sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/*
+    TOTALRES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
+    cp -r $WDPATH/input_files/equi/*  $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/
+    sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/*.in \
+                                      $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/npt/*.in \
+                                      $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/nvt/*.in
         
     cp $WDPATH/input_files/prod/md_prod.in $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/prod/
         
     done
-    echo "Done copying files for MD
-    "
+    echo "Done copying files for MD"
 
 echo "DONE!"
 done
