@@ -175,7 +175,7 @@ for i in 1 2 3 4 5
             if [[ $WAT -eq 1 ]]
                then 
                   PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} ${TOPO}
-                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH}
+                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RM_HOH}
             fi
 
             ### Calculate RMSD
@@ -184,7 +184,7 @@ for i in 1 2 3 4 5
                   echo "Correct unsolvated coordinates available!"
                   PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} ${TOPO}
                   echo "Calculating RMSD from unsolvated trajectories"
-                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
+                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD_equi}
                else
                   echo "No unsolvated coordinates available. Can't calculate RMSD"
             fi
