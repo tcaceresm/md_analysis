@@ -179,7 +179,7 @@ for i in 1 2 3 4 5
             fi
 
             ### Calculate RMSD
-            if  test -f ${EQUI}/npt_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
+            if  test -f ${EQUI}/npt/${RECEPTOR}_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
                then
                   echo "Correct unsolvated coordinates available!"
                   PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} ${TOPO}
