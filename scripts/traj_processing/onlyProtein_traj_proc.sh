@@ -175,7 +175,7 @@ for i in 1 2 3 4 5
             if [[ $WAT -eq 1 ]]
                then 
                   PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} ${TOPO}
-                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RM_HOH}
+                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RM_HOH_equi}
             fi
 
             ### Calculate RMSD
