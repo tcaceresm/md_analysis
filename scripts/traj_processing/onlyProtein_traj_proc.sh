@@ -29,7 +29,7 @@ function Help
 function PrepareInputFile
 {
    #               1       2         3      4    5       6
-   #removeWater $PROD $PROD_FILES $RM_HOH $LIG $N_RES $TOPO
+   #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
 
    echo "Copying input $3 file"
       
@@ -76,8 +76,8 @@ done
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-PROD_FILES=$SCRIPT_PATH/prod_processing/onlyProtein
-EQUI_FILES=$SCRIPT_PATH/equi_processing/onlyProtein
+PROD_FILES=$SCRIPT_PATH/prod_processing/
+EQUI_FILES=$SCRIPT_PATH/equi_processing/
 
 WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
 
@@ -102,11 +102,11 @@ https://github.com/tcaceresm/md_analysis
 for i in 1 2 3 4 5
    do
       echo "Processing ${RECEPTOR} repetition ${i}"
-      
+
       EQUI="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/equi/"
       PROD="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/prod/"
       TOPO="${WDPATH}/MD/${RECEPTOR}/topo/"
-      N_RES=$(cat ${TOPO}_vac.pdb | grep "<1>" | tail -n 1 | awk '{print $5}')
+      N_RES=$(cat ${TOPO}/${RECEPTOR}_vac.pdb | tail -n 3 | awk '{print $5}')
 
       RM_HOH="remove_hoh_prod" #remove_hoh_prod
       RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
@@ -132,7 +132,9 @@ for i in 1 2 3 4 5
                               
          if [[ $WAT -eq 1 ]]
             then
-               PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${N_RES} ${TOPO}
+               #               1       2         3      4    5       6
+   #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
+               PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} ${TOPO}
                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
             else
                echo "Not removing WAT from trajectories"
@@ -144,7 +146,7 @@ for i in 1 2 3 4 5
                   then
                      echo "Correct unsolvated production coordinates available!"
 
-                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${N_RES} ${TOPO}
+                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES} ${TOPO}
                      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
                   else
                      echo "No unsolvated production coordinates available."
@@ -172,7 +174,7 @@ for i in 1 2 3 4 5
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
-                  PrepareInputFile $EQUI $EQUI_FILES $RM_HOH $LIG $N_RES $TOPO
+                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH} ${LIG} ${RECEPTOR} ${N_RES} ${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH}
             fi
 
@@ -180,7 +182,7 @@ for i in 1 2 3 4 5
             if  test -f ${EQUI}/npt_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
                then
                   echo "Correct unsolvated coordinates available!"
-                  PrepareInputFile $EQUI $EQUI_FILES $RMSD_equi $LIG $N_RES $TOPO
+                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} ${TOPO}
                   echo "Calculating RMSD from unsolvated trajectories"
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
                else
