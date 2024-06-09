@@ -1,5 +1,5 @@
 parm TOPO_PATH/RECEPTOR_solv.parm7
-trajin ./npt/*npt_equil*
+trajin ./npt/*npt_equil_*.nc
 autoimage
 strip :WAT
 strip :Na+
