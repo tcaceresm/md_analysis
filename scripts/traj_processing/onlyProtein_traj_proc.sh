@@ -133,7 +133,7 @@ for i in 1 2 3 4 5
          if [[ $WAT -eq 1 ]]
             then
                #               1       2         3      4    5       6
-   #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
+               #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
                PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} ${TOPO}
                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
             else
@@ -142,12 +142,12 @@ for i in 1 2 3 4 5
 
          if [[ $rmsd -eq 1 ]]
             then
-               if test -f ${PROD}_prod_noWAT.nc
+               if test -f ${RECEPTOR}_prod_noWAT.nc
                   then
                      echo "Correct unsolvated production coordinates available!"
 
                      PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES} ${TOPO}
-                     ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+                     ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
                   else
                      echo "No unsolvated production coordinates available."
                fi
@@ -174,7 +174,7 @@ for i in 1 2 3 4 5
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
-                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH} ${LIG} ${RECEPTOR} ${N_RES} ${TOPO}
+                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} ${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH}
             fi
 
