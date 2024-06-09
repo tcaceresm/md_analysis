@@ -2,7 +2,7 @@
 
 parm TOPO_PATH/RECEPTOR_vac.parm7
 
-trajin LIGN_equi.nc
+trajin RECEPTOR_equi.nc
 autoimage
 
 #RMSD. La referencia es el primer frame
@@ -19,10 +19,10 @@ run
 
 
 #RMSD de residuos a 6 amstrong de la auxina (residuo 586). La referencia es el primer frame. No deberia especificar la línea 6, pero no funciona
-#rms first out LIGN_rmsd_noWAT_BSite.data (:NRES<:6.0)&@CA,C,N 
+#rms first out RECEPTOR_rmsd_noWAT_BSite.data (:NRES<:6.0)&@CA,C,N 
 
 rms ref Avg
 
-atomicfluct out LIGN_rmsf_noWAT.data 1-NRES@CA,C,N byres
-#atomicfluct out LIGN_rmsf_noWAT_BSite.data (:NRES<:6.0)&@CA,C,N byres
-#atomicfluct out LIGN_rmsf_noWAT_aux.data :NRES-NRES&!@H= byres
+atomicfluct out RECEPTOR_rmsf_noWAT.data 1-NRES@CA,C,N byres
+#atomicfluct out RECEPTOR_rmsf_noWAT_BSite.data (:NRES<:6.0)&@CA,C,N byres
+#atomicfluct out RECEPTOR_rmsf_noWAT_aux.data :NRES-NRES&!@H= byres

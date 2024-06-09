@@ -76,8 +76,8 @@ done
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-PROD_FILES=$SCRIPT_PATH/prod_processing/
-EQUI_FILES=$SCRIPT_PATH/equi_processing/
+PROD_FILES=$SCRIPT_PATH/prod_processing/onlyProtein/
+EQUI_FILES=$SCRIPT_PATH/equi_processing/onlyProtein/
 
 WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
 
