@@ -35,7 +35,7 @@ function PrepareInputFile
       
    cp $2/$3 $1
 
-   sed -i "s/LIG/${4}/g" "$1/$3"
+   sed -i "s/LIG\|RECEPTOR/${4}/g" "$1/$3"
    sed -i "s/NRES/${5}/g" "$1/$3"
    sed -i "s+TOPO_PATH+${6}+g" "$1/$3"
 
@@ -117,7 +117,7 @@ for i in 1 2 3 4 5
 
       if [[ $prod -eq 1 ]]
          then
-            echo "\n
+            echo "
             ################################
             # Processing Production Files  #
             ################################
