@@ -174,7 +174,7 @@ for i in 1 2 3 4 5
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
-                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} ${TOPO}
+                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} ${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH}
             fi
 
