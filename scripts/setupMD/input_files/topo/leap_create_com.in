@@ -28,7 +28,7 @@ charge COM
 addIons COM Na+ 0
 addions COM Cl- 0
 
-solvatebox COM TIP3PBOX 11.0
+solvatebox COM TIP3PBOX 14.0
 savepdb COM /TOPO_PATH/LIGND_solv_com.pdb
 saveAmberParm COM /TOPO_PATH/LIGND_solv_com.parm7 /TOPO_PATH/LIGND_solv_com.crd
 
