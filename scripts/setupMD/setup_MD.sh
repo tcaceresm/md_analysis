@@ -45,7 +45,6 @@ WDPATH=($(realpath $WDPATH))
 # Ligandos analizados
 declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-#echo "LIGANDS ${LIGANDS[*]}"
 
 #COFACTOR_MOL2=($(ls ${WDPATH}/cofactor/))
 #echo "COFACTOR mol2 $COFACTOR_MOL2"
@@ -59,7 +58,7 @@ RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 LEAP_SCRIPT_1="leap_topo_vac.in"
 LEAP_SCRIPT_2="leap_topo_solv.in"
 LEAP_SCRIPT="leap_create_com.in"
-LEAP_LIGAND="leap_liGAND.in"
+LEAP_LIGAND="leap_lib.in"
 
 # Ensemble
 
