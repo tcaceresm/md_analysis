@@ -1,11 +1,10 @@
 source leaprc.protein.ff14SB
 source leaprc.water.tip3p
-source leaprc.gaff
+source leaprc.gaff2
 
-set default PBradii parse
+set default PBradii mbondi
 
 loadoff LIGAND_LIB_PATH/LIGND.lib
-loadoff COFACTOR_LIB_PATH/COF.lib
 
 LIG = loadpdb LIGAND_LIB_PATH/LIGND_lig.pdb
 REC = loadpdb REC_PATH/RECEPTOR_prep.pdb
