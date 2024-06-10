@@ -180,7 +180,7 @@ for LIG in "${LIGANDS[@]}" #Create folders and copy input files and mol2
     cp ${SCRIPT_PATH}/input_files/topo/${LEAP_LIGAND} $LIGAND_LIB 
     cp ${WDPATH}/ligands/${LIG}.mol2 $LIGAND_LIB # copy ligand.mol2 to lib folder
 
-    sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_SCRIPT_1} $TOPO/$LEAP_SCRIPT_2 ${TOPO}/${LEAP_SCRIPT} $LIGAND_LIB/$LEAP_LIGAND
+    sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_SCRIPT} $LIGAND_LIB/$LEAP_LIGAND
     sed -i "s+TOPO_PATH+${TOPO}+g" ${TOPO}/${LEAP_SCRIPT}
     #sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2} ${TOPO}/${LEAP_SCRIPT}
     #sed -i "s/COF/${COFACTOR}/g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2} ${TOPO}/${LEAP_SCRIPT}
