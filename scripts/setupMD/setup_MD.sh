@@ -43,7 +43,7 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WDPATH=($(realpath $WDPATH))
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${SCRIPT_PATH}/ligands/))
+declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 #COFACTOR_MOL2=($(ls ${WDPATH}/cofactor/))
@@ -51,7 +51,7 @@ declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 #COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 #echo "COFACTOR $COFACTOR"
 
-RECEPTOR_PDB=($(ls ${SCRIPT_PATH}/receptor/))
+RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 # Input para LEaP
@@ -105,7 +105,7 @@ Preparing receptor ${RECEPTOR}
 
 RECEPTOR_PATH=${WDPATH}/MD/$RECEPTOR/receptor/
 
-ln -s ${SCRIPT_PATH}/receptor/$RECEPTOR_PDB ${RECEPTOR_PATH}/$RECEPTOR_PDB
+ln -s ${WDPATH}/receptor/$RECEPTOR_PDB ${RECEPTOR_PATH}/$RECEPTOR_PDB
 
 $AMBERHOME/bin/pdb4amber -i ${RECEPTOR_PATH}/$RECEPTOR_PDB -o ${RECEPTOR_PATH}/${RECEPTOR}_prep.pdb --add-missing-atoms --no-conect > "${RECEPTOR_PATH}/pdb4amber.log"
 
@@ -113,7 +113,7 @@ echo "Done preparing receptor ${RECEPTOR}"
 
 # Prepare cofactor. 
 
-if test -e "${SCRIPT_PATH}/cofactor"
+if test -e "${WDPATH}/cofactor"
   then
     echo "
     ####################################
@@ -178,7 +178,7 @@ for LIG in "${LIGANDS[@]}" #Create folders and copy input files and mol2
 
     cp ${SCRIPT_PATH}/input_files/topo/${LEAP_SCRIPT} $TOPO
     cp ${SCRIPT_PATH}/input_files/topo/${LEAP_LIGAND} $LIGAND_LIB 
-    cp ${SCRIPT_PATH}/ligands/${LIG}.mol2 $LIGAND_LIB # copy ligand.mol2 to lib folder
+    cp ${WDPATH}/ligands/${LIG}.mol2 $LIGAND_LIB # copy ligand.mol2 to lib folder
 
     sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_SCRIPT_1} $TOPO/$LEAP_SCRIPT_2 ${TOPO}/${LEAP_SCRIPT} $LIGAND_LIB/$LEAP_LIGAND
     sed -i "s+TOPO_PATH+${TOPO}+g" ${TOPO}/${LEAP_SCRIPT}
