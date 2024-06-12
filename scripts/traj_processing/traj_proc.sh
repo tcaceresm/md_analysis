@@ -181,7 +181,7 @@ for LIG in "${LIGANDS[@]}"
                   if  test -f ${EQUI}/npt/${LIG}_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
                      then
                         echo "Correct unsolvated coordinates available!"
-                        PrepareInputFile $EQUI $EQUI_FILES $RMSD_equi $LIG $N_RES $TOPO
+                        PrepareInputFile $EQUI/npt/ $EQUI_FILES $RMSD_equi $LIG $N_RES $TOPO
                         echo "Calculating RMSD from unsolvated trajectories"
                         ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
                      else
