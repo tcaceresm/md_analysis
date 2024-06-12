@@ -3,7 +3,7 @@ source leaprc.water.tip3p
 
 REC = loadpdb REC_PATH/RECEPTOR_prep.pdb
 
-savepdb REC TOPO_PATH/RECEPTOR.pdb
+savepdb REC TOPO_PATH/RECEPTOR_rec.pdb
 
 saveAmberParm REC TOPO_PATH/RECEPTOR_vac.parm7 /TOPO_PATH/RECEPTOR_vac.crd
 charge REC
