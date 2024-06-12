@@ -173,8 +173,7 @@ for LIG in "${LIGANDS[@]}"
                   ### REMOVE HOH
                   if [[ $WAT -eq 1 ]]
                      then
-                        cp ${EQUI_FILES}/${RM_HOH_equi} $EQUI/npt/
-                        PrepareInputFile $EQUI $EQUI_FILES $EQUI/npt/$RM_HOH_equi $LIG $N_RES $TOPO
+                        PrepareInputFile $EQUI/npt/ $EQUI_FILES $EQUI/npt/$RM_HOH_equi $LIG $N_RES $TOPO
                         ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
                   fi
 
