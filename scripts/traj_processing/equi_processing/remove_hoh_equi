@@ -1,4 +1,4 @@
-parm TOPO_PATH/LIGN_solv_com.parm7
+parm TOPO_PATH/LIG_solv_com.parm7
 trajin *.nc
 autoimage
 strip :WAT
