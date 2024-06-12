@@ -173,8 +173,8 @@ for LIG in "${LIGANDS[@]}"
                   ### REMOVE HOH
                   if [[ $WAT -eq 1 ]]
                      then 
-                        PrepareInputFile $EQUI $EQUI_FILES $RM_HOH $LIG $N_RES $TOPO
-                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH}
+                        PrepareInputFile $EQUI $EQUI_FILES $RM_HOH_equi $LIG $N_RES $TOPO
+                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
                   fi
 
                   ### Calculate RMSD
