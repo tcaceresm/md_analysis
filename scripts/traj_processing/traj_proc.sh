@@ -107,7 +107,7 @@ for LIG in "${LIGANDS[@]}"
             EQUI="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
             PROD="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
             TOPO="${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/"
-            N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep "<1>" | tail -n 1 | awk '{print $5}')
+            N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep "LIG" | tail -n 1 | awk '{print $5}')
 
             RM_HOH="remove_hoh_prod" #remove_hoh_prod
             RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
