@@ -146,7 +146,7 @@ for LIG in "${LIGANDS[@]}"
                            echo "Correct unsolvated production coordinates available!"
 
                            PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${LIG} ${N_RES} ${TOPO}
-                           ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+                           ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
                         else
                            echo "No unsolvated production coordinates available."
                      fi
