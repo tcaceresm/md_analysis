@@ -104,7 +104,7 @@ for LIG in "${LIGANDS[@]}"
       for i in 1 2 3 4 5
          do
             
-            EQUI="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/npt"
+            EQUI="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
             PROD="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
             TOPO="${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/"
             N_RES=$(cat ${TOPO}/${LIG}_com.pdb | grep "LIG" | tail -n 1 | awk '{print $5}')
