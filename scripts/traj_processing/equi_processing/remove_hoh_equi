@@ -4,5 +4,5 @@ autoimage
 strip :WAT
 strip :Na+
 rms fit :1-NRES
-trajout LIGN_equi.nc format netcdf
+trajout LIG_equi.nc format netcdf
 

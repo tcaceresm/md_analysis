@@ -118,7 +118,7 @@ for LIG in "${LIGANDS[@]}"
          
             if [[ $prod -eq 1 ]]
                then
-                  echo "\n
+                  echo "
                   ################################
                   # Processing Production Files  #
                   ################################
