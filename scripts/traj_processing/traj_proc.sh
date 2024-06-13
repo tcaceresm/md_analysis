@@ -103,8 +103,11 @@ for LIG in "${LIGANDS[@]}"
     
       for i in 1 2 3 4 5
          do
-            echo "Repetition number $i"
-
+            echo "
+            ########################
+            # Repetition number $i #
+            ########################            
+            "
             EQUI="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
             PROD="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
             TOPO="${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/"
@@ -120,12 +123,12 @@ for LIG in "${LIGANDS[@]}"
             if [[ $prod -eq 1 ]]
                then
                   echo "
-                  #######################################
-                  # Processing Production Files $LIG $i #
-                  #######################################
-                  "
-                  echo "Copying files to $PROD"
-                  echo "Copying process_mdout.perl to ${PROD}"   
+                  #########################################
+                  # Processing Production Files $LIG $i   #
+                  # Copying files to $PROD                #
+                  # Copying process_mdout.perl to ${PROD} #
+                  #########################################
+                  "   
                   cp $PROD_FILES/process_mdout.perl $PROD
 
                   cd $PROD
@@ -134,24 +137,41 @@ for LIG in "${LIGANDS[@]}"
                                    
                if [[ $WAT -eq 1 ]]
                   then
-                     echo "Removing WAT from trajectories"
+                     echo "
+                     ##########################################
+                     # Removing WAT from trajectories $LIG $i #
+                     ##########################################
+                     "
                      PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${LIG} ${N_RES} ${TOPO}
                      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
                   else
-                     echo "Not removing WAT from trajectories"
+                     echo "
+                     ##############################################
+                     # Not removing WAT from trajectories $LIG $i #
+                     ##############################################
+                     "
                fi
 
                if [[ $rmsd -eq 1 ]]
                   then
                      if test -f ${PROD}/${LIG}_prod_noWAT.nc
                         then
-                           echo "Correct unsolvated production coordinates available!"
-                           echo "Calculating RMSD from unsolvated coordinates"
+                           echo "
+                           #########################################################
+                           # Correct unsolvated production coordinates available!  #
+                           # Calculating RMSD from unsolvated coordinates $LIG $i  #
+                           #########################################################
+                           "
+
                            PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${LIG} ${N_RES} ${TOPO}
                            ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
                         else
-                           echo "No unsolvated production coordinates available."
-                           echo "Can't calculate RMSD"
+                           echo "
+                           ####################################################
+                           # No unsolvated production coordinates available.  #
+                           # Can't calculate RMSD $LIG $i                     #
+                           ####################################################
+                           "
                      fi
                fi
             fi 
@@ -159,34 +179,45 @@ for LIG in "${LIGANDS[@]}"
             if [[ $equi -eq 1 ]]
                then
                   echo "
-                  ########################################
-                  Processing Equilibration Files $LIG $i #
-                  ########################################
-                  "
-               
-                  echo "Copying files to $EQUI"
-                  
+                  #############################################
+                  # Processing Equilibration Files $LIG $i    #
+                  # Copying files to $EQUI                    #
+                  #     Copying process_mdout.perl to ${EQUI} #
+                  #############################################
+                  "               
                   cd $EQUI
 
-                  echo "Copying (and overwriting) process_mdout.perl"
                   cp $EQUI_FILES/process_mdout.perl $EQUI
                   echo "Processing *.out files with process_mdout.perl"
+
                   /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
                
                   ### REMOVE HOH
                   if [[ $WAT -eq 1 ]]
                      then
-                        echo "Removing WAT from trajectories"                     
+                        echo "
+                        #################################################
+                        # Removing WAT from trajectories (equi) $LIG $i #
+                        #################################################
+                        "                     
                         PrepareInputFile $EQUI/npt/ $EQUI_FILES $RM_HOH_equi $LIG $N_RES $TOPO
                         ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
                      else
-                        echo "Not removing WAT from trajectories"
+                        echo "
+                        #####################################################
+                        # Not removing WAT from trajectories (equi) $LIG $i #
+                        #####################################################
+                        "
                   fi
 
                   ### Calculate RMSD
                   if  test -f ${EQUI}/npt/${LIG}_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
                      then
-                        echo "Correct unsolvated coordinates available!"
+                        echo "
+                        ##############################################
+                        # Correct unsolvated coordinates available!  #
+                        ##############################################
+                        "
                         PrepareInputFile $EQUI/npt/ $EQUI_FILES $RMSD_equi $LIG $N_RES $TOPO
                         echo "Calculating RMSD from unsolvated trajectories"
                         ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
