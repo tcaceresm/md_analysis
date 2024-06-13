@@ -119,6 +119,57 @@ for LIG in "${LIGANDS[@]}"
             
             RMSD="prod_rmsd"
             RMSD_equi="equi_rmsd"
+
+            if [[ $equi -eq 1 ]]
+               then
+                  echo "
+                  #############################################
+                  # Processing Equilibration Files $LIG $i    #
+                  # Copying files to $EQUI                    #
+                  #     Copying process_mdout.perl to ${EQUI} #
+                  #############################################
+                  "               
+                  cd $EQUI
+
+                  cp $EQUI_FILES/process_mdout.perl $EQUI
+                  echo "Processing *.out files with process_mdout.perl"
+
+                  /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
+               
+                  ### REMOVE HOH
+                  if [[ $WAT -eq 1 ]]
+                     then
+                        echo "
+                        #################################################
+                        # Removing WAT from trajectories (equi) $LIG $i #
+                        #################################################
+                        "                     
+                        PrepareInputFile $EQUI/npt/ $EQUI_FILES $RM_HOH_equi $LIG $N_RES $TOPO
+                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
+                     else
+                        echo "
+                        #####################################################
+                        # Not removing WAT from trajectories (equi) $LIG $i #
+                        #####################################################
+                        "
+                  fi
+
+                  ### Calculate RMSD
+                  if  test -f ${EQUI}/npt/${LIG}_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
+                     then
+                        echo "
+                        ##############################################
+                        # Correct unsolvated coordinates available!  #
+                        ##############################################
+                        "
+                        PrepareInputFile $EQUI/npt/ $EQUI_FILES $RMSD_equi $LIG $N_RES $TOPO
+                        echo "Calculating RMSD from unsolvated trajectories"
+                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
+                     else
+                        echo "No unsolvated coordinates available. Can't calculate RMSD"
+                  fi
+                
+            fi
          
             if [[ $prod -eq 1 ]]
                then
@@ -175,58 +226,7 @@ for LIG in "${LIGANDS[@]}"
                      fi
                fi
             fi 
-         
-            if [[ $equi -eq 1 ]]
-               then
-                  echo "
-                  #############################################
-                  # Processing Equilibration Files $LIG $i    #
-                  # Copying files to $EQUI                    #
-                  #     Copying process_mdout.perl to ${EQUI} #
-                  #############################################
-                  "               
-                  cd $EQUI
-
-                  cp $EQUI_FILES/process_mdout.perl $EQUI
-                  echo "Processing *.out files with process_mdout.perl"
-
-                  /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
-               
-                  ### REMOVE HOH
-                  if [[ $WAT -eq 1 ]]
-                     then
-                        echo "
-                        #################################################
-                        # Removing WAT from trajectories (equi) $LIG $i #
-                        #################################################
-                        "                     
-                        PrepareInputFile $EQUI/npt/ $EQUI_FILES $RM_HOH_equi $LIG $N_RES $TOPO
-                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RM_HOH_equi}
-                     else
-                        echo "
-                        #####################################################
-                        # Not removing WAT from trajectories (equi) $LIG $i #
-                        #####################################################
-                        "
-                  fi
-
-                  ### Calculate RMSD
-                  if  test -f ${EQUI}/npt/${LIG}_equi.nc && [[ $rmsd -eq 1 ]] #unsolvated coordinates
-                     then
-                        echo "
-                        ##############################################
-                        # Correct unsolvated coordinates available!  #
-                        ##############################################
-                        "
-                        PrepareInputFile $EQUI/npt/ $EQUI_FILES $RMSD_equi $LIG $N_RES $TOPO
-                        echo "Calculating RMSD from unsolvated trajectories"
-                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/npt/${RMSD_equi}
-                     else
-                        echo "No unsolvated coordinates available. Can't calculate RMSD"
-                  fi
-                
-            fi
-
+        
          done
    done
  
