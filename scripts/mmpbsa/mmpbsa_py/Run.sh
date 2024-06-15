@@ -52,6 +52,7 @@ declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
+EXE=${AMBERHOME}/bin/MMPBSA.py.MPI
 
 for LIG in "${LIGANDS[@]}"
   do
@@ -84,7 +85,7 @@ for LIG in "${LIGANDS[@]}"
 
     cd ${MMPBSA_PATH}
 
-    /usr/bin/mpirun --oversubscribe -np $THREADS ${AMBERHOME}/bin/MMPBSA.py -O -i mm_pbsa.in \
+    /usr/bin/mpirun --oversubscribe -np $THREADS ${EXE} -O -i mm_pbsa.in \
       -cp $COM_TOP \
       -rp $REC_TOP \
       -lp $LIG_TOP \
