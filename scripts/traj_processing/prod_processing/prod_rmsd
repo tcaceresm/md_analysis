@@ -2,7 +2,7 @@
 #Calcula el RMSD/F de todos los residuos y del pocket (incluyendo a la auxina)
 
 parm TOPO_PATH/LIG_vac_com.parm7
-trajin ../equi/npt/LIG_equi.nc
+#trajin ../equi/npt/LIG_equi.nc
 trajin LIG_prod_noWAT.nc
 autoimage :1-NRES
 
