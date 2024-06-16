@@ -125,8 +125,6 @@ for LIG in "${LIGANDS[@]}"
                   echo "
                   #############################################
                   # Processing Equilibration Files $LIG $i    #
-                  # Copying files to $EQUI                    #
-                  #     Copying process_mdout.perl to ${EQUI} #
                   #############################################
                   "               
                   cd $EQUI
@@ -176,8 +174,6 @@ for LIG in "${LIGANDS[@]}"
                   echo "
                   #########################################
                   # Processing Production Files $LIG $i   #
-                  # Copying files to $PROD                #
-                  # Copying process_mdout.perl to ${PROD} #
                   #########################################
                   "   
                   cp $PROD_FILES/process_mdout.perl $PROD
