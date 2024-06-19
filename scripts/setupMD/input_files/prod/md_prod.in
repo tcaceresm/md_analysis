@@ -1,6 +1,6 @@
 NVT MD w/No position restraints and PME (sander)
  &cntrl
-  ntx    = 7,
+  ntx    = 5,
   irest  = 1,
   ntpr   = 500,
   ntwx   = 5000,
