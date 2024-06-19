@@ -1,6 +1,6 @@
 Sample input file for GB and PB calculation
 &general
-startframe=1, endframe=500, interval=5,
+startframe=1, endframe=1100, interval=100,
 verbose=2, keep_files=0, netcdf=1,
 use_sander=1
 

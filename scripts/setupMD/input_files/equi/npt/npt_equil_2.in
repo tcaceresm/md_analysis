@@ -1,4 +1,4 @@
-NPT MD w/ position restraints (5 kcal/molA) and PME (sander)
+NPT MD w/ position restraints (4 kcal/molA) and PME (sander)
  &cntrl
   ntx    = 5,
   irest  = 1,
