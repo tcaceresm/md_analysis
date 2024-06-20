@@ -1,31 +1,38 @@
-Simulacion NPT sin restraints
+NPT MD w/o position restraints and PME (sander)
 &cntrl
-  imin=0,             ! No es una minimización de energía
+  ! Nature and Format of output
+  ntx    = 5,          ! Leer coordenadas y velocidades de un archivo de reinicio
+  irest  = 1,          ! Continuar una simulación previa (restartear)
   
-  irest=1,            ! Leer las coordenadas y velocidades para continuar la simulación
-  ntx=5,              ! Leer coordenadas y velocidades
-  
-  ntb=2,              ! Usar periodic boundary conditions (PBC)
-  pres0=1.0,          ! Presión objetivo en atmósferas
-  ntp=1,              ! Control de presión isotrópica
-  taup=2.0,           ! Relajación de presión
-  
-  ntc=2,              ! Restringir enlaces que involucran hidrógeno
-  ntf=2,              ! Restringir fuerzas calculadas para enlaces que involucran hidrógeno
-  cut=8.0,            ! Corte de no-enlazados (non-bonded interactions)
-  
-  nstlim=500000,      ! Número de pasos de la simulación
-  dt=0.002,           ! Paso de tiempo en picosegundos
+  ! Nature and Format of output
+  ntpr   = 100,        ! Frecuencia de impresión de la salida (cada 50 pasos)
+  ntwx   = 5000,       ! Frecuencia de escritura de coordenadas en el archivo de trayectoria (cada 1000 pasos)
+  ntwr   = 5000,       ! Frecuencia de escritura de archivo restart.
 
-  tempi=300.0,        ! Temperatura inicial
-  temp0=300.0,        ! Temperatura objetivo
-  ntt=3,              ! Termostato Langevin
-  gamma_ln=1.0,       ! Coeficiente de colisión para el termostato Langevin
+  ! Potential function parameters
+  ntf    = 2,          ! Evaluación de fuerza. Se omiten los enlaces que involucren H
+  cut    = 8.0,        ! Cutoff para interacciones no enlazadas (8.0 Å)
+  nsnb   = 10,         ! Actualización de la lista de vecinos cada 10 pasos
+  		      
+  ! Molecular dynamics
+  nstlim = 50000000,   ! Número total de pasos de la simulación (100 ns si el paso de tiempo es 0.002 ps)
+  nscm   = 0,          ! Frecuencia de remoción del movimiento del centro de masa (desactivado)
+  t      = 1350.0,     ! Tiempo inicial (en picosegundos)
+  dt     = 0.002,      ! Paso de tiempo en picosegundos
   
-  ntpr=100,           ! Frecuencia de impresión de la salida (en pasos)
-  ntwx=5000,          ! Frecuencia de escritura de coordenadas en el archivo de trayectoria (en pasos)
-  ntwr=5000,          ! Frecuencia de escritura de reinicio (en pasos)
-  ioutfm=1,           ! Formato binario de las coordenadas de salida
-  iwrap=1,            ! Encajonar las moléculas en la caja primaria
-&end
-
+  ! Temperature regulation
+  temp0  = 300.0,      ! Temperatura objetivo
+  tempi  = 300.0,      ! Temperatura inicial
+  ntt    = 3,          ! Termostato de Langevin
+  gamma_ln  = 5,       ! The collision frequency γ, in ps−1 , when ntt = 3
+  
+  ! Pressure regulation
+  ntp    = 1,          ! Control de presión isotrópica
+  barostat = 1         ! Barostato de Berendsen
+  pres0  = 1.0,        ! Presión objetivo (1 atm)
+  taup   = 1,          ! Tiempo de relajación de la presión (ps)
+  
+  ! SHAKE bond length constraints  
+  ntc    = 2,          ! Restringir enlaces que involucran hidrógenos (SHAKE)
+  tol    = 0.000001,   ! Tolerancia para las restricciones
+ &end
