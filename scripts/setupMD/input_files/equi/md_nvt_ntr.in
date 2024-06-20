@@ -1,39 +1,53 @@
 NVT MD w/ position restraints (5 kcal/molA) and PME (sander)
  &cntrl
-  nmropt = 1,
-
-  ntpr   = 100,
-  ntwr   = 2500,
+  ! Nature and Format of input
+  ntx    = 1          ! Leer coordenadas (y no velocidades) de un archivo de reinicio
+  irest  = 0          ! Continuar una simulación previa (restartear)
   
-  ntf    = 2,
-  ntb    = 1,
-  cut    = 9.0,
-  nsnb   = 10,
-
-  ntr    = 1,
+  ! Nature and Format of output
+  ntpr   = 100,       ! Frecuencia de impresión de la salida (cada 100 pasos) mdinfo
+  ntwr   = 2500,      ! Frecuencia de escritura de archivos de reinicio (cada 2500 pasos)
+  ntwx   = 0,         ! Frecuencia de escritura de coordenadas al archivo mdcrd
+                      ! Si ntwx = 0, no se escribe un archivo de trayectorias.
+                      
+  ! Frozen or restrained atoms
+  ntr    = 1,         ! Activar restricciones
+                      
+  ! Molecular dynamics
   
-  nstlim = 25000,
-  nscm   = 1000,
-  t      = 0.0, 
-  dt     = 0.002,
+  nstlim = 25000      ! Número total de pasos de la simulación (50 ps si el paso de tiempo es 0.002 ps)
+  nscm   = 1000,      ! Frecuencia de remoción del movimiento del centro de masa (cada 1000 pasos)
+  t      = 0.0,       ! Tiempo inicial
+  dt     = 0.002,     ! Paso de tiempo en picosegundos
   
-  ntt    = 1,
-  temp0  = 300.0,
-  tempi  = 100.0,
-  tautp  = 0.5,
-
-  ntc    = 2,
-  tol    = 0.000001,
+  ! Potential function parameters
   
+  ntb    = 1,         ! This variable controls whether or not periodic boundaries are imposed on the system during the calculation of non-bonded interactions. Volumen cte.
+  cut    = 9.0,       ! Cutoff para interacciones no enlazadas (9.0 Å)
+  nsnb   = 10,        ! Actualización de la lista de vecinos cada 10 pasos
+  ntf    = 2,         ! Evaluación de la fuerza. Restringir enlaces que involucran hidrógenos
+  
+  ! Temperature regulation
+ 
+  ntt    = 3,         ! Temperatura constante usando el algoritmo Langevin.
+  temp0  = 300.0,     ! Temperatura objetivo
+  tempi  = 100.0,     ! Temperatura inicial
+  tautp  = 5,         ! Time constant, in ps, for heat bath coupling for the system
+  
+  ! SHAKE bond length constraints
+  ntc    = 2,         ! Restringir enlaces que involucran hidrógenos
+  tol    = 0.000001,  ! Tolerancia para las restricciones
  &end
- &wt
+
+ &wt                  ! Desde el paso 0 hasta el paso 20000, la temperatura se incrementa linealmente de 100 K a 300 K
   type   = 'TEMP0', 
   istep1 = 0,       
   istep2 = 20000,
   value1 = 100.0,   
   value2 = 300.0,
  &end
- &wt
+
+ &wt                  ! Desde el paso 20001 hasta el paso 25000, la temperatura se mantiene constante en 300 K
   type   = 'TEMP0', 
   istep1 = 20001,   
   istep2 = 25000,
@@ -47,4 +61,5 @@ Hold the Solutes fixed
 5.0
 RES 1 TOTALRES
 END
-END   
+END
+

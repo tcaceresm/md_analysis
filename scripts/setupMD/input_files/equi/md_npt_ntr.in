@@ -1,34 +1,44 @@
 NPT MD w/ position restraints (5 kcal/molA) and PME (sander)
- &cntrl
-  ntx    = 5,
-  irest  = 1,
-  ntpr   = 50,
-  ntwx   = 50,
+&cntrl
+  ! Nature and Format of output
+  ntx    = 5,          ! Leer coordenadas y velocidades de un archivo de reinicio
+  irest  = 1,          ! Continuar una simulación previa (restartear)
+  
+  ! Nature and Format of output
+  ntpr   = 50,         ! Frecuencia de impresión de la salida (cada 50 pasos)
+  ntwx   = 50,         ! Frecuencia de escritura de coordenadas en el archivo de trayectoria (cada 50 pasos)
 
-  ntf    = 2,
-  ntb    = 2,
-  cut    = 8.0,
-  nsnb   = 10,
+  ! Potential function parameters
+  ntf    = 2,          ! Evaluación de fuerza. Se omiten los enlaces que involucren H
+  ntb    = 2,          ! Usar condiciones periódicas de contorno (PBC). Presión constante.
+  cut    = 8.0,        ! Corte para interacciones no enlazadas (8.0 Å)
+  nsnb   = 10,         ! Actualización de la lista de vecinos cada 10 pasos
+  ntr    = 1,          ! Activar restratins en los átomos especificados con un potencial armónico.
+  		       ! Las coordenadas de referencia están dadas por un archivo formato restrt (rst7)
+  		       ! desde el archivo refc
 
-  ntr    = 1,
+  ! Molecular dynamics
+  nstlim = 25000,      ! Número total de pasos de la simulación (50 ps si el paso de tiempo es 0.002 ps)
+  nscm   = 1000,       ! Frecuencia de remoción del movimiento del centro de masa (desactivado)
+  t      = 50.0,       ! Tiempo inicial (en picosegundos)
+  dt     = 0.002,      ! Paso de tiempo en picosegundos
 
-  nstlim = 25000,
-  nscm   = 0,
-  t      = 50.0,
-  dt     = 0.002,
+  ! Temperature regulation
+  temp0  = 300.0,      ! Temperatura objetivo
+  tempi  = 300.0,      ! Temperatura inicial
+  ntt    = 3,          ! Termostato de Langevin
+  gamma_ln = 5,        ! The collision frequency γ, in ps−1 , when ntt = 3
+  
+  ! Pressure regulation
+  ntp    = 1,          ! Control de presión isotrópica
+  barostat = 1         ! Barostato de Berendsen
+  pres0  = 1.0,        ! Presión objetivo (1 atm)
+  taup   = 1,          ! Tiempo de relajación de la presión (ps)
 
-  temp0  = 300.0,
-  tempi  = 300.0,   
-  ntt    = 1,
-  tautp  = 0.5,
-
-  ntp    = 1,
-  pres0  = 1.0,
-  taup   = 0.5,
-
-  ntc    = 2,
-  tol    = 0.000001,
- &end
+  ! SHAKE bond length constraints
+  ntc    = 2,          ! Restringir enlaces que involucran hidrógenos (SHAKE
+  tol    = 0.000001,   ! Tolerancia para las restricciones
+&end
 Hold the Protein fixed
 5.0
 RES 1 TOTALRES
