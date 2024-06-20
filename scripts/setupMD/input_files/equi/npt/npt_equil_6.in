@@ -15,7 +15,7 @@ NPT MD w/o position restraints and PME (sander)
   nsnb   = 10,         ! Actualización de la lista de vecinos cada 10 pasos
   		      
   ! Molecular dynamics
-  nstlim = 25000,      ! Número total de pasos de la simulación (50 ps si el paso de tiempo es 0.002 ps)
+  nstlim = 500000,     ! Número total de pasos de la simulación (50 ps si el paso de tiempo es 0.002 ps)
   nscm   = 0,          ! Frecuencia de remoción del movimiento del centro de masa (desactivado)
   t      = 350.0,      ! Tiempo inicial (en picosegundos)
   dt     = 0.002,      ! Paso de tiempo en picosegundos
