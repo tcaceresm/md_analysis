@@ -32,7 +32,7 @@ NVT MD w/ position restraints (5 kcal/molA) and PME (sander)
   ntt    = 3,         ! Temperatura constante usando el algoritmo Langevin.
   temp0  = 300.0,     ! Temperatura objetivo
   tempi  = 100.0,     ! Temperatura inicial
-  tautp  = 5,         ! Time constant, in ps, for heat bath coupling for the system
+  gamma_ln = 5,       ! The collision frequency γ, in ps−1 , when ntt = 3
   
   ! SHAKE bond length constraints
   ntc    = 2,         ! Restringir enlaces que involucran hidrógenos

@@ -11,7 +11,7 @@ NPT MD w/ position restraints (5 kcal/molA) and PME (sander)
   ! Potential function parameters
   ntf    = 2,          ! Evaluación de fuerza. Se omiten los enlaces que involucren H
   ntb    = 2,          ! Usar condiciones periódicas de contorno (PBC). Presión constante.
-  cut    = 8.0,        ! Corte para interacciones no enlazadas (8.0 Å)
+  cut    = 8.0,        ! Cutoff para interacciones no enlazadas (8.0 Å)
   nsnb   = 10,         ! Actualización de la lista de vecinos cada 10 pasos
   ntr    = 1,          ! Activar restratins en los átomos especificados con un potencial armónico.
   		       ! Las coordenadas de referencia están dadas por un archivo formato restrt (rst7)

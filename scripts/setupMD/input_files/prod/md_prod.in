@@ -1,27 +1,31 @@
-NVT MD w/No position restraints and PME (sander)
- &cntrl
-  ntx    = 5,
-  irest  = 1,
-  ntpr   = 500,
-  ntwx   = 5000,
-  ntwr   = 5000,
-  iwrap  = 1,
+Simulacion NPT sin restraints
+&cntrl
+  imin=0,             ! No es una minimización de energía
+  
+  irest=1,            ! Leer las coordenadas y velocidades para continuar la simulación
+  ntx=5,              ! Leer coordenadas y velocidades
+  
+  ntb=2,              ! Usar periodic boundary conditions (PBC)
+  pres0=1.0,          ! Presión objetivo en atmósferas
+  ntp=1,              ! Control de presión isotrópica
+  taup=2.0,           ! Relajación de presión
+  
+  ntc=2,              ! Restringir enlaces que involucran hidrógeno
+  ntf=2,              ! Restringir fuerzas calculadas para enlaces que involucran hidrógeno
+  cut=8.0,            ! Corte de no-enlazados (non-bonded interactions)
+  
+  nstlim=500000,      ! Número de pasos de la simulación
+  dt=0.002,           ! Paso de tiempo en picosegundos
 
-  ntf    = 2,
-  ntb    = 1,
-  cut    = 9.0,
-  nsnb   = 10,
+  tempi=300.0,        ! Temperatura inicial
+  temp0=300.0,        ! Temperatura objetivo
+  ntt=3,              ! Termostato Langevin
+  gamma_ln=1.0,       ! Coeficiente de colisión para el termostato Langevin
+  
+  ntpr=100,           ! Frecuencia de impresión de la salida (en pasos)
+  ntwx=5000,          ! Frecuencia de escritura de coordenadas en el archivo de trayectoria (en pasos)
+  ntwr=5000,          ! Frecuencia de escritura de reinicio (en pasos)
+  ioutfm=1,           ! Formato binario de las coordenadas de salida
+  iwrap=1,            ! Encajonar las moléculas en la caja primaria
+&end
 
-  nstlim = 5000000,
-  nscm   = 1000,
-  t      = 2000,
-  dt     = 0.002,
-
-  temp0  = 300.0,
-  tempi  = 300.0,
-  ntt    = 1,
-  tautp  = 2.0,
-
-  ntc    = 2,
-  tol    = 0.000001,
- &end
