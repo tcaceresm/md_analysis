@@ -11,6 +11,7 @@ Help() {
     echo "Options:"
     echo "h     Print help"
     echo "d     Working Directory."
+    echo "n     Replicas."
     echo
 }
 
