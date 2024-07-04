@@ -93,7 +93,7 @@ PrepareLigand() {
 
     echo "Computing net charge from partial charges of mol2 file"
     LIGAND_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' "${LIG}.mol2" | awk '{sum += $9} END {printf "%.0f\n", sum}')
-    echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}"
+    echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}" | tee -a ligand_net_charge.log
 
     $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -rn LIG -nc "$LIGAND_NET_CHARGE" -at gaff2 
     $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}_lig.pdb" -fo pdb -dr n -rn LIG
