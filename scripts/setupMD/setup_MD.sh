@@ -1,238 +1,215 @@
 #!/usr/bin/bash
-set -e
-set -u
-set -o pipefail
+
+set -euo pipefail
 
 ############################################################
-# Help                                                     #
+# Help
 ############################################################
-Help()
-{
-   # Display Help
-
-   echo "Syntax: bash setup_MD.sh [-h|d]"
-   echo "To save a log file and also print the status, run: bash setup_MD.sh -d \$DIRECTORY | tee -a \$LOGFILE"
-   echo "Options:"
-   echo "h     Print help"
-   echo "d     Working Directory."
-   echo
+Help() {
+    echo "Syntax: bash setup_MD.sh [-h|d]"
+    echo "To save a log file and also print the status, run: bash setup_MD.sh -d \$DIRECTORY | tee -a \$LOGFILE"
+    echo "Options:"
+    echo "h     Print help"
+    echo "d     Working Directory."
+    echo
 }
 
 ############################################################
-# Process the input options. Add options as needed.        #
+# Crear directorios
 ############################################################
-# Get the options
-while getopts ":hd:" option; do
-   case $option in
-      h) # Print this help
-         Help
-         exit;;
-      d) # Enter the MD Directory
-         WDPATH=$OPTARG;;
-     \?) # Invalid option
-         echo "Error: Invalid option"
-         exit;;
-   esac
+CreateDirectories() {
+    # Número de replicas
+    local N=$1
+    # Nombre del ligando
+    local LIG=$2
+    # Nombre del receptor
+    local RECEPTOR=$3
+
+    mkdir -p ${WDPATH}/MD/${RECEPTOR}/{cofactor_lib,receptor,${LIG}/{lib,setupMD,topo}}
+    
+    # Crear la lista de replicas
+    REPS=()
+    for ((i=1; i<=N; i++)); do
+        REPS+=("rep$i")
+    done
+
+    # Directorio donde crearemos repN/equi_prod/npt,nvt
+    BASE_DIR=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD
+    # Subdirectorios dentro de cada replicación
+    SUBDIRS=("equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+
+    # Crear la estructura de directorios
+    for REP in "${REPS[@]}"; do
+        for SUBDIR in "${SUBDIRS[@]}"; do
+            mkdir -p "${BASE_DIR}/${REP}/${SUBDIR}"
+        done
+    done
+    
+
+}
+
+############################################################
+# Preparar receptor
+############################################################
+PrepareReceptor() {
+    local REC=$1
+    echo "####################################"
+    echo "Preparing receptor: $REC"
+    echo "####################################"
+    
+    local RECEPTOR_PDB_FILE="${WDPATH}/receptor/${REC}.pdb"
+    local RECEPTOR_PDB_FILE_PREPARED_LOCATION="${WDPATH}/MD/$REC/receptor/"
+    local RECEPTOR_PDB_FILE_PREPARED="${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_prep.pdb"
+
+    ln -s ${RECEPTOR_PDB_FILE} ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb
+    
+    cd ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}
+
+    $AMBERHOME/bin/pdb4amber -i ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb -o ${RECEPTOR_PDB_FILE_PREPARED} --add-missing-atoms --no-conect -l prepare_receptor.log
+
+    echo "Done preparing receptor $REC"
+
+}
+
+############################################################
+# Preparar ligando
+############################################################
+PrepareLigand() {
+    local REC=$1
+    local LIG=$2
+    local LEAP_TOPO=$3
+    local LEAP_LIG=$4
+    local LIGAND_LIB="${WDPATH}/MD/${REC}/${LIG}/lib"
+    local RECEPTOR_PATH="${WDPATH}/MD/${REC}/receptor"
+    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
+
+    cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
+    cp "${SCRIPT_PATH}/input_files/topo/${LEAP_LIG}" ${LIGAND_LIB}
+    ln -s ${WDPATH}/ligands/${LIG}.mol2 ${LIGAND_LIB}/${LIG}.mol2
+
+    sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_TOPO} $LIGAND_LIB/$LEAP_LIG
+
+    cd "$LIGAND_LIB"
+
+    echo "Computing net charge from partial charges of mol2 file"
+    LIGAND_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' "${LIG}.mol2" | awk '{sum += $9} END {printf "%.0f\n", sum}')
+    echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}"
+
+    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -rn LIG -nc "$LIGAND_NET_CHARGE" -at gaff2 
+    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}_lig.pdb" -fo pdb -dr n -rn LIG
+    $AMBERHOME/bin/parmchk2 -i "${LIGAND_LIB}/${LIG}.mol2" -f mol2 -o "${LIGAND_LIB}/${LIG}.frcmod"
+    $AMBERHOME/bin/tleap -f "${LIGAND_LIB}/${LEAP_LIGAND}" > prepare_ligand.log
+    
+    cd "$WDPATH"
+
+    echo "Done preparing ligand"
+}
+
+
+############################################################
+# Preparar Topologias
+############################################################
+PrepareTopology() {
+
+    local LIG=$1
+    local REC=$2
+    local LEAP_TOPO=$3
+    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
+
+    echo "####################################"
+    echo "Preparing Topologies $REC $LIG"
+    echo "####################################"
+
+    cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
+
+    cd ${TOPO}
+
+    sed -i "s+LIGAND+${LIG}+g" ${LEAP_TOPO}
+    sed -i "s+RECEPTOR+${REC}+g" ${LEAP_TOPO}
+  
+    $AMBERHOME/bin/tleap -f ${LEAP_TOPO} > prepare_topologies.log
+
+    echo "Done preparing complex $REC $LIG"
+}
+
+############################################################
+# Preparar archivos de MD
+############################################################
+PrepareMD() {
+    local LIG=$1
+    local REC=$2
+    local N=$3
+    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
+    local MD_FOLDER="${WDPATH}/MD/${REC}/${LIG}/setupMD/"
+
+    echo "####################################"
+    echo "Preparing MD files"
+    echo "####################################"
+
+    TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
+
+    for rep in $(seq 1 $N); do 
+        cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
+        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in
+        cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
+    done
+    echo "Done copying files for MD"
+}
+
+
+
+############################################################
+# Main script
+############################################################
+while getopts ":hd:n:" option; do
+    case $option in
+        h)  # Print this help
+            Help
+            exit;;
+        d)  # Enter the MD Directory
+            WDPATH=$OPTARG;;
+        n)  # Replicas
+            REPLICAS=$OPTARG;;
+        \?) # Invalid option
+            echo "Error: Invalid option"
+            exit;;
+    esac
 done
 
-#Ruta de la carpeta del script (donde se encuentra este script y demás input files).
+# Ruta de la carpeta del script (donde se encuentra este script y demás input files).
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Ruta de la carpeta de trabajo: /path/to/MD.
-# WD contiene también la carpeta del receptor, ligando y cofactor.
-WDPATH=($(realpath $WDPATH))
+# Ruta de la carpeta de trabajo.
+# WD debe contener la carpeta del receptor, ligando y cofactor (opcional). 
+WDPATH=$(realpath "$WDPATH")
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
-declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
+LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
-#COFACTOR_MOL2=($(ls ${WDPATH}/cofactor/))
-#echo "COFACTOR mol2 $COFACTOR_MOL2"
-#COFACTOR=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
-#echo "COFACTOR $COFACTOR"
-
-RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
-RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
+RECEPTOR_PDB=($(ls "${WDPATH}/receptor/"))
+RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 # Input para LEaP
-LEAP_SCRIPT_1="leap_topo_vac.in"
-LEAP_SCRIPT_2="leap_topo_solv.in"
-LEAP_SCRIPT="leap_create_com.in"
+LEAP_TOPO="leap_create_com.in"
 LEAP_LIGAND="leap_lib.in"
-
-# Ensemble
 
 ENSEMBLE="npt"
 
-#echo "RECEPTOR $RECEPTOR"
-echo "
-##############################
-Welcome to SetupMD v0.0.0
-Author: Tomás Cáceres <caceres.tomas@uc.cl>
-Laboratory of Molecular Design <http://schuellerlab.org/>
-https://github.com/tcaceresm/md_analysis
-Powered by high fat food and procrastination
-##############################
-"
-echo "
-##############################
-Checking existence of ${RECEPTOR} folder located at MD folder inside working directory
-##############################
-"
-RECEPTOR_MD=${WDPATH}/MD/${RECEPTOR}
 
-if test -e "${RECEPTOR_MD}"
-    then
-        echo "${RECEPTOR_MD} exists"
-        echo "CONTINUE
-        "
-    else
-        echo "${RECEPTOR_MD} does not exist"
-        echo "Creating MD/${RECEPTOR} folder at ${WDPATH}"
-        echo "Creating cofactor_lib and receptor folders"
-        mkdir -p ${RECEPTOR_MD}/{cofactor_lib,receptor}
-        echo "DONE!
-        "
-    fi 
+echo "##############################"
+echo "Welcome to SetupMD v0.1.0"
+echo "Author: Tomás Cáceres <caceres.tomas@uc.cl>"
+echo "##############################"
 
-
-# Prepare receptor. 
-echo "
-####################################
-Preparing receptor ${RECEPTOR}
-####################################
-"
-
-RECEPTOR_PATH=${WDPATH}/MD/$RECEPTOR/receptor/
-
-ln -s ${WDPATH}/receptor/$RECEPTOR_PDB ${RECEPTOR_PATH}/$RECEPTOR_PDB
-
-$AMBERHOME/bin/pdb4amber -i ${RECEPTOR_PATH}/$RECEPTOR_PDB -o ${RECEPTOR_PATH}/${RECEPTOR}_prep.pdb --add-missing-atoms --no-conect > "${RECEPTOR_PATH}/pdb4amber.log"
-
-echo "Done preparing receptor ${RECEPTOR}"
-
-# Prepare cofactor. 
-
-if test -e "${WDPATH}/cofactor"
-  then
-    echo "
-    ####################################
-    Preparing cofactor ${COFACTOR_MOL2}
-    ####################################
-    "
-
-    COFACTOR_LIB=${WDPATH}/MD/cofactor_lib
-
-    cp ${SCRIPT_PATH}/cofactor/$COFACTOR_MOL2 $COFACTOR_LIB
-    cp ${SCRIPT_PATH}/input_files/topo/leap_liGAND.in $COFACTOR_LIB
-    sed -i "s/LIGND/${COFACTOR}/g" $COFACTOR_LIB/leap_liGAND.in
-    sed -i "s/LIG/${COFACTOR}/g" $COFACTOR_LIB/leap_liGAND.in
-
-    cd $COFACTOR_LIB 
-
-    echo "Computing net charge from partial charges of mol2 file"
-    COFACTOR_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' $COFACTOR_MOL2 | awk '{sum += $9} END {printf "%.0f\n", sum}')
-    echo "Net charge of ${COFACTOR_MOL2}: ${COFACTOR_NET_CHARGE}"
-
-    $AMBERHOME/bin/antechamber -i ${COFACTOR_MOL2} -fi mol2 -o ${COFACTOR_MOL2} -fo mol2 -c bcc -nc $COFACTOR_NET_CHARGE -rn $COFACTOR
-    $AMBERHOME/bin/parmchk2 -i $COFACTOR_MOL2 -f mol2 -o "${COFACTOR}.frcmod"
-    $AMBERHOME/bin/tleap -f ${COFACTOR_LIB}/${LEAP_LIGAND}
-
-    cd ${WDPATH}
-
-    echo "Done preparing cofactor"
-fi    
-
-for LIG in "${LIGANDS[@]}" #Create folders and copy input files and mol2
-  do
-    echo "
-    ####################################
-    Preparing ligand ${LIG}
-    ####################################
-    "
-    echo "Checking existence of MD/${LIG} folder"
+# Preparar ligandos, complejos y archivos de MD
+for LIG in "${LIGANDS[@]}"; do
+    CreateDirectories $REPLICAS $LIG $RECEPTOR_NAME
+    PrepareReceptor $RECEPTOR_NAME 
+    PrepareLigand $RECEPTOR_NAME $LIG $LEAP_TOPO $LEAP_LIGAND
+    PrepareTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
+    PrepareMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
     
-    if test -e ${RECEPTOR_MD}/${LIG} 
-      then
-        echo "${RECEPTOR_MD}/${LIG} exist"
-        echo "CONTINUE
-        "
-      else
-        echo "${RECEPTOR_MD}/${LIG} do not exist"
-        echo "Creating directiores at ${RECEPTOR_MD} for ${LIG}"
-        mkdir -p ${RECEPTOR_MD}/${LIG}/{lib,topo,setupMD/{rep1/{equi/{nvt,npt},prod/{nvt,npt}},rep2/{equi/{nvt,npt},prod/{nvt,npt}},rep3/{equi/{nvt,npt},prod/{nvt,npt}},rep4/{equi/{nvt,npt},prod/{nvt,npt}},rep5/{equi/{nvt,npt},prod/{nvt,npt}}}}
-
-        echo "DONE
-         "
-    fi   	
-    
-    #TOPO is topology folder of ligand 
-    TOPO=${RECEPTOR_MD}/${LIG}/topo
-    #LIGAND_LIB is library folder of ligand
-    LIGAND_LIB=${RECEPTOR_MD}/${LIG}/lib
-
-    echo "Copying files to $TOPO  
-    Copying ${LEAP_SCRIPT} to $TOPO
-    Copying ${LEAP_LIGAND} to ${LIGAND_LIB}"
-    
-
-    cp ${SCRIPT_PATH}/input_files/topo/${LEAP_SCRIPT} $TOPO
-    cp ${SCRIPT_PATH}/input_files/topo/${LEAP_LIGAND} $LIGAND_LIB 
-    cp ${WDPATH}/ligands/${LIG}.mol2 $LIGAND_LIB # copy ligand.mol2 to lib folder
-
-    sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_SCRIPT} $LIGAND_LIB/$LEAP_LIGAND
-    sed -i "s+TOPO_PATH+${TOPO}+g" ${TOPO}/${LEAP_SCRIPT}
-    #sed -i "s+COFACTOR_LIB_PATH+${COFACTOR_LIB}+g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2} ${TOPO}/${LEAP_SCRIPT}
-    #sed -i "s/COF/${COFACTOR}/g" ${TOPO}/${LEAP_SCRIPT_1} ${TOPO}/${LEAP_SCRIPT_2} ${TOPO}/${LEAP_SCRIPT}
-    sed -i "s+LIGAND_LIB_PATH+${LIGAND_LIB}+g" ${TOPO}/${LEAP_SCRIPT}
-    sed -i "s+REC_PATH+${RECEPTOR_PATH}+g" ${TOPO}/${LEAP_SCRIPT}
-    sed -i "s/RECEPTOR/${RECEPTOR}/g" ${TOPO}/${LEAP_SCRIPT} 
-
-    cd $LIGAND_LIB
-    
-    echo "Computing net charge from partial charges of mol2 file"
-    LIGAND_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' ${LIG}.mol2 | awk '{sum += $9} END {printf "%.0f\n", sum}')
-    echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}"
-
-
-    $AMBERHOME/bin/antechamber -i $LIGAND_LIB/$LIG.mol2 -fi mol2 -o $LIGAND_LIB/$LIG.mol2 -fo mol2 -rn LIG -nc $LIGAND_NET_CHARGE -at gaff2
-    $AMBERHOME/bin/antechamber -i $LIGAND_LIB/$LIG.mol2 -fi mol2 -o $LIGAND_LIB/${LIG}_lig.pdb -fo pdb -dr n -rn LIG
-    $AMBERHOME/bin/parmchk2 -i $LIGAND_LIB/$LIG.mol2 -f mol2 -o "$LIGAND_LIB/$LIG.frcmod"
-    $AMBERHOME/bin/tleap -f $LIGAND_LIB/$LEAP_LIGAND
-    cd ${WDPATH}
-    
-    echo "
-    Done preparing ligand
-    "
-
-    echo "    
-    ####################################
-    Preparing Complex $RECEPTOR $LIG
-    ####################################
-    "
-    $AMBERHOME/bin/tleap -f $TOPO/${LEAP_SCRIPT} 
-
-    echo "
-    Done preparing complex $RECEPTOR $LIG
-    " 
-    echo "    
-    ####################################
-    Preparing MD files
-    ####################################
-    "
-    for rep in 1 2 3 4 5
-      do
-        TOTALRES=$(cat ${TOPO}/${LIG}_com.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
-        
-        cp -r ${SCRIPT_PATH}/input_files/equi/*  $WDPATH/MD/$RECEPTOR/$LIG/setupMD/rep$rep/equi/
-        sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/$RECEPTOR/$LIG/setupMD/rep$rep/equi/*.in $WDPATH/MD/$RECEPTOR/$LIG/setupMD/rep$rep/equi/npt/*.in $WDPATH/MD/$RECEPTOR/$LIG/setupMD/rep$rep/equi/nvt/*.in
-        
-        cp ${SCRIPT_PATH}/input_files/prod/md_prod.in $WDPATH/MD/$RECEPTOR/$LIG/setupMD/rep$rep/prod/
-        
-        done
-      echo "Done copying files for MD
-        "
-
-echo "DONE!"
 done
 
+echo "DONE!"
