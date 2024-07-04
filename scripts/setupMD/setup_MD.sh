@@ -172,7 +172,7 @@ for LIG in "${LIGANDS[@]}" #Create folders and copy input files and mol2
     LIGAND_LIB=${RECEPTOR_MD}/${LIG}/lib
 
     echo "Copying files to $TOPO  
-    Copying ${LEAP_SCRIPT_1}, ${LEAP_SCRIPT_2} to $TOPO
+    Copying ${LEAP_SCRIPT} to $TOPO
     Copying ${LEAP_LIGAND} to ${LIGAND_LIB}"
     
 
