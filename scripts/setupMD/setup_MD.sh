@@ -161,11 +161,9 @@ PrepareMD() {
     echo "Done copying files for MD"
 }
 
-
-
-############################################################
-# Main script
-############################################################
+###########################################################
+# Options
+###########################################################
 while getopts ":hd:n:" option; do
     case $option in
         h)  # Print this help
@@ -180,6 +178,12 @@ while getopts ":hd:n:" option; do
             exit;;
     esac
 done
+
+
+############################################################
+# Main script
+############################################################
+
 
 # Ruta de la carpeta del script (donde se encuentra este script y demás input files).
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
