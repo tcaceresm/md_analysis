@@ -62,11 +62,11 @@ PrepareReceptor() {
     local RECEPTOR_PDB_FILE_PREPARED_LOCATION="${WDPATH}/MD/$REC/receptor/"
     local RECEPTOR_PDB_FILE_PREPARED="${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_prep.pdb"
 
-    ln -s ${RECEPTOR_PDB_FILE} ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb
+    cp ${RECEPTOR_PDB_FILE} ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb
     
     cd ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}
 
-    $AMBERHOME/bin/pdb4amber -i ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb -o ${RECEPTOR_PDB_FILE_PREPARED} --add-missing-atoms --no-conect -l prepare_receptor.log
+    $AMBERHOME/bin/pdb4amber -i ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb -o ${RECEPTOR_PDB_FILE_PREPARED}  -l prepare_receptor.log
 
     echo "Done preparing receptor $REC"
 
@@ -84,9 +84,13 @@ PrepareLigand() {
     local RECEPTOR_PATH="${WDPATH}/MD/${REC}/receptor"
     local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
 
+    echo "####################################"
+    echo "Preparing ligand: $LIG"
+    echo "####################################"
+
     cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
     cp "${SCRIPT_PATH}/input_files/topo/${LEAP_LIG}" ${LIGAND_LIB}
-    ln -s ${WDPATH}/ligands/${LIG}.mol2 ${LIGAND_LIB}/${LIG}.mol2
+    cp ${WDPATH}/ligands/${LIG}.mol2 ${LIGAND_LIB}/${LIG}.mol2
 
     sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_TOPO} $LIGAND_LIB/$LEAP_LIG
 
