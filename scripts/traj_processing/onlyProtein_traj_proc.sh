@@ -171,6 +171,7 @@ for i in $(seq 1 $N)
 
       if [[ $prod -eq 1 ]]
          then
+            echo ""
             echo "################################"
             echo "# Processing Production Files  #"
             echo "################################"
@@ -207,6 +208,7 @@ for i in $(seq 1 $N)
 
       if [[ $equi -eq 1 ]]
          then
+            echo ""
             echo "##################################"
             echo "# Processing Equilibration Files #"
             echo "##################################"
