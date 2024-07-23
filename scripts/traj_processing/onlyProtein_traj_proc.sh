@@ -197,17 +197,17 @@ for i in $(seq 1 $N)
             ##############################
             "
           
-         if [[ $PROCESS_OUT_FILES -eq 1 ]]
-            then
-               cd $EQUI
+            if [[ $PROCESS_OUT_FILES -eq 1 ]]
+               then
+                  cd $EQUI
 
-               #processOutFiles $EQUI $EQUI_FILES
+                  #processOutFiles $EQUI $EQUI_FILES
 
-               echo "Copying (and overwriting) process_mdout.perl"
-               cp $EQUI_FILES/process_mdout.perl $EQUI
-               echo "Processing *.out files with process_mdout.perl"
-               /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
-         
+                  echo "Copying (and overwriting) process_mdout.perl"
+                  cp $EQUI_FILES/process_mdout.perl $EQUI
+                  echo "Processing *.out files with process_mdout.perl"
+                  /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
+            fi
             
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
