@@ -180,8 +180,8 @@ for i in $(seq 1 $N)
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
-                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RM_HOH_equi}
+                  PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RM_HOH_equi}
             fi
 
             ### Calculate RMSD
@@ -190,9 +190,9 @@ for i in $(seq 1 $N)
                   if [[ -f ${EQUI}/$ensemble/${RECEPTOR}_equi.nc ]]
                      then 
                      echo "Correct unsolvated coordinates available!"
-                     PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+                     PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                      echo "Calculating RMSD from unsolvated trajectories"
-                     ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD_equi}
+                     ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RMSD_equi}
                      else
                         echo "No unsolvated coordinates available. Can't calculate RMSD"
                   fi
