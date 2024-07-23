@@ -19,18 +19,35 @@ function Help
    echo "e     0|1. Process equilibration output."
    echo "p     0|1. Process production output"
    echo "r     0|1. Compute RMSD from trajectories"
-   echo "W     0|1. Remove WAT from trajectories"
-   echo
+   echo "w     0|1. Remove WAT from trajectories"
+   echo "o     0|1. Process .out files"
 }
 
 ################################################################
-# Remove waters from molecular dynamics trajectories function. #
+# Display message                                              #
+################################################################
+
+function displayHello
+{
+
+   echo "
+   ##############################
+   Welcome to trajectory processing v0.0.0
+   Author: Tomás Cáceres <caceres.tomas@uc.cl>
+   Laboratory of Molecular Design <http://schuellerlab.org/>
+   https://github.com/tcaceresm/md_analysis
+   ##############################
+   "
+}
+
+################################################################
+# Prepare input files                                          #
 ################################################################
 
 function PrepareInputFile
 {
-   #               1       2         3      4    5       6
-   #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
+   #               1       2         3      4    5    
+   #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES 
 
    echo "Copying input $3 file"
       
@@ -38,13 +55,37 @@ function PrepareInputFile
 
    sed -i "s/LIG\|RECEPTOR/${4}/g" "$1/$3"
    sed -i "s/NRES/${5}/g" "$1/$3"
-   #sed -i "s+TOPO_PATH+${6}+g" "$1/$3"
 
-   cd $1
-
-   #${AMBERHOME}/bin/cpptraj -i ${1}/${3}
 }
 
+################################################################
+# Prepare paths & Number of residues                           #
+################################################################
+function obtainPaths
+{
+   local WDPATH=$1
+   local RECEPTOR=$2
+
+   EQUI="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/equi/"
+   PROD="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/prod/"
+   TOPO="${WDPATH}/MD/${RECEPTOR}/topo/"
+   N_RES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')
+
+}
+
+################################################################
+# Process .out files                                           #
+################################################################
+
+function processOutFiles
+{
+   local $PROD=$1
+   local $PROD_FILES=$2
+
+   echo "Copying process_mdout.perl to ${PROD}"   
+   cp $PROD_FILES/process_mdout.perl $PROD               
+   /usr/bin/perl ${PROD}/process_mdout.perl ${PROD}/*.out
+}
 
 ############################################################
 # Process the input options. Add options as needed.        #
@@ -67,6 +108,8 @@ while getopts ":hd:n:e:p:r:w:" option; do
          rmsd=$OPTARG;;
       w) # Remove waters?
          WAT=$OPTARG;;
+      o) # Process out files
+         PROCESS_OUT_FILES=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -88,36 +131,26 @@ WDPATH=$(realpath $WDPATH) #Working directory, where setupMD was configured
 declare -a LIGANDS_MOL2=($(ls $WDPATH/ligands/))
 declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
+# Analyzed receptor
 RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
-echo "
-##############################
-Welcome to trajectory processing v0.0.0
-Author: Tomás Cáceres <caceres.tomas@uc.cl>
-Laboratory of Molecular Design <http://schuellerlab.org/>
-https://github.com/tcaceresm/md_analysis
-##############################
-"
+# Input files names
+RM_HOH="remove_hoh_prod" 
+RM_HOH_mmpbsa="remove_hoh_mmpbsa"
+RM_HOH_equi="remove_hoh_equi" 
 
+RMSD="prod_rmsd"
+RMSD_equi="equi_rmsd"
 
+# MD ensemble
+ensemble="npt"
     
 for i in $(seq 1 $N)
    do
       echo "Processing ${RECEPTOR} repetition ${i}"
 
-      EQUI="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/equi/"
-      PROD="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/prod/"
-      TOPO="${WDPATH}/MD/${RECEPTOR}/topo/"
-      N_RES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')
-
-      RM_HOH="remove_hoh_prod" #remove_hoh_prod
-      RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
-      RM_HOH_equi="remove_hoh_equi" #remove_hoh_equi
-      
-      RMSD="prod_rmsd"
-      RMSD_equi="equi_rmsd"
-      ensemble="npt"
+      obtainPaths ${WDPATH} $RECEPTOR
 
       if [[ $prod -eq 1 ]]
          then
@@ -126,19 +159,17 @@ for i in $(seq 1 $N)
             # Processing Production Files  #
             ################################
             "
-            echo "Copying files to $PROD"
-            echo "Copying process_mdout.perl to ${PROD}"   
-            cp $PROD_FILES/process_mdout.perl $PROD
-
-            cd $PROD
-               
-            /usr/bin/perl ${PROD}/process_mdout.perl *.out
+         if [[ $PROCESS_OUT_FILES -eq 1 ]]
+            then
+               cd $PROD
+               processOutFiles $PROD $PROD_FILES
+         fi
                               
          if [[ $WAT -eq 1 ]]
             then
-               #               1       2         3      4    5       6
-               #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
-               PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} #${TOPO}
+               #               1       2         3      4    5      
+               #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES 
+               PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
             else
                echo "Not removing WAT from trajectories"
@@ -146,7 +177,7 @@ for i in $(seq 1 $N)
 
          if [[ $rmsd -eq 1 ]]
             then
-               if test -f ${RECEPTOR}_prod_noWAT.nc
+               if [[ -f ${RECEPTOR}_prod_noWAT.nc ]]
                   then
                      echo "Correct unsolvated production coordinates available!"
 
@@ -165,21 +196,23 @@ for i in $(seq 1 $N)
             Processing Equilibration Files
             ##############################
             "
+          
+         if [[ $PROCESS_OUT_FILES -eq 1 ]]
+            then
+               cd $EQUI
+
+               #processOutFiles $EQUI $EQUI_FILES
+
+               echo "Copying (and overwriting) process_mdout.perl"
+               cp $EQUI_FILES/process_mdout.perl $EQUI
+               echo "Processing *.out files with process_mdout.perl"
+               /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
          
-            echo "Copying files to $EQUI"
             
-            cd $EQUI
-
-            echo "Copying (and overwriting) process_mdout.perl"
-            cp $EQUI_FILES/process_mdout.perl $EQUI
-            echo "Processing *.out files with process_mdout.perl"
-            /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
-         
-            cd $EQUI/$ensemble
-
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
+                  cd $EQUI/$ensemble
                   PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RM_HOH_equi}
             fi
@@ -188,10 +221,11 @@ for i in $(seq 1 $N)
             if [[ $rmsd -eq 1 ]] #unsolvated coordinates
                then
                   if [[ -f ${EQUI}/$ensemble/${RECEPTOR}_equi.nc ]]
-                     then 
+                     then
                      echo "Correct unsolvated coordinates available!"
                      PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                      echo "Calculating RMSD from unsolvated trajectories"
+                     cd $EQUI/$ensemble
                      ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RMSD_equi}
                      else
                         echo "No unsolvated coordinates available. Can't calculate RMSD"
