@@ -209,7 +209,7 @@ for i in $(seq 1 $N)
 
       if [[ $equi -eq 1 ]]
          then
-            echo ""
+            #echo ""
             echo "   ##################################"
             echo "   # Processing Equilibration Files #"
             echo "   ##################################"
@@ -227,6 +227,7 @@ for i in $(seq 1 $N)
                   PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RM_HOH_equi}
                else
+                  echo ""
                   echo "   Not removing WAT from trajectories"
             fi
 
