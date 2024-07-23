@@ -93,13 +93,14 @@ function processProdOutFiles
 ################################################################
 
 function processEquiOutFiles
+{
    local $EQUI=$1
    local $PROD_FILES=$2
 
    echo "Copying process_mdout.perl to ${PROD}"
    cp $EQUI_FILES/process_mdout.perl $EQUI
    /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
-   
+}  
 
 ############################################################
 # Process the input options. Add options as needed.        #
