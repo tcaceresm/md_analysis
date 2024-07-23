@@ -49,13 +49,15 @@ function PrepareInputFile
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:e:p:r:w:" option; do
+while getopts ":hd:n:e:p:r:w:" option; do
    case $option in
       h) # Print this help
          Help
          exit;;
       d) # Enter the MD Directory
          WDPATH=$OPTARG;;
+      n) # Replicas
+         N=$OPTARG;;
       e) # Equilibration processing
          equi=$OPTARG;;
       p) # Production processing
@@ -99,7 +101,7 @@ https://github.com/tcaceresm/md_analysis
 
 
     
-for i in 1 2 3 4 5
+for i in $(seq 1 $N)
    do
       echo "Processing ${RECEPTOR} repetition ${i}"
 
