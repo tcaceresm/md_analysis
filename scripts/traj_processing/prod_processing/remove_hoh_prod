@@ -1,5 +1,5 @@
-parm TOPO_PATH/LIG_solv_com.parm7
-trajin ../equi/npt/npt_equil_*.nc
+parm ../../../topo/LIG_solv_com.parm7
+#trajin ../equi/npt/npt_equil_*.nc
 trajin md_prod.nc
 autoimage :1-NRES
 strip :Na+,Cl-
