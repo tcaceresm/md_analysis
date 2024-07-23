@@ -245,6 +245,7 @@ for i in $(seq 1 $N)
                   fi
                else
                   echo "   Not calculating RMSD"
+                  echo ""
             fi
             
       fi
