@@ -15,6 +15,7 @@ function Help
    echo "options:"
    echo "h     Print help"
    echo "d     Working Directory."
+   echo "n     Number of repetitions."
    echo "e     0|1. Process equilibration output."
    echo "p     0|1. Process production output"
    echo "r     0|1. Compute RMSD from trajectories"
@@ -173,6 +174,8 @@ for i in $(seq 1 $N)
             echo "Processing *.out files with process_mdout.perl"
             /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
          
+            cd $EQUI_FILES/npt
+            
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
