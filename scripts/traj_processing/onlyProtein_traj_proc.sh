@@ -31,12 +31,12 @@ function displayHello
 {
 
    echo "
-   ##############################
+   ###########################################################
    Welcome to trajectory processing v0.0.0
    Author: Tomás Cáceres <caceres.tomas@uc.cl>
    Laboratory of Molecular Design <http://schuellerlab.org/>
    https://github.com/tcaceresm/md_analysis
-   ##############################
+   ############################################################
    "
 }
 
@@ -243,6 +243,8 @@ for i in $(seq 1 $N)
                      else
                         echo "No unsolvated coordinates available. Can't calculate RMSD"
                   fi
+               else
+                  echo "Not calculating RMSD"
             fi
             
       fi
