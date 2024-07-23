@@ -173,9 +173,9 @@ for i in $(seq 1 $N)
       if [[ $prod -eq 1 ]]
          then
             echo ""
-            echo "################################"
-            echo "# Processing Production Files  #"
-            echo "################################"
+            echo "   ################################"
+            echo "   # Processing Production Files  #"
+            echo "   ################################"
             echo ""
          if [[ $PROCESS_OUT_FILES -eq 1 ]]
             then
@@ -189,30 +189,30 @@ for i in $(seq 1 $N)
                PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
             else
-               echo "Not removing WAT from trajectories"
+               echo "   Not removing WAT from trajectories"
          fi
 
          if [[ $rmsd -eq 1 ]]
             then
                if [[ -f ${RECEPTOR}_prod_noWAT.nc ]]
                   then
-                     echo "Correct unsolvated production coordinates available!"
+                     echo "   Correct unsolvated production coordinates available!"
                      PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES}
                      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
                   else
-                     echo "No unsolvated production coordinates available."
+                     echo "   No unsolvated production coordinates available."
                fi
             else
-               echo "Not calculating RMSD"
+               echo "   Not calculating RMSD"
          fi
       fi 
 
       if [[ $equi -eq 1 ]]
          then
             echo ""
-            echo "##################################"
-            echo "# Processing Equilibration Files #"
-            echo "##################################"
+            echo "   ##################################"
+            echo "   # Processing Equilibration Files #"
+            echo "   ##################################"
             echo ""          
             if [[ $PROCESS_OUT_FILES -eq 1 ]]
                then
@@ -227,7 +227,7 @@ for i in $(seq 1 $N)
                   PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RM_HOH_equi}
                else
-                  echo "Not removing WAT from trajectories"
+                  echo "   Not removing WAT from trajectories"
             fi
 
             ### Calculate RMSD
@@ -235,16 +235,16 @@ for i in $(seq 1 $N)
                then
                   if [[ -f ${EQUI}/$ensemble/${RECEPTOR}_equi.nc ]]
                      then
-                        echo "Correct unsolvated coordinates available!"
+                        echo "   Correct unsolvated coordinates available!"
                         PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-                        echo "Calculating RMSD from unsolvated trajectories"
+                        echo "   Calculating RMSD from unsolvated trajectories"
                         cd $EQUI/$ensemble
                         ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RMSD_equi}
                      else
-                        echo "No unsolvated coordinates available. Can't calculate RMSD"
+                        echo "   No unsolvated coordinates available. Can't calculate RMSD"
                   fi
                else
-                  echo "Not calculating RMSD"
+                  echo "   Not calculating RMSD"
             fi
             
       fi
