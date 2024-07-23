@@ -181,14 +181,17 @@ for i in $(seq 1 $N)
             fi
 
             ### Calculate RMSD
-            if [[ -f ${EQUI}/npt/${RECEPTOR}_equi.nc && $rmsd -eq 1 ]] #unsolvated coordinates
+            if [[ $rmsd -eq 1 ]] #unsolvated coordinates
                then
-                  echo "Correct unsolvated coordinates available!"
-                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} ${TOPO}
-                  echo "Calculating RMSD from unsolvated trajectories"
-                  ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD_equi}
-               else
-                  echo "No unsolvated coordinates available. Can't calculate RMSD"
+                  if [[ -f ${EQUI}/npt/${RECEPTOR}_equi.nc ]]
+                     then 
+                     echo "Correct unsolvated coordinates available!"
+                     PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} ${TOPO}
+                     echo "Calculating RMSD from unsolvated trajectories"
+                     ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD_equi}
+                     else
+                        echo "No unsolvated coordinates available. Can't calculate RMSD"
+                  fi
             fi
             
       fi
