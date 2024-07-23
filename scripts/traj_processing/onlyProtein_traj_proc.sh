@@ -174,6 +174,7 @@ for i in $(seq 1 $N)
             echo "################################"
             echo "# Processing Production Files  #"
             echo "################################"
+            echo ""
          if [[ $PROCESS_OUT_FILES -eq 1 ]]
             then
                cd $PROD
@@ -208,7 +209,8 @@ for i in $(seq 1 $N)
          then
             echo "##################################"
             echo "# Processing Equilibration Files #"
-            echo "##################################"          
+            echo "##################################"
+            echo ""          
             if [[ $PROCESS_OUT_FILES -eq 1 ]]
                then
                   cd $EQUI
