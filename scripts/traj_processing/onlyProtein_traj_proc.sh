@@ -209,8 +209,8 @@ for i in $(seq 1 $N)
 
       if [[ $equi -eq 1 ]]
          then
-            #echo ""
-            echo -e "   \n    ##################################"
+            echo ""
+            echo "   ##################################"
             echo "   # Processing Equilibration Files #"
             echo "   ##################################"
             echo ""          
