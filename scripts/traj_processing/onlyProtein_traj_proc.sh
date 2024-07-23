@@ -174,8 +174,8 @@ for i in $(seq 1 $N)
             echo "Processing *.out files with process_mdout.perl"
             /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
          
-            cd $EQUI_FILES/npt
-            
+            cd $EQUI/npt
+
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
