@@ -159,7 +159,9 @@ RMSD_equi="equi_rmsd"
 
 # MD ensemble
 ensemble="npt"
-    
+
+displayHello
+
 for i in $(seq 1 $N)
    do
       echo "Processing ${RECEPTOR} repetition ${i}"
