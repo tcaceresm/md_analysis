@@ -1,8 +1,8 @@
-parm TOPO_PATH/RECEPTOR_solv.parm7
-trajin ./npt/*npt_equil_*.nc
+parm ../../../../topo/RECEPTOR_solv.parm7
+trajin ./*npt_equil_*.nc
 autoimage
 strip :WAT
 strip :Na+
 rms fit :1-NRES
-trajout ./npt/RECEPTOR_equi.nc format netcdf
+trajout ./RECEPTOR_equi.nc format netcdf
 

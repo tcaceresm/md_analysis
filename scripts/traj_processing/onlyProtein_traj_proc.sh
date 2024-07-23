@@ -38,7 +38,7 @@ function PrepareInputFile
 
    sed -i "s/LIG\|RECEPTOR/${4}/g" "$1/$3"
    sed -i "s/NRES/${5}/g" "$1/$3"
-   sed -i "s+TOPO_PATH+${6}+g" "$1/$3"
+   #sed -i "s+TOPO_PATH+${6}+g" "$1/$3"
 
    cd $1
 
@@ -117,6 +117,7 @@ for i in $(seq 1 $N)
       
       RMSD="prod_rmsd"
       RMSD_equi="equi_rmsd"
+      ensemble="npt"
 
       if [[ $prod -eq 1 ]]
          then
@@ -137,7 +138,7 @@ for i in $(seq 1 $N)
             then
                #               1       2         3      4    5       6
                #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES $TOPO
-               PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} ${TOPO}
+               PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} #${TOPO}
                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
             else
                echo "Not removing WAT from trajectories"
@@ -149,7 +150,7 @@ for i in $(seq 1 $N)
                   then
                      echo "Correct unsolvated production coordinates available!"
 
-                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES} ${TOPO}
+                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES} #${TOPO}
                      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
                   else
                      echo "No unsolvated production coordinates available."
@@ -172,24 +173,24 @@ for i in $(seq 1 $N)
             echo "Copying (and overwriting) process_mdout.perl"
             cp $EQUI_FILES/process_mdout.perl $EQUI
             echo "Processing *.out files with process_mdout.perl"
-            /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./npt/*.out
+            /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
          
-            cd $EQUI/npt
+            cd $EQUI/$ensemble
 
             ### REMOVE HOH
             if [[ $WAT -eq 1 ]]
                then 
-                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} ${TOPO}
+                  PrepareInputFile ${EQUI} ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RM_HOH_equi}
             fi
 
             ### Calculate RMSD
             if [[ $rmsd -eq 1 ]] #unsolvated coordinates
                then
-                  if [[ -f ${EQUI}/npt/${RECEPTOR}_equi.nc ]]
+                  if [[ -f ${EQUI}/$ensemble/${RECEPTOR}_equi.nc ]]
                      then 
                      echo "Correct unsolvated coordinates available!"
-                     PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} ${TOPO}
+                     PrepareInputFile ${EQUI} ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                      echo "Calculating RMSD from unsolvated trajectories"
                      ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${RMSD_equi}
                      else
