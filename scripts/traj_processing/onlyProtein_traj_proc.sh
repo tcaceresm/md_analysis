@@ -108,7 +108,7 @@ for i in $(seq 1 $N)
       EQUI="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/equi/"
       PROD="${WDPATH}/MD/${RECEPTOR}/setupMD/rep${i}/prod/"
       TOPO="${WDPATH}/MD/${RECEPTOR}/topo/"
-      N_RES=$(cat ${TOPO}/${RECEPTOR}_vac.pdb | tail -n 3 | awk '{print $5}')
+      N_RES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')
 
       RM_HOH="remove_hoh_prod" #remove_hoh_prod
       RM_HOH_mmpbsa="remove_hoh_mmpbsa" #remove_hoh_mmpbsa
