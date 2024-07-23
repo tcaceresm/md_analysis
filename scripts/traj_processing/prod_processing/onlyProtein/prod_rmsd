@@ -1,7 +1,7 @@
 #Actualizado al 5-02-23. Debería borrar los scripts que no ocupo en la carpeta de los li gandos
 #Calcula el RMSD/F de todos los residuos y del pocket (incluyendo a la auxina)
 
-parm TOPO_PATH/RECEPTOR_vac.parm7
+parm ../../../topo/RECEPTOR_vac.parm7
 trajin RECEPTOR_prod_noWAT.nc
 autoimage :1-NRES
 
