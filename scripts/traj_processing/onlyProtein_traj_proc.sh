@@ -31,12 +31,12 @@ function displayHello
 {
 
 echo "
-#############################################################
-#Welcome to trajectory processing v0.0.0                    #   
-#Author: Tomás Cáceres <caceres.tomas@uc.cl>                #
-#Laboratory of Molecular Design <http://schuellerlab.org/>  #
-#https://github.com/tcaceresm/md_analysis                   #
-#############################################################
+##############################################################
+# Welcome to trajectory processing v0.0.0                    #   
+# Author: Tomás Cáceres <caceres.tomas@uc.cl>                #
+# Laboratory of Molecular Design <http://schuellerlab.org/>  #
+# https://github.com/tcaceresm/md_analysis                   #
+##############################################################
 "
 }
 
@@ -171,11 +171,9 @@ for i in $(seq 1 $N)
 
       if [[ $prod -eq 1 ]]
          then
-            echo "
-            ################################
-            # Processing Production Files  #
-            ################################
-            "
+            echo "################################"
+            echo "# Processing Production Files  #"
+            echo "################################"
          if [[ $PROCESS_OUT_FILES -eq 1 ]]
             then
                cd $PROD
@@ -208,12 +206,9 @@ for i in $(seq 1 $N)
 
       if [[ $equi -eq 1 ]]
          then
-            echo "
-            ##############################
-            Processing Equilibration Files
-            ##############################
-            "
-          
+            echo "##################################"
+            echo "# Processing Equilibration Files #"
+            echo "##################################"          
             if [[ $PROCESS_OUT_FILES -eq 1 ]]
                then
                   cd $EQUI
