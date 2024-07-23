@@ -30,14 +30,14 @@ function Help
 function displayHello
 {
 
-   echo "
-   ###########################################################
-   Welcome to trajectory processing v0.0.0
-   Author: Tomás Cáceres <caceres.tomas@uc.cl>
-   Laboratory of Molecular Design <http://schuellerlab.org/>
-   https://github.com/tcaceresm/md_analysis
-   ############################################################
-   "
+echo "
+#############################################################
+#Welcome to trajectory processing v0.0.0                    #   
+#Author: Tomás Cáceres <caceres.tomas@uc.cl>                #
+#Laboratory of Molecular Design <http://schuellerlab.org/>  #
+#https://github.com/tcaceresm/md_analysis                   #
+#############################################################
+"
 }
 
 ################################################################
