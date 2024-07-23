@@ -74,10 +74,10 @@ function obtainPaths
 }
 
 ################################################################
-# Process .out files                                           #
+# Process production .out files                                #
 ################################################################
 
-function processOutFiles
+function processProdOutFiles
 {
    local $PROD=$1
    local $PROD_FILES=$2
@@ -85,7 +85,21 @@ function processOutFiles
    echo "Copying process_mdout.perl to ${PROD}"   
    cp $PROD_FILES/process_mdout.perl $PROD               
    /usr/bin/perl ${PROD}/process_mdout.perl ${PROD}/*.out
+
 }
+
+################################################################
+# Process equilibration .out files                             #
+################################################################
+
+function processEquiOutFiles
+   local $EQUI=$1
+   local $PROD_FILES=$2
+
+   echo "Copying process_mdout.perl to ${PROD}"
+   cp $EQUI_FILES/process_mdout.perl $EQUI
+   /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
+   
 
 ############################################################
 # Process the input options. Add options as needed.        #
@@ -162,13 +176,12 @@ for i in $(seq 1 $N)
          if [[ $PROCESS_OUT_FILES -eq 1 ]]
             then
                cd $PROD
-               processOutFiles $PROD $PROD_FILES
+               processProdOutFiles $PROD $PROD_FILES
          fi
                               
          if [[ $WAT -eq 1 ]]
             then
-               #               1       2         3      4    5      
-               #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES 
+               cd ${PROD}  
                PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
             else
@@ -180,12 +193,13 @@ for i in $(seq 1 $N)
                if [[ -f ${RECEPTOR}_prod_noWAT.nc ]]
                   then
                      echo "Correct unsolvated production coordinates available!"
-
-                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES} #${TOPO}
+                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES}
                      ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
                   else
                      echo "No unsolvated production coordinates available."
                fi
+            else
+               echo "Not calculating RMSD"
          fi
       fi 
 
@@ -200,13 +214,7 @@ for i in $(seq 1 $N)
             if [[ $PROCESS_OUT_FILES -eq 1 ]]
                then
                   cd $EQUI
-
-                  #processOutFiles $EQUI $EQUI_FILES
-
-                  echo "Copying (and overwriting) process_mdout.perl"
-                  cp $EQUI_FILES/process_mdout.perl $EQUI
-                  echo "Processing *.out files with process_mdout.perl"
-                  /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
+                  processEquiOutFiles $EQUI $EQUI_FILES
             fi
             
             ### REMOVE HOH
@@ -215,6 +223,8 @@ for i in $(seq 1 $N)
                   cd $EQUI/$ensemble
                   PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                   ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RM_HOH_equi}
+               else
+                  echo "Not removing WAT from trajectories"
             fi
 
             ### Calculate RMSD
@@ -222,11 +232,11 @@ for i in $(seq 1 $N)
                then
                   if [[ -f ${EQUI}/$ensemble/${RECEPTOR}_equi.nc ]]
                      then
-                     echo "Correct unsolvated coordinates available!"
-                     PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-                     echo "Calculating RMSD from unsolvated trajectories"
-                     cd $EQUI/$ensemble
-                     ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RMSD_equi}
+                        echo "Correct unsolvated coordinates available!"
+                        PrepareInputFile ${EQUI}/$ensemble ${EQUI_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+                        echo "Calculating RMSD from unsolvated trajectories"
+                        cd $EQUI/$ensemble
+                        ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RMSD_equi}
                      else
                         echo "No unsolvated coordinates available. Can't calculate RMSD"
                   fi
