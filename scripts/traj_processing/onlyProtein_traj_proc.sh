@@ -91,7 +91,7 @@ function processOutFiles
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:n:e:p:r:w:" option; do
+while getopts ":hd:n:e:p:r:w:o:" option; do
    case $option in
       h) # Print this help
          Help
