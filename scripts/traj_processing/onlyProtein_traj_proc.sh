@@ -165,8 +165,9 @@ displayHello
 
 for i in $(seq 1 $N)
    do
+      echo ""
       echo "Processing ${RECEPTOR} repetition ${i}"
-
+      echo ""
       obtainPaths ${WDPATH} $RECEPTOR
 
       if [[ $prod -eq 1 ]]
