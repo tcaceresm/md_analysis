@@ -1,0 +1,17 @@
+parm ../../../topo/ClpP_vac.parm7
+trajin ClpP_prod_noWAT.nc
+
+hbond Ser98_His123_Asp172 :98,123,172 avgout Ser98_His123_Asp172_HBond.dat
+hbond Ser293_His318_Asp367 :293,318,367 avgout Ser293_His318_Asp367_HBond.dat
+hbond Ser488_His513_Asp562 :488,513,562 avgout Ser488_His513_Asp562_HBond.dat
+hbond Ser683_His708_Asp757 :683,708,757 avgout Ser683_His708_Asp757_HBond.dat
+hbond Ser878_His903_Asp952 :878,903,952 avgout Ser878_His903_Asp952_HBond.dat
+hbond Ser1073_His1098_Asp1147 :1073,1098,1147 avgout Ser1073_His1098_Asp1147_HBond.dat
+hbond Ser1268_His1293_Asp1342 :1268,1293,1342 avgout Ser1268_His1293_Asp1342_HBond.dat
+hbond Ser1463_His1488_Asp1537 :1463,1488,1537 avgout Ser1463_His1488_Asp1537_HBond.dat
+hbond Ser1658_His1683_Asp1732 :1658,1683,1732 avgout Ser1658_His1683_Asp1732_HBond.dat
+hbond Ser1853_His1878_Asp1927 :1853,1878,1927 avgout Ser1853_His1878_Asp1927_HBond.dat
+hbond Ser2048_His2073_Asp2122 :2048,2073,2122 avgout Ser2048_His2073_Asp2122_HBond.dat
+hbond Ser2243_His2268_Asp2317 :2243,2268,2317 avgout Ser2243_His2268_Asp2317_HBond.dat
+hbond Ser2438_His2463_Asp2512 :2438,2463,2512 avgout Ser2438_His2463_Asp2512_HBond.dat
+hbond Ser2633_His2658_Asp2707 :2633,2658,2707 avgout Ser2633_His2658_Asp2707_HBond.dat

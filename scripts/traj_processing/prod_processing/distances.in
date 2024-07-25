@@ -1,0 +1,47 @@
+parm ../../../topo/ClpP_vac.parm7
+trajin ClpP_prod_noWAT.nc
+
+hbond Ser98_His123 :98,123 avgout Ser98_His123_HBond.dat
+
+distance Ser98_His123  :98@OG :123@NE2 noimage out Ser98_His123_Distance
+distance Asp172_His123 :172@OD1,OD2 :123@ND1 noimage out Asp172_His123_Distance
+
+distance Ser293_His318  :293@OG :318@NE2 noimage out Ser293_His318_Distance
+distance Asp367_His318 :367@OD1,OD2 :318@ND1 noimage out Asp367_His318_Distance
+
+distance Ser488_His513  :488@OG :513@NE2 noimage out Ser488_His513_Distance
+distance Asp562_His513 :562@OD1,OD2 :513@ND1 noimage out Asp562_His513_Distance
+
+distance Ser683_His708  :683@OG :708@NE2 noimage out Ser683_His708_Distance
+distance Asp757_His708 :757@OD1,OD2 :708@ND1 noimage out Asp757_His708_Distance
+
+distance Ser878_His903  :878@OG :903@NE2 noimage out Ser878_His903_Distance
+distance Asp952_His903 :952@OD1,OD2 :903@ND1 noimage out Asp952_His903_Distance
+
+distance Ser1073_His1098  :1073@OG :1098@NE2 noimage out Ser1073_His1098_Distance
+distance Asp1147_His1098 :1147@OD1,OD2 :1098@ND1 noimage out Asp1147_His1098_Distance
+
+distance Ser1268_His1293  :1268@OG :1293@NE2 noimage out Ser1268_His1293_Distance
+distance Asp1342_His1293 :1342@OD1,OD2 :1293@ND1 noimage out Asp1342_His1293_Distance
+
+distance Ser1463_His1488  :1463@OG :1488@NE2 noimage out Ser1463_His1488_Distance
+distance Asp1537_His1488 :1537@OD1,OD2 :1488@ND1 noimage out Asp1537_His1488_Distance
+
+distance Ser1658_His1683 :1658@OG :1683@NE2 noimage out Ser1658_His1683_Distance
+distance Asp1732_His1683 :1732@OD1,OD2 :1683@ND1 noimage out Asp1732_His1683_Distance
+
+distance Ser1853_His1878  :1853@OG :1878@NE2 noimage out Ser1853_His1878_Distance
+distance Asp1927_His1878 :1927@OD1,OD2 :1878@ND1 noimage out Asp1927_His1878_Distance
+
+distance Ser2048_His2073  :2048@OG :2073@NE2 noimage out Ser2048_His2073_Distance
+distance Asp2122_His2073 :2122@OD1,OD2 :2073@ND1 noimage out Asp2122_His2073_Distance
+
+distance Ser2243_His2268  :2243@OG :2268@NE2 noimage out Ser2243_His2268_Distance
+distance Asp2317_His2268 :2317@OD1,OD2 :2268@ND1 noimage out Asp2317_His2268_Distance
+
+distance Ser2438_His2463  :2438@OG :2463@NE2 noimage out Ser2438_His2463_Distance
+distance Asp2512_His2463 :2512@OD1,OD2 :2463@ND1 noimage out Asp2512_His2463_Distance
+
+distance Ser2633_His2658  :2633@OG :2658@NE2 noimage out Ser2633_His2658_Distance
+distance Asp2707_His2658 :2707@OD1,OD2 :2658@ND1 noimage out Asp2707_His2658_Distance
+
