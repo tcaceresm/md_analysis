@@ -19,7 +19,7 @@ Help() {
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:n:" option; do
+while getopts ":hd:n:r:" option; do
     case $option in
         h)  # Print this help
             Help
