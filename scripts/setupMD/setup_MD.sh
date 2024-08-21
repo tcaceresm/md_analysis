@@ -220,6 +220,7 @@ for LIG in "${LIGANDS[@]}"; do
     if [[ $PREP_REC -eq 1 ]]
     then
         PrepareReceptor $RECEPTOR_NAME
+    fi
     
     PrepareLigand $RECEPTOR_NAME $LIG $LEAP_TOPO $LEAP_LIGAND
     PrepareTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
