@@ -12,8 +12,29 @@ Help() {
     echo "h     Print help"
     echo "d     Working Directory."
     echo "n     Replicas."
+    echo "r     Prepare receptor?".
     echo
 }
+
+###########################################################
+# Options
+###########################################################
+while getopts ":hd:n:" option; do
+    case $option in
+        h)  # Print this help
+            Help
+            exit;;
+        d)  # Enter the MD Directory
+            WDPATH=$OPTARG;;
+        n)  # Replicas
+            REPLICAS=$OPTARG;;
+        r)  # Prepare receptor?
+            PREP_REC=$OPTARG;;
+        \?) # Invalid option
+            echo "Error: Invalid option"
+            exit;;
+    esac
+done
 
 ############################################################
 # Crear directorios
@@ -161,25 +182,6 @@ PrepareMD() {
     echo "Done copying files for MD"
 }
 
-###########################################################
-# Options
-###########################################################
-while getopts ":hd:n:" option; do
-    case $option in
-        h)  # Print this help
-            Help
-            exit;;
-        d)  # Enter the MD Directory
-            WDPATH=$OPTARG;;
-        n)  # Replicas
-            REPLICAS=$OPTARG;;
-        \?) # Invalid option
-            echo "Error: Invalid option"
-            exit;;
-    esac
-done
-
-
 ############################################################
 # Main script
 ############################################################
@@ -214,7 +216,11 @@ echo "##############################"
 # Preparar ligandos, complejos y archivos de MD
 for LIG in "${LIGANDS[@]}"; do
     CreateDirectories $REPLICAS $LIG $RECEPTOR_NAME
-    PrepareReceptor $RECEPTOR_NAME 
+
+    if [[ $PREP_REC -eq 1 ]]
+    then
+        PrepareReceptor $RECEPTOR_NAME
+    
     PrepareLigand $RECEPTOR_NAME $LIG $LEAP_TOPO $LEAP_LIGAND
     PrepareTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
     PrepareMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
