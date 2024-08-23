@@ -5,25 +5,31 @@ source leaprc.gaff2
 set default PBradii mbondi
 
 loadoff ../lib/LIGAND.lib
+#loadoff ../../cofactor_lib/COFACTOR.lib
 
 LIG = loadpdb ../lib/LIGAND_lig.pdb
 REC = loadpdb ../../receptor/RECEPTOR_prep.pdb
+#COF = loadpdb ../../cofactor_lib/COFACTOR_lig.pdb
 COM = combine {REC LIG}
+#COM = combine {REC COF LIG}
 
 savepdb COM ./LIGAND_com.pdb
 savepdb REC ./LIGAND_rec.pdb
 savepdb LIG ./LIGAND_lig.pdb
+#savepdb COF ./LIGAND_cof.pdb
 
 loadAmberParams ../lib/LIGAND.frcmod
+#loadAmberParams ../../cofactor_lib/COFACTOR.frcmod
 
 saveAmberParm LIG ./LIGAND_vac_lig.parm7 ./LIGAND_vac_lig.crd
 saveAmberParm REC ./LIGAND_vac_rec.parm7 ./LIGAND_vac_rec.crd
 saveAmberParm COM ./LIGAND_vac_com.parm7 ./LIGAND_vac_com.crd
-
+#saveAmberParm COF ./LIGAND_vac_cof.parm7 ./LIGAND_vac_cof.crd
 
 charge LIG
 charge REC
 charge COM
+#charge COF
 
 addIons COM Na+ 0
 addions COM Cl- 0
