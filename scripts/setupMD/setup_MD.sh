@@ -12,14 +12,15 @@ Help() {
     echo "h     Print help"
     echo "d     Working Directory."
     echo "n     Replicas."
-    echo "r     Prepare receptor?".
+    echo "r     Prepare receptor?"
+    echo "c     Prepare cofactor?"
     echo
 }
 
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:n:r:" option; do
+while getopts ":hd:n:r:c:" option; do
     case $option in
         h)  # Print this help
             Help
@@ -30,6 +31,8 @@ while getopts ":hd:n:r:" option; do
             REPLICAS=$OPTARG;;
         r)  # Prepare receptor?
             PREP_REC=$OPTARG;;
+        c)  # Prepare cofactor?
+            PREP_COFACTOR=$OPTARG;;
         \?) # Invalid option
             echo "Error: Invalid option"
             exit;;
@@ -40,33 +43,40 @@ done
 # Crear directorios
 ############################################################
 CreateDirectories() {
+    # Preparar ligandos?
+    local PREPARE_LIGAND=$1
     # Número de replicas
-    local N=$1
+    local N=$2
     # Nombre del ligando
-    local LIG=$2
+    local LIG=$3
     # Nombre del receptor
-    local RECEPTOR=$3
+    local RECEPTOR=$4
 
-    mkdir -p ${WDPATH}/MD/${RECEPTOR}/{cofactor_lib,receptor,${LIG}/{lib,setupMD,topo}}
-    
-    # Crear la lista de replicas
-    REPS=()
-    for ((i=1; i<=N; i++)); do
-        REPS+=("rep$i")
-    done
-
-    # Directorio donde crearemos repN/equi_prod/npt,nvt
-    BASE_DIR=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD
-    # Subdirectorios dentro de cada replicación
-    SUBDIRS=("equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
-
-    # Crear la estructura de directorios
-    for REP in "${REPS[@]}"; do
-        for SUBDIR in "${SUBDIRS[@]}"; do
-            mkdir -p "${BASE_DIR}/${REP}/${SUBDIR}"
+    if [[ $PREPARE_LIGAND -eq 1 ]]
+    then
+        mkdir -p ${WDPATH}/MD/${RECEPTOR}/{cofactor_lib,receptor,${LIG}/{lib,setupMD,topo}}
+        
+        # Crear la lista de replicas
+        REPS=()
+        for ((i=1; i<=N; i++)); do
+            REPS+=("rep$i")
         done
-    done
+
+        # Directorio donde crearemos repN/equi_prod/npt,nvt
+        BASE_DIR=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD
+        # Subdirectorios dentro de cada replicación
+        SUBDIRS=("equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+
+        # Crear la estructura de directorios
+        for REP in "${REPS[@]}"; do
+            for SUBDIR in "${SUBDIRS[@]}"; do
+                mkdir -p "${BASE_DIR}/${REP}/${SUBDIR}"
+            done
+        done
+    else #Only create receptor and cofactor lib        
+        mkdir -p ${WDPATH}/MD/${RECEPTOR}/{cofactor_lib,receptor}
     
+    fi
 
 }
 
@@ -97,23 +107,20 @@ PrepareReceptor() {
 # Preparar ligando
 ############################################################
 PrepareLigand() {
-    local REC=$1
-    local LIG=$2
-    local LEAP_TOPO=$3
-    local LEAP_LIG=$4
-    local LIGAND_LIB="${WDPATH}/MD/${REC}/${LIG}/lib"
-    local RECEPTOR_PATH="${WDPATH}/MD/${REC}/receptor"
-    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
-
+    local LIG=$1
+    local LIG_PATH=$2
+    local LEAP_LIG=$3
+    local LIGAND_LIB=$4
+    local RESNAME=$5
+        
     echo "####################################"
     echo "Preparing ligand: $LIG"
     echo "####################################"
 
-    cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
     cp "${SCRIPT_PATH}/input_files/topo/${LEAP_LIG}" ${LIGAND_LIB}
-    cp ${WDPATH}/ligands/${LIG}.mol2 ${LIGAND_LIB}/${LIG}.mol2
+    cp ${LIG_PATH}/${LIG}.mol2 ${LIGAND_LIB}/${LIG}.mol2
 
-    sed -i "s/LIGND/${LIG}/g" ${TOPO}/${LEAP_TOPO} $LIGAND_LIB/$LEAP_LIG
+    sed -i "s/LIGND/${LIG}/g" $LIGAND_LIB/$LEAP_LIG
 
     cd "$LIGAND_LIB"
 
@@ -121,10 +128,10 @@ PrepareLigand() {
     LIGAND_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' "${LIG}.mol2" | awk '{sum += $9} END {printf "%.0f\n", sum}')
     echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}" | tee -a ligand_net_charge.log
 
-    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -rn LIG -nc "$LIGAND_NET_CHARGE" -at gaff2 
-    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}_lig.pdb" -fo pdb -dr n -rn LIG -at gaff2
+    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -c bcc -nc "$LIGAND_NET_CHARGE" -at gaff2 -rn $RESNAME
+    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}_lig.pdb" -fo pdb -dr n -nc $LIGAND_NET_CHARGE -at gaff2 -rn $RESNAME
     $AMBERHOME/bin/parmchk2 -i "${LIGAND_LIB}/${LIG}.mol2" -f mol2 -o "${LIGAND_LIB}/${LIG}.frcmod"
-    $AMBERHOME/bin/tleap -f "${LIGAND_LIB}/${LEAP_LIGAND}" > prepare_ligand.log
+    $AMBERHOME/bin/tleap -f "${LIGAND_LIB}/${LEAP_LIG}" > prepare_ligand.log
     
     cd "$WDPATH"
 
@@ -140,15 +147,24 @@ PrepareTopology() {
     local LIG=$1
     local REC=$2
     local LEAP_TOPO=$3
+    local COFACTOR=$4    
     local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
 
     echo "####################################"
     echo "Preparing Topologies $REC $LIG"
     echo "####################################"
 
+
+
     cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
 
     cd ${TOPO}
+
+    if [[ $COFACTOR != "a" ]]
+    then
+        sed -i "s+COFACTOR+${COFACTOR}+g" ${LEAP_TOPO}
+        sed -i "s+#++g" ${LEAP_TOPO}
+    fi
 
     sed -i "s+LIGAND+${LIG}+g" ${LEAP_TOPO}
     sed -i "s+RECEPTOR+${REC}+g" ${LEAP_TOPO}
@@ -201,9 +217,17 @@ LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 RECEPTOR_PDB=($(ls "${WDPATH}/receptor/"))
 RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
+if [[ $PREP_COFACTOR -eq 1 ]]
+then
+    COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
+    COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
+else
+    COFACTOR_NAME="a"
+fi
+
 # Input para LEaP
 LEAP_TOPO="leap_create_com.in"
-LEAP_LIGAND="leap_lib.in"
+
 
 ENSEMBLE="npt"
 
@@ -213,17 +237,27 @@ echo "Welcome to SetupMD v0.1.0"
 echo "Author: Tomás Cáceres <caceres.tomas@uc.cl>"
 echo "##############################"
 
-# Preparar ligandos, complejos y archivos de MD
-for LIG in "${LIGANDS[@]}"; do
-    CreateDirectories $REPLICAS $LIG $RECEPTOR_NAME
+# Preparar receptor y cofactor
 
-    if [[ $PREP_REC -eq 1 ]]
-    then
-        PrepareReceptor $RECEPTOR_NAME
-    fi
-    
-    PrepareLigand $RECEPTOR_NAME $LIG $LEAP_TOPO $LEAP_LIGAND
-    PrepareTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
+CreateDirectories "" "" "" $RECEPTOR_NAME
+
+if [[ $PREP_REC -eq 1 ]]
+then
+    PrepareReceptor $RECEPTOR_NAME
+fi
+
+if [[ $PREP_COFACTOR -eq 1 ]]
+then
+    PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF"
+fi
+
+# Preparar ligandos, complejos y archivos de MD
+LEAP_LIGAND="leap_lib.in"
+
+for LIG in "${LIGANDS[@]}"; do
+    CreateDirectories 1 $REPLICAS $LIG $RECEPTOR_NAME
+    PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/${LIG}/lib" "LIG"
+    PrepareTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO $COFACTOR_NAME
     PrepareMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
     
 done

@@ -1,0 +1,10 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff2
+
+loadAmberParams LIGND.frcmod
+COF = loadmol2 LIGND.mol2
+check COF
+saveoff COF LIGND.lib
+
+quit

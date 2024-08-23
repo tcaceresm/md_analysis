@@ -14,6 +14,7 @@ Help()
    echo "options:"
    echo "h     Print this help"
    echo "d     Working Directory."
+   echo "n     Replicas"
    echo
 }
 
@@ -28,6 +29,8 @@ while getopts ":hd:" option; do
          exit;;
       d) # Enter the MD Directory
          WD_PATH=$OPTARG;;
+      n) # Replicas
+         N=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
@@ -66,7 +69,7 @@ Starting MD simulations
 ##############################
 "
 
-for rep in 1 2 3 4 5 # Repetitions
+for rep in $(seq 1 $N) # Repetitions
   do
     for LIG in "${LIGANDS[@]}" #Run equi and prod for each lig
       do
