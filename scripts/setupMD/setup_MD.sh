@@ -11,6 +11,7 @@ Help() {
     echo "Options:"
     echo "h     Print help"
     echo "d     Working Directory."
+    echo "t     Time in nanoseconds (asuming 2 fs timestep)."
     echo "n     Replicas."
     echo "r     Prepare receptor?"
     echo "c     Prepare cofactor?"
@@ -20,13 +21,15 @@ Help() {
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:n:r:c:" option; do
+while getopts ":hd:t:n:r:c:" option; do
     case $option in
         h)  # Print this help
             Help
             exit;;
         d)  # Enter the MD Directory
             WDPATH=$OPTARG;;
+        t)  # Time in nanoseconds
+            TIME=$OPTARG;;
         n)  # Replicas
             REPLICAS=$OPTARG;;
         r)  # Prepare receptor?
@@ -189,11 +192,13 @@ PrepareMD() {
     echo "####################################"
 
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
+    NSTEPS=$((500000 * $TIME))
 
     for rep in $(seq 1 $N); do 
         cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
         cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
+        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"
     done
     echo "Done copying files for MD"
 }
@@ -237,8 +242,7 @@ echo "Welcome to SetupMD v0.1.0"
 echo "Author: Tomás Cáceres <caceres.tomas@uc.cl>"
 echo "##############################"
 
-# Preparar receptor y cofactor
-
+# Preparar receptor
 CreateDirectories "" "" "" $RECEPTOR_NAME
 
 if [[ $PREP_REC -eq 1 ]]
@@ -246,6 +250,7 @@ then
     PrepareReceptor $RECEPTOR_NAME
 fi
 
+# Preparar cofactor
 if [[ $PREP_COFACTOR -eq 1 ]]
 then
     PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF"
