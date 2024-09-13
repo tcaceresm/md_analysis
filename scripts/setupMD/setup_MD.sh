@@ -163,7 +163,7 @@ PrepareTopology() {
 
     cd ${TOPO}
 
-    if [[ $COFACTOR != "a" ]]
+    if [[ -n $COFACTOR ]]
     then
         sed -i "s+COFACTOR+${COFACTOR}+g" ${LEAP_TOPO}
         sed -i "s+#++g" ${LEAP_TOPO}
@@ -215,21 +215,23 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # WD debe contener la carpeta del receptor, ligando y cofactor (opcional). 
 WDPATH=$(realpath "$WDPATH")
 
-# Ligandos analizados
+# Ligandos
 LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
 LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
+# Receptor
 RECEPTOR_PDB=($(ls "${WDPATH}/receptor/"))
 RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
+# Preparar cofactor?
 if [[ $PREP_COFACTOR -eq 1 ]]
 then
     COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
     COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 else
-    COFACTOR_NAME="a"
+    COFACTOR_NAME=""
 fi
-
+echo $COFACTOR_NAME
 # Input para LEaP
 LEAP_TOPO="leap_create_com.in"
 
