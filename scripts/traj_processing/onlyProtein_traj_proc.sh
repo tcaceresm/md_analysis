@@ -79,8 +79,8 @@ function obtainPaths
 
 function processProdOutFiles
 {
-   local $PROD=$1
-   local $PROD_FILES=$2
+   local PROD=$1
+   local PROD_FILES=$2
 
    echo "Copying process_mdout.perl to ${PROD}"   
    cp $PROD_FILES/process_mdout.perl $PROD               
@@ -94,8 +94,8 @@ function processProdOutFiles
 
 function processEquiOutFiles
 {
-   local $EQUI=$1
-   local $PROD_FILES=$2
+   local EQUI=$1
+   local PROD_FILES=$2
 
    echo "Copying process_mdout.perl to ${PROD}"
    cp $EQUI_FILES/process_mdout.perl $EQUI
