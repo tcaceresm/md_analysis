@@ -177,13 +177,13 @@ for i in $(seq 1 $N)
             echo "   # Processing Production Files  #"
             echo "   ################################"
             echo ""
-         if [[ $PROCESS_OUT_FILES -eq 1 ]]
+         if [[ $PROCESS_OUT_FILES -eq 1 ]] # Process .out files
             then
                cd $PROD
                processProdOutFiles $PROD $PROD_FILES
          fi
                               
-         if [[ $WAT -eq 1 ]]
+         if [[ $WAT -eq 1 ]] # Remove waters
             then
                cd ${PROD}  
                PrepareInputFile ${PROD} ${PROD_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
@@ -192,7 +192,7 @@ for i in $(seq 1 $N)
                echo "   Not removing WAT from trajectories"
          fi
 
-         if [[ $rmsd -eq 1 ]]
+         if [[ $rmsd -eq 1 ]] #Calculate RMSD from unsolvated trajectories
             then
                if [[ -f ${RECEPTOR}_prod_noWAT.nc ]]
                   then
