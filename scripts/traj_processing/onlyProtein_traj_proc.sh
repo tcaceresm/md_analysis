@@ -152,7 +152,6 @@ RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 # Input files names
 RM_HOH="remove_hoh_prod" 
-RM_HOH_mmpbsa="remove_hoh_mmpbsa"
 RM_HOH_equi="remove_hoh_equi" 
 
 RMSD="prod_rmsd"
@@ -192,22 +191,17 @@ for i in $(seq 1 $N)
                echo "   Not removing WAT from trajectories"
          fi
 
-         if [[ $rmsd -eq 1 ]] #Calculate RMSD from unsolvated trajectories
+         if [[ $rmsd -eq 1 ]] #Calculate RMSD
             then
-               if [[ -f ${RECEPTOR}_prod_noWAT.nc ]]
-                  then
-                     echo "   Correct unsolvated production coordinates available!"
-                     PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES}
-                     ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
-                  else
-                     echo "   No unsolvated production coordinates available."
-               fi
+               echo "   Computing RMSD"
+               PrepareInputFile ${PROD} ${PROD_FILES} ${RMSD} ${RECEPTOR} ${N_RES}
+               ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RMSD}
             else
                echo "   Not calculating RMSD"
          fi
       fi 
 
-      if [[ $equi -eq 1 ]]
+      if [[ $equi -eq 1 ]] # Process equilibration phase files
          then
             echo ""
             echo "   ##################################"

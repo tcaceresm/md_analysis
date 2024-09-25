@@ -1,9 +1,10 @@
 #Actualizado al 8-02-23. Debería borrar los scripts que no ocupo en la carpeta de los li gandos
 #Calcula el RMSD/F de todos los residuos y del pocket (incluyendo a la auxina)
 
-parm TOPO_PATH/LIG_vac_com.parm7
+parm TOPO_PATH/LIG_solv_com.parm7
 
-trajin LIG_equi.nc
+trajin *.nc
+strip :WAT,Na+,Cl-,K+
 autoimage
 
 #RMSD. La referencia es el primer frame
