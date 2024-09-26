@@ -132,7 +132,7 @@ PrepareTopology() {
     echo "Preparing Topologies $REC"
     echo "####################################"
 
-    cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
+    cp "${SCRIPT_PATH}/input_files/topo/onlyProtein/${LEAP_TOPO}" ${TOPO}
 
     cd ${TOPO}
 
@@ -189,7 +189,7 @@ LEAP_SCRIPT="leap_create_rec.in"
 
 CreateDirectories $REPLICAS $RECEPTOR
 PrepareReceptor $RECEPTOR
-PrepareTopology $RECEPTOR $LEAP_RECEPTOR ""
+PrepareTopology $RECEPTOR $LEAP_SCRIPT ""
 PrepareMD $RECEPTOR $REPLICAS
 # Prepare receptor.
 # echo "
@@ -223,18 +223,18 @@ PrepareMD $RECEPTOR $REPLICAS
 # ${AMBERHOME}/bin/tleap -f $TOPO/${LEAP_SCRIPT} # Obtain complex.pdb
 
 
-for rep in 1 2 3 4 5
-  do
-    TOTALRES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
-    cp -r $WDPATH/input_files/equi/*  $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/
-    sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/*.in \
-                                      $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/npt/*.in \
-                                      $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/nvt/*.in
+# for rep in 1 2 3 4 5
+#   do
+#     TOTALRES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | grep 'ATOM' | awk '{print $5}') # last atom del receptor
+#     cp -r $WDPATH/input_files/equi/*  $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/
+#     sed -i "s/TOTALRES/${TOTALRES}/g" $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/*.in \
+#                                       $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/npt/*.in \
+#                                       $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/equi/nvt/*.in
 
-    cp $WDPATH/input_files/prod/md_prod.in $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/prod/
+#     cp $WDPATH/input_files/prod/md_prod.in $WDPATH/MD/${RECEPTOR}/setupMD/rep$rep/prod/
     
-    echo "Done copying files for MD"
-  done
+#     echo "Done copying files for MD"
+#   done
 echo "DONE!"
 
 

@@ -1,18 +1,18 @@
 source leaprc.protein.ff14SB
 source leaprc.water.tip3p
 
-REC = loadpdb REC_PATH/RECEPTOR_prep.pdb
+REC = loadpdb ../receptor/RECEPTOR_prep.pdb
 
-savepdb REC TOPO_PATH/RECEPTOR_rec.pdb
+savepdb REC ./RECEPTOR_rec.pdb
 
-saveAmberParm REC TOPO_PATH/RECEPTOR_vac.parm7 /TOPO_PATH/RECEPTOR_vac.crd
+saveAmberParm REC ./RECEPTOR_vac.parm7 ./RECEPTOR_vac.crd
 charge REC
 
 addIons REC Na+ 0
 addions REC Cl- 0
 
 solvatebox REC TIP3PBOX 14.0
-savepdb REC TOPO_PATH/RECEPTOR_solv.pdb
-saveAmberParm REC TOPO_PATH/RECEPTOR_solv.parm7 TOPO_PATH/RECEPTOR_solv.crd
+savepdb REC ./RECEPTOR_solv.pdb
+saveAmberParm REC ./RECEPTOR_solv.parm7 ./RECEPTOR_solv.crd
 
 quit
