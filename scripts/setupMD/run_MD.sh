@@ -15,6 +15,8 @@ Help()
    echo "h     Print this help"
    echo "d     Working Directory."
    echo "n     Replicas"
+   echo "e     Run equilibration?."
+   echo "p     Run production?."
    echo
 }
 
