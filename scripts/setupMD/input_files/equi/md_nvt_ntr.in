@@ -5,13 +5,15 @@ NVT MD w/ position restraints (5 kcal/molA) and PME (sander)
   irest  = 0          ! Continuar una simulación previa (restartear)
   
   ! Nature and Format of output
-  ntpr   = 100,       ! Frecuencia de impresión de la salida (cada 100 pasos) mdinfo
+  ntpr   = 50,        ! Frecuencia de impresión de la salida (cada 100 pasos) mdinfo
   ntwr   = 2500,      ! Frecuencia de escritura de archivos de reinicio (cada 2500 pasos)
-  ntwx   = 0,         ! Frecuencia de escritura de coordenadas al archivo mdcrd
-                      ! Si ntwx = 0, no se escribe un archivo de trayectorias.
+  ntwx   = 2500,      ! Frecuencia de escritura de coordenadas al archivo mdcrd
+  
                       
   ! Frozen or restrained atoms
-  ntr    = 1,         ! Activar restricciones
+  ntr    = 1,         ! Flag for restraining specified atoms in Cartesian space using a harmonic potential
+  restraintmask = ":1-TOTALRES&!@H=",
+  restraint_wt = 5.0,
                       
   ! Molecular dynamics
   
@@ -23,7 +25,7 @@ NVT MD w/ position restraints (5 kcal/molA) and PME (sander)
   ! Potential function parameters
   
   ntb    = 1,         ! This variable controls whether or not periodic boundaries are imposed on the system during the calculation of non-bonded interactions. Volumen cte.
-  cut    = 9.0,       ! Cutoff para interacciones no enlazadas (9.0 Å)
+  cut    = 10.0,      ! Cutoff para interacciones no enlazadas (10.0 Å)
   nsnb   = 10,        ! Actualización de la lista de vecinos cada 10 pasos
   ntf    = 2,         ! Evaluación de la fuerza. Restringir enlaces que involucran hidrógenos
   
@@ -57,9 +59,4 @@ NVT MD w/ position restraints (5 kcal/molA) and PME (sander)
  &wt
   type   = 'END',
  &end
-Hold the Solutes fixed
-5.0
-RES 1 TOTALRES
-END
-END
 

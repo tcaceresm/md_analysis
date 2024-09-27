@@ -5,22 +5,24 @@ NPT MD w/ position restraints (3 kcal/molA) and PME (sander)
   irest  = 1,          ! Continuar una simulación previa (restartear)
   
   ! Nature and Format of output
-  ntpr   = 100,        ! Frecuencia de impresión de la salida (cada 50 pasos)
+  ntpr   = 100,        ! Frecuencia de impresión de la salida (cada 100 pasos)
   ntwx   = 1000,       ! Frecuencia de escritura de coordenadas en el archivo de trayectoria (cada 1000 pasos)
   ntwr   = 1000,       ! Frecuencia de escritura de archivo restart.
 
   ! Potential function parameters
   ntf    = 2,          ! Evaluación de fuerza. Se omiten los enlaces que involucren H
-  cut    = 8.0,        ! Cutoff para interacciones no enlazadas (8.0 Å)
+  cut    = 10.0,       ! Cutoff para interacciones no enlazadas (8.0 Å)
   nsnb   = 10,         ! Actualización de la lista de vecinos cada 10 pasos
-  ntr    = 1,          ! Activar restratins en los átomos especificados con un potencial armónico.
-  		       ! Las coordenadas de referencia están dadas por un archivo formato restrt (rst7)
-  		       ! desde el archivo refc
+  
+  ! Frozen or restrained atoms
+  ntr    = 1,          ! Flag for restraining specified atoms in Cartesian space using a harmonic potential
+  restraintmask = ":1-TOTALRES&!@H=",
+  restraint_wt = 3.0,
   		      
   ! Molecular dynamics
   nstlim = 25000,      ! Número total de pasos de la simulación (50 ps si el paso de tiempo es 0.002 ps)
   nscm   = 0,          ! Frecuencia de remoción del movimiento del centro de masa (desactivado)
-  t      = 200.0,      ! Tiempo inicial (en picosegundos)
+  t      = 100.0,      ! Tiempo inicial (en picosegundos)
   dt     = 0.002,      ! Paso de tiempo en picosegundos
   
   ! Temperature regulation
@@ -39,8 +41,4 @@ NPT MD w/ position restraints (3 kcal/molA) and PME (sander)
   ntc    = 2,          ! Restringir enlaces que involucran hidrógenos (SHAKE)
   tol    = 0.000001,   ! Tolerancia para las restricciones
  &end
-Hold the solutes fixed
-3.0
-RES 1 TOTALRES
-END
-END
+
