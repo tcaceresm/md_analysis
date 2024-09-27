@@ -77,7 +77,7 @@ Starting MD simulations
 ##############################
 "
 
-for rep in $(seq 1 $N) # Repetitions
+for rep in $(seq 1 $REPLICAS) # Repetitions
   do
     #Run Equilibration
     if [[ $EQUI -eq 1 ]]
