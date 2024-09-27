@@ -37,8 +37,6 @@ while getopts ":hd:e:o:n:" option; do
          PROD=$OPTARG;;
       n) # Replicas
          REPLICAS=$OPTARG;;
-      r) # Prolong equilibration
-         RST_EQUI=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;

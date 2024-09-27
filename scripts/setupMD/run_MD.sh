@@ -22,15 +22,19 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:" option; do
+while getopts ":hd:e:o:n:" option; do
    case $option in
       h) # Print this help
          Help
          exit;;
       d) # Enter the MD Directory
          WD_PATH=$OPTARG;;
+      e) # Run equilibration
+         EQUI=$OPTARG;;
+      p) # Run production
+         PROD=$OPTARG;;
       n) # Replicas
-         N=$OPTARG;;
+         REPLICAS=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
