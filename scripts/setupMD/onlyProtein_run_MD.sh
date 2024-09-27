@@ -102,14 +102,14 @@ for rep in $(seq 1 $REPLICAS) # Repetitions
       NEW=min_ntr_h
       if [[ ! -f $NEW.rst7 ]]
       then
-         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
       fi
 
       OLD=${NEW}.rst7
       NEW=min_ntr_l
       if [[ ! -f $NEW.rst7 ]]
       then      
-         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
       fi
 
       OLD=${NEW}.rst7
