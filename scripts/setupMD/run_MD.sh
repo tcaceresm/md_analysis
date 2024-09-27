@@ -73,87 +73,123 @@ for rep in $(seq 1 $N) # Repetitions
   do
     for LIG in "${LIGANDS[@]}" #Run equi and prod for each lig
       do
-        echo "Checking existence of MD/${RECEPTOR}/${LIG} folder."
-      
-        if test -e ${WDPATH}/MD/${RECEPTOR}/${LIG} 
-          then
-            echo "${WDPATH}/MD/${RECEPTOR}/${LIG} exist."
-            echo "CONTINUE"
-          else
-            echo "${WDPATH}/MD/${RECEPTOR}/${LIG} does not exist. Please check it."
-            exit 1
-        fi   	
-        
-        CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv_com.crd
-        TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv_com.parm7
-        
-        # Run Equilibration
-        echo "
-        ##############################
-        Starting Equilibration $LIG $rep
-        ##############################
-        "
+        #Run Equilibration
+        if [[ $EQUI -eq 1 ]]
+          then 
+          echo "
+          ##############################
+          Starting Equilibration $RECEPTOR $rep
+          ##############################
+          "   
+          # Topology and coord file
+          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.crd
+          TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
 
-        EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
-
-        cd $EQUI_PATH
-
-        echo "Running equilibration for ${LIG} $rep" 
-        OLD=$CRD
-        NEW=min_ntr_h
-          $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=min_ntr_l
-          $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=md_nvt_ntr
-          $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=md_npt_ntr
-          $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
-
-
-        # NPT Simulation
-        cd ${EQUI_PATH}/npt
-
-        OLD=${NEW}.rst7
-        NEW=npt_equil_1
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=npt_equil_2
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=npt_equil_3
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=npt_equil_4
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=npt_equil_5
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-
-        OLD=${NEW}.rst7
-        NEW=npt_equil_6
-          $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
+          # Directory path /WDPATH/MD/${RECEPTOR_FOLDER}/setupMD/repX/equi/
+          EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
           
-        # Run Production
+          cd $EQUI_PATH
 
+          echo "Running equilibration for ${RECEPTOR} $rep" 
+          OLD=$CRD
+          NEW=min_ntr_h
+          if [[ ! -f $NEW.rst7 ]]
+          then
+            $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=min_ntr_l
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=md_nvt_ntr
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=md_npt_ntr
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
+          fi
+
+          cd ${EQUI_PATH}/npt
+
+          OLD=${NEW}.rst7
+          NEW=npt_equil_1
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=npt_equil_2
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=npt_equil_3
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=npt_equil_4
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=npt_equil_5
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+          fi
+
+          OLD=${NEW}.rst7
+          NEW=npt_equil_6
+          if [[ ! -f $NEW.rst7 ]]
+          then      
+            $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
+          fi
+      fi
+
+
+      if [[ $PROD -eq 1 ]]
+          then
+            # Run Production
+
+            echo "
+            ##############################
+            Starting Production phase of ${RECEPTOR} rep${rep}
+            ##############################
+            "
+            PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
+            cd $PROD_PATH
+
+            if [[ ! -f md_prod.rst7 ]]
+            then
+                $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ${EQUI_PATH}/npt/npt_equil_6.rst7 -r md_prod.rst7 -x md_prod.nc -inf md_prod.info
+            else
+                echo "md_prod.rst7 already exist! If you want to start a new production (not a restart) please remove md_prod.rst7"
+
+            fi
+      fi
         echo "
         ##############################
-        Starting Production $LIG $rep
+        Done rep $rep for $RECEPTOR
         ##############################
         "
-        PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
-        cd $PROD_PATH
-        $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ../equi/npt/npt_equil_6.rst7 -x md_prod.nc -r md_prod.rst7 -inf md_prod.info
-
       done
         echo "
   ##############################

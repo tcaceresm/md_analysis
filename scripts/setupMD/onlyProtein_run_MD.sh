@@ -45,6 +45,11 @@ while getopts ":hd:e:o:n:" option; do
    esac
 done
 
+#####
+# This script will check if restart file exists. That means is not necessary to start over
+# In case you want to start over, first remove all restart files (*.rst7)
+#####
+
 #Ruta de la carpeta del script (donde se encuentra este script)
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -78,7 +83,7 @@ for rep in $(seq 1 $N) # Repetitions
   do
     #Run Equilibration
     if [[ $EQUI -eq 1 ]]
-    then 
+      then 
       echo "
       ##############################
       Starting Equilibration $RECEPTOR $rep
@@ -97,66 +102,97 @@ for rep in $(seq 1 $N) # Repetitions
       echo "Running equilibration for ${RECEPTOR} $rep" 
       OLD=$CRD
       NEW=min_ntr_h
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then
+         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=min_ntr_l
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=md_nvt_ntr
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=md_npt_ntr
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
-      
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
+      fi
+
       cd ${EQUI_PATH}/npt
 
       OLD=${NEW}.rst7
       NEW=npt_equil_1
-      $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=npt_equil_2
-      $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=npt_equil_3
-      $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=npt_equil_4
-      $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=npt_equil_5
-      $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
+      fi
 
       OLD=${NEW}.rst7
       NEW=npt_equil_6
-      $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
+      if [[ ! -f $NEW.rst7 ]]
+      then      
+         $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
+      fi
    fi
 
-   # if [[ RST_EQUI -eq 1 ]]
-   # then
-   #    OLD=${NEW}.rst7
-   #    NEW=""
-   # fi
 
    if [[ $PROD -eq 1 ]]
-   then
-      # Run Production
+      then
+         # Run Production
 
-      echo "
-      ##############################
-      Starting Production phase of ${RECEPTOR} rep${rep}
-      ##############################
-      "
-      PROD_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/prod/
-      cd $PROD_PATH
-      $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ${EQUI_PATH}/npt/npt_equil_6.rst7 -x md_prod.nc -inf md_prod.info
-   
+         echo "
+         ##############################
+         Starting Production phase of ${RECEPTOR} rep${rep}
+         ##############################
+         "
+         PROD_PATH=${WDPATH}/MD/${RECEPTOR}/setupMD/rep${rep}/prod/
+         cd $PROD_PATH
+
+         if [[ ! -f md_prod.rst7 ]]
+         then
+            $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ${EQUI_PATH}/npt/npt_equil_6.rst7 -r md_prod.rst7 -x md_prod.nc -inf md_prod.info
+         else
+            echo "md_prod.rst7 already exist! If you want to start a new production (not a restart) please remove md_prod.rst7"
+
+         fi
    fi
     echo "
     ##############################
