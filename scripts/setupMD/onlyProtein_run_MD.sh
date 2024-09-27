@@ -16,7 +16,7 @@ Help()
    echo "d     Working Directory."
    echo "e     Run equilibration."
    echo "p     Run production."
-   echo "r     (not added yet) Restart equilibration (prolong equilibration)."
+   echo "n     Replicas."
    echo
 }
 
