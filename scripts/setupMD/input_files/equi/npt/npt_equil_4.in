@@ -17,7 +17,7 @@ NPT MD w/ position restraints (2 kcal/molA) and PME (sander)
   ! Frozen or restrained atoms
   ntr    = 1,          ! Flag for restraining specified atoms in Cartesian space using a harmonic potential
   restraintmask = ":1-TOTALRES&!@H=",
-  restraint_wt = 5.0,
+  restraint_wt = 2.0,
   		      
   ! Molecular dynamics
   nstlim = 25000,      ! Número total de pasos de la simulación (50 ps si el paso de tiempo es 0.002 ps)
@@ -33,6 +33,7 @@ NPT MD w/ position restraints (2 kcal/molA) and PME (sander)
   
   ! Pressure regulation
   ntp    = 1,          ! Control de presión isotrópica
+  ntb    = 2,	       ! PBC
   barostat = 1         ! Barostato de Berendsen
   pres0  = 1.0,        ! Presión objetivo (1 atm)
   taup   = 1,          ! Tiempo de relajación de la presión (ps)
