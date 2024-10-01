@@ -151,11 +151,11 @@ RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
 RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 # Input files names
-RM_HOH="remove_hoh_prod" 
-RM_HOH_equi="remove_hoh_equi" 
+RM_HOH="remove_hoh_prod.in" 
+RM_HOH_equi="remove_hoh_equi.in" 
 
-RMSD="prod_rmsd"
-RMSD_equi="equi_rmsd"
+RMSD="prod_rmsd.in"
+RMSD_equi="equi_rmsd.in"
 
 # MD ensemble
 ensemble="npt"

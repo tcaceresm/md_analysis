@@ -1,0 +1,8 @@
+parm TOPO_PATH/LIG_solv_com.parm7
+trajin npt_equil_*.nc
+autoimage
+strip :WAT
+strip :Na+
+rms fit :1-NRES
+trajout LIG_equi.nc format netcdf
+
