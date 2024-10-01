@@ -1,8 +1,0 @@
-parm ../../../../topo/RECEPTOR_solv.parm7
-trajin ./*npt_equil_*.nc
-autoimage
-strip :WAT
-strip :Na+
-rms fit :1-NRES
-trajout ./RECEPTOR_equi.nc format netcdf
-
