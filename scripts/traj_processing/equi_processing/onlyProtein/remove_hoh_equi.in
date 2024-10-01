@@ -1,4 +1,5 @@
 parm ../../../../topo/RECEPTOR_solv.parm7
+trajin ../*md*.nc
 trajin ./*npt_equil_*.nc
 autoimage
 strip :WAT
