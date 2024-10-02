@@ -34,7 +34,7 @@ NPT MD w/ position restraints (3 kcal/molA) and PME (sander)
   ! Pressure regulation
   ntp    = 1,          ! Control de presión isotrópica
   ntb    = 2,	       ! PBC
-  barostat = 1         ! Barostato de Berendsen
+  barostat = 2         ! Barostato Monte Carlo
   pres0  = 1.0,        ! Presión objetivo (1 atm)
   taup   = 1,          ! Tiempo de relajación de la presión (ps)
   

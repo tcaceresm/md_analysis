@@ -11,7 +11,7 @@ NPT MD w/o position restraints and PME (sander)
 
   ! Potential function parameters
   ntf    = 2,          ! Evaluación de fuerza. Se omiten los enlaces que involucren H
-  cut    = 8.0,        ! Cutoff para interacciones no enlazadas (8.0 Å)
+  cut    = 10.0,       ! Cutoff para interacciones no enlazadas (8.0 Å)
   nsnb   = 10,         ! Actualización de la lista de vecinos cada 10 pasos
   		      
   ! Molecular dynamics
@@ -29,7 +29,7 @@ NPT MD w/o position restraints and PME (sander)
   ! Pressure regulation
   ntp    = 1,          ! Control de presión isotrópica
   ntb    = 2,          ! PBC
-  barostat = 1,        ! Barostato de Berendsen
+  barostat = 2,        ! Barostato Montecarlo
   pres0  = 1.0,        ! Presión objetivo (1 atm)
   taup   = 1,          ! Tiempo de relajación de la presión (ps)
   
