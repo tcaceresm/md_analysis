@@ -42,6 +42,25 @@ while getopts ":hd:t:n:r:c:" option; do
     esac
 done
 
+################################################################
+# Display message                                              #
+################################################################
+
+function displayHello
+{
+
+echo "
+##############################
+Welcome to SetupMD v0.0.0
+Author: Tomás Cáceres <caceres.tomas@uc.cl>
+Laboratory of Molecular Design <http://schuellerlab.org/>
+https://github.com/tcaceresm/md_analysis
+Powered by high fat food and procrastination
+##############################
+"
+}
+
+
 ############################################################
 # Crear directorios
 ############################################################
@@ -238,11 +257,6 @@ LEAP_TOPO="leap_create_com.in"
 
 ENSEMBLE="npt"
 
-
-echo "##############################"
-echo "Welcome to SetupMD v0.1.0"
-echo "Author: Tomás Cáceres <caceres.tomas@uc.cl>"
-echo "##############################"
 
 # Preparar receptor
 CreateDirectories "" "" "" $RECEPTOR_NAME
