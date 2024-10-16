@@ -6,22 +6,40 @@ set -euo pipefail
 # Help
 ############################################################
 Help() {
-    echo "Syntax: bash setup_MD.sh [-h|d]"
-    echo "To save a log file and also print the status, run: bash setup_MD.sh -d \$DIRECTORY | tee -a \$LOGFILE"
+    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-r 0|1] [-c 0|1]"
+    echo
+    echo "This script sets up molecular dynamics simulations in the specified directory."
+    echo "The specified directory must always have a folder named  \"receptor\" containing the receptor PDB \
+and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of ligands and cofactor, respectively."
+    echo "There are two ways of setup MD:"
+    echo "   1) Setup a only-protein MD. See p flag below."
+    echo "   2) Setup a Protein-Ligand MD. See z flag below."
+    echo "Both ways are not mutually excluded. You can setup both at the same time."
+    echo "Sometimes you want to debug topology preparation step by re-running this script.
+In order to avoid reparameterizing your ligands/cofactors, you can set r|l|c flags to zero. See below."
+    echo
     echo "Options:"
-    echo "h     Print help"
-    echo "d     Working Directory."
-    echo "t     Time in nanoseconds (asuming 2 fs timestep)."
-    echo "n     Replicas."
-    echo "r     Prepare receptor?"
-    echo "c     Prepare cofactor?"
+    echo "  -h               Show this help message and exit."
+    echo "  -d DIRECTORY     Specify the directory for the simulation."
+    echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
+    echo "  -n REPLICAS      Number of replicas to run in the simulation."
+    echo "  -p 0|1           Protein-only MD."
+    echo "  -z 0|1           Protein-Ligand MD."
+    echo "  -r 0|1           Flag to indicate if the receptor should be prepared."
+    echo "  -l 0|1           Flag to indicate if the ligands should be parameterized."
+    echo "  -c 0|1           Flag to indicate if the cofactor should be parameterized."
+    echo
+    echo "Examples:"
+    echo "  bash setup_MD.sh -d /path/to/dir -t 100 -n 5 -r 1 -c 0"
+    echo "  bash setup_MD.sh -d /path/to/dir -t 50 -n 3 -r 1 -c 0 | tee -a log.txt"
     echo
 }
+
 
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:t:n:r:c:" option; do
+while getopts ":hd:t:n:p:z:r:l:c:" option; do
     case $option in
         h)  # Print this help
             Help
@@ -32,8 +50,14 @@ while getopts ":hd:t:n:r:c:" option; do
             TIME=$OPTARG;;
         n)  # Replicas
             REPLICAS=$OPTARG;;
+        p)  # Protein-Only MD
+            ONLY_PROTEIN_MD=$OPTARG;;
+        z)  # Protein-Ligand MD
+            PROT_LIG_MD=$OPTARG;;
         r)  # Prepare receptor?
             PREP_REC=$OPTARG;;
+        l)  # Prepare ligand?
+            PREP_LIG=$OPTARG;;
         c)  # Prepare cofactor?
             PREP_COFACTOR=$OPTARG;;
         \?) # Invalid option
@@ -49,57 +73,62 @@ done
 function displayHello
 {
 
-echo "
-##############################
-Welcome to SetupMD v0.0.0
-Author: Tomás Cáceres <caceres.tomas@uc.cl>
-Laboratory of Molecular Design <http://schuellerlab.org/>
-https://github.com/tcaceresm/md_analysis
-Powered by high fat food and procrastination
-##############################
-"
+    echo "
+    ##############################
+    Welcome to SetupMD v0.0.0
+    Author: Tomás Cáceres <caceres.tomas@uc.cl>
+    Laboratory of Molecular Design <http://schuellerlab.org/>
+    https://github.com/tcaceresm/md_analysis
+    Powered by high fat food and procrastination
+    ##############################
+    "
 }
 
 
 ############################################################
 # Crear directorios
 ############################################################
-CreateDirectories() {
-    # Preparar ligandos?
-    local PREPARE_LIGAND=$1
+CreateOnlyProteinDirectories() {
     # Número de replicas
-    local N=$2
-    # Nombre del ligando
-    local LIG=$3
+    local N=$1
     # Nombre del receptor
-    local RECEPTOR=$4
+    local RECEPTOR=$2
 
-    if [[ $PREPARE_LIGAND -eq 1 ]]
-    then
-        mkdir -p ${WDPATH}/MD/${RECEPTOR}/{cofactor_lib,receptor,${LIG}/{lib,setupMD,topo}}
-        
-        # Crear la lista de replicas
-        REPS=()
-        for ((i=1; i<=N; i++)); do
-            REPS+=("rep$i")
+    # Directorio donde crearemos repN/equi_prod/npt,nvt
+    BASE_DIR=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/
+
+    mkdir -p ${BASE_DIR}/topo
+
+    # Subdirectorios dentro de cada réplica
+    SUBDIRS=("mmpbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+
+    for REP in $(seq 1 $N); do
+        for SUBDIR in "${SUBDIRS[@]}"; do
+            mkdir -p "${BASE_DIR}/rep${REP}/${SUBDIR}"
         done
+    done
+}
 
-        # Directorio donde crearemos repN/equi_prod/npt,nvt
-        BASE_DIR=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD
-        # Subdirectorios dentro de cada replicación
-        SUBDIRS=("equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+CreateProteinLigandDirectories() {
+    # Número de replicas
+    local N=$1
+    # Nombre del ligando
+    local LIG=$2
+    # Nombre del receptor
+    local RECEPTOR=$3
 
-        # Crear la estructura de directorios
-        for REP in "${REPS[@]}"; do
-            for SUBDIR in "${SUBDIRS[@]}"; do
-                mkdir -p "${BASE_DIR}/${REP}/${SUBDIR}"
-            done
+    # Directorio donde crearemos repN/equi_prod/npt,nvt
+    BASE_DIR=${WDPATH}/MD/${RECEPTOR}
+    # Subdirectorios dentro de cada réplica
+    SUBDIRS=("mmpbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+
+    mkdir -p ${BASE_DIR}/${LIG}/{lib,setupMD,topo}
+    # Crear la estructura de directorios
+    for REP in $(seq 1 $N); do
+        for SUBDIR in "${SUBDIRS[@]}"; do
+            mkdir -p "${BASE_DIR}/${LIG}/setupMD/rep${REP}/${SUBDIR}"
         done
-    else #Only create receptor and cofactor lib        
-        mkdir -p ${WDPATH}/MD/${RECEPTOR}/{cofactor_lib,receptor}
-    
-    fi
-
+    done
 }
 
 ############################################################
@@ -112,21 +141,23 @@ PrepareReceptor() {
     echo "####################################"
     
     local RECEPTOR_PDB_FILE="${WDPATH}/receptor/${REC}.pdb"
-    local RECEPTOR_PDB_FILE_PREPARED_LOCATION="${WDPATH}/MD/$REC/receptor/"
-    local RECEPTOR_PDB_FILE_PREPARED="${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_prep.pdb"
+    local PREP_PDB_PATH="${WDPATH}/MD/$REC/receptor/"
+    local PREP_PDB_FILE="${PREP_PDB_PATH}/${REC}_prep.pdb"
 
-    cp ${RECEPTOR_PDB_FILE} ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb
+    mkdir -p ${PREP_PDB_PATH}
+
+    cp ${RECEPTOR_PDB_FILE} ${PREP_PDB_PATH}/${REC}_original.pdb
     
-    cd ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}
+    cd ${PREP_PDB_PATH}
 
-    $AMBERHOME/bin/pdb4amber -i ${RECEPTOR_PDB_FILE_PREPARED_LOCATION}/${REC}_original.pdb -o ${RECEPTOR_PDB_FILE_PREPARED}  -l prepare_receptor.log
+    $AMBERHOME/bin/pdb4amber -i ${PREP_PDB_PATH}/${REC}_original.pdb -o ${PREP_PDB_FILE} -l prepare_receptor.log
 
     echo "Done preparing receptor $REC"
 
 }
 
 ############################################################
-# Preparar ligando
+# Preparar non-standard residue (ligand)
 ############################################################
 PrepareLigand() {
     local LIG=$1
@@ -164,7 +195,35 @@ PrepareLigand() {
 ############################################################
 # Preparar Topologias
 ############################################################
-PrepareTopology() {
+PrepareOnlyProteinTopology() {
+
+    local REC=$1
+    local LEAP_TOPO=$2
+    local COFACTOR=$3   
+    local TOPO="${WDPATH}/MD/${REC}/onlyProteinMD/topo"
+
+    echo "####################################"
+    echo "Preparing Topologies $REC"
+    echo "####################################"
+
+    cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
+
+    cd ${TOPO}
+
+    if [[ -n $COFACTOR ]]
+    then
+        sed -i "s+COFACTOR+${COFACTOR}+g" ${LEAP_TOPO}
+        sed -i "s+#++g" ${LEAP_TOPO}
+    fi
+
+    sed -i "s+RECEPTOR+${REC}+g" ${LEAP_TOPO}
+  
+    $AMBERHOME/bin/tleap -f ${LEAP_TOPO} > prepare_topologies.log
+
+    echo "Done preparing $REC"
+}
+
+PrepareProteinLigandTopology() {
 
     local LIG=$1
     local REC=$2
@@ -176,13 +235,11 @@ PrepareTopology() {
     echo "Preparing Topologies $REC $LIG"
     echo "####################################"
 
-
-
     cp "${SCRIPT_PATH}/input_files/topo/${LEAP_TOPO}" ${TOPO}
 
     cd ${TOPO}
 
-    if [[ -n $COFACTOR ]]
+    if [[ $PREP_COFACTOR -eq 1 ]]
     then
         sed -i "s+COFACTOR+${COFACTOR}+g" ${LEAP_TOPO}
         sed -i "s+#++g" ${LEAP_TOPO}
@@ -199,7 +256,29 @@ PrepareTopology() {
 ############################################################
 # Preparar archivos de MD
 ############################################################
-PrepareMD() {
+PrepareOnlyProteinMD() {
+    local REC=$1
+    local N=$2
+    local TOPO="${WDPATH}/MD/${REC}/onlyProteinMD/topo"
+    local MD_FOLDER="${WDPATH}/MD/${REC}/onlyProteinMD/"
+
+    echo "####################################"
+    echo "Preparing MD files"
+    echo "####################################"
+
+    TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${REC}_rec.pdb" | tail -n 1)
+    NSTEPS=$((500000 * $TIME))
+
+    for rep in $(seq 1 $N); do 
+        cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
+        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
+        cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
+        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"
+    done
+    echo "Done copying files for MD"
+}
+
+PrepareProteinLigandMD() {
     local LIG=$1
     local REC=$2
     local N=$3
@@ -234,32 +313,11 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # WD debe contener la carpeta del receptor, ligando y cofactor (opcional). 
 WDPATH=$(realpath "$WDPATH")
 
-# Ligandos
-LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
-LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
 # Receptor
 RECEPTOR_PDB=($(ls "${WDPATH}/receptor/"))
 RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
-# Preparar cofactor?
-if [[ $PREP_COFACTOR -eq 1 ]]
-then
-    COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
-    COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
-else
-    COFACTOR_NAME=""
-fi
-echo $COFACTOR_NAME
-# Input para LEaP
-LEAP_TOPO="leap_create_com.in"
-
-
 ENSEMBLE="npt"
-
-
-# Preparar receptor
-CreateDirectories "" "" "" $RECEPTOR_NAME
 
 if [[ $PREP_REC -eq 1 ]]
 then
@@ -269,18 +327,42 @@ fi
 # Preparar cofactor
 if [[ $PREP_COFACTOR -eq 1 ]]
 then
+    COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
+    COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
     PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF"
 fi
 
-# Preparar ligandos, complejos y archivos de MD
-LEAP_LIGAND="leap_lib.in"
 
-for LIG in "${LIGANDS[@]}"; do
-    CreateDirectories 1 $REPLICAS $LIG $RECEPTOR_NAME
-    PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/${LIG}/lib" "LIG"
-    PrepareTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO $COFACTOR_NAME
-    PrepareMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
-    
-done
+if [[ $ONLY_PROTEIN_MD -eq 1 ]]
+then
+    # Input para LEaP
+    LEAP_SCRIPT="leap_create_rec.in"
+
+    CreateOnlyProteinDirectories $REPLICAS $RECEPTOR
+    PrepareOnlyProteinTopology $RECEPTOR $LEAP_SCRIPT $PREP_COFACTOR
+    PrepareOnlyProteinMD $RECEPTOR $REPLICAS
+fi
+
+
+# Preparar ligandos, complejos y archivos de MD
+if [[ $PROT_LIG_MD -eq 1 ]]
+then
+    # Ligandos
+    LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
+    LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+
+    # Ligand leap input
+    LEAP_LIGAND="leap_lib.in"
+    # Leap input para topologias complejo proteina-ligando
+    LEAP_TOPO="leap_create_com.in"
+
+    for LIG in "${LIGANDS[@]}"
+    do
+        CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
+        PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/${LIG}/lib" "LIG"
+        PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO $PREP_COFACTOR
+        PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
+    done
+fi
 
 echo "DONE!"
