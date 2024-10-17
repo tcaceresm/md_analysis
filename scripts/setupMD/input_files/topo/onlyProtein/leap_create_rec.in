@@ -1,7 +1,12 @@
 source leaprc.protein.ff14SB
 source leaprc.water.tip3p
 
-REC = loadpdb ../receptor/RECEPTOR_prep.pdb
+#loadoff ../../cofactor_lib/COFACTOR.lib
+
+REC = loadpdb ../../receptor/RECEPTOR_prep.pdb
+#COF = loadpdb ../../cofactor_lib/COFACTOR_lig.pdb
+#REC = combine {REC COF}
+
 
 savepdb REC ./RECEPTOR_rec.pdb
 
