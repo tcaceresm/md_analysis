@@ -1,0 +1,16 @@
+Input file for GB and PB calculation
+&general
+startframe=1, endframe=9999,
+verbose=2, keep_files=0, netcdf=1,
+use_sander=1
+
+/
+&pb
+inp=2, indi=1.0, exdi=80.0, cavity_offset=-0.5692,
+cavity_surften=0.0378, prbrad=1.4,
+scale=2.0, linit=1000, istrng=0.0, radiopt=0, 
+istrng=0.15, fillratio=4.0,
+/
+&gb
+igb=1, saltcon=0.0, surfoff=0.0,
+surften=0.0072, molsurf=0, probe=0

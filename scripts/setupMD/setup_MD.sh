@@ -6,40 +6,51 @@ set -euo pipefail
 # Help
 ############################################################
 Help() {
-    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-r 0|1] [-c 0|1]"
+    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-rlc 0|1]"
     echo
     echo "This script sets up molecular dynamics simulations in the specified directory."
+    echo "Also, it can setup MM/P(G)BSA rescoring calculations (only in protein-ligand setup)."
     echo "The specified directory must always have a folder named  \"receptor\" containing the receptor PDB \
 and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of ligands and cofactor, respectively."
     echo "There are two ways of setup MD:"
-    echo "   1) Setup a only-protein MD. See p flag below."
-    echo "   2) Setup a Protein-Ligand MD. See z flag below."
+    echo "   1) Setup a only-protein MD. See [-p] flag below."
+    echo "   2) Setup a Protein-Ligand MD. See [-z] flag below."
     echo "Both ways are not mutually excluded. You can setup both at the same time."
-    echo "Sometimes you want to debug topology preparation step by re-running this script.
-In order to avoid reparameterizing your ligands/cofactors, you can set r|l|c flags to zero. See below."
+    echo "If you want to re-run this script to debug something, you can save some time setting
+ r|l|c flags to zero. See examples below."
     echo
     echo "Options:"
     echo "  -h               Show this help message and exit."
     echo "  -d DIRECTORY     Specify the directory for the simulation."
-    echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
-    echo "  -n REPLICAS      Number of replicas to run in the simulation."
     echo "  -p 0|1           Protein-only MD."
     echo "  -z 0|1           Protein-Ligand MD."
-    echo "  -r 0|1           Flag to indicate if the receptor should be prepared."
-    echo "  -l 0|1           Flag to indicate if the ligands should be parameterized."
-    echo "  -c 0|1           Flag to indicate if the cofactor should be parameterized."
+    echo "  -g 0|1           (default=0) Setup MM/P(G)BSA rescoring. Only works with [-z 1]"
+    echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
+    echo "  -n REPLICAS      Number of replicas to run in the simulation."
+    echo "  -r 0|1           (default=1) Flag to indicate if the receptor should be prepared."
+    echo "  -l 0|1           (default=1) Flag to indicate if the ligands should be parameterized. Doesn't apply for only-protein MD"
+    echo "  -c 0|1           (default=0) Flag to indicate if the cofactor should be parameterized."
     echo
     echo "Examples:"
-    echo "  bash setup_MD.sh -d /path/to/dir -t 100 -n 5 -r 1 -c 0"
-    echo "  bash setup_MD.sh -d /path/to/dir -t 50 -n 3 -r 1 -c 0 | tee -a log.txt"
+    echo " -Perform both Protein-only MD and Protein-Ligand MD, 100 ns length, 3 replicas, without cofactor:"
+    echo "   bash setup_MD.sh -d /path/to/dir -p 1 -z 1 -t 100 -n 3"
+    echo " -Perform only Protein-Ligand MD, with a cofactor:"
+    echo "   bash setup_MD.sh -d /path/to/dir -p 0 -z 1 -t 100 -n 3 -c 1"
+    echo " -Re-run this script to debug topologies in Protein-Ligand MD. This won't re-parameterize ligands:"
+    echo "   bash setup_MD.sh -d /path/to/dir -p 0 -z 1 -t 100 -n 3 -r 0 -l 0"
     echo
 }
 
+# Default values
+
+PREP_REC=1
+PREP_LIG=1
+PREP_COFACTOR=0
 
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:t:n:p:z:r:l:c:" option; do
+while getopts ":hd:p:z:g:t:n:r:l:c:" option; do
     case $option in
         h)  # Print this help
             Help
@@ -54,6 +65,8 @@ while getopts ":hd:t:n:p:z:r:l:c:" option; do
             ONLY_PROTEIN_MD=$OPTARG;;
         z)  # Protein-Ligand MD
             PROT_LIG_MD=$OPTARG;;
+        g)  # MM/P(G)BSA rescoring
+            MMPBGSA=$OPTARG;;
         r)  # Prepare receptor?
             PREP_REC=$OPTARG;;
         l)  # Prepare ligand?
@@ -73,15 +86,15 @@ done
 function displayHello
 {
 
-    echo "
-    "####################################"
-    Welcome to SetupMD v0.0.0
-    Author: Tomás Cáceres <caceres.tomas@uc.cl>
-    Laboratory of Molecular Design <http://schuellerlab.org/>
-    https://github.com/tcaceresm/md_analysis
-    Powered by high fat food and procrastination
-    "####################################"
-    "
+echo "
+"#############################################################"
+Welcome to SetupMD v0.0.0
+Author: Tomás Cáceres <caceres.tomas@uc.cl>
+Laboratory of Molecular Design <http://schuellerlab.org/>
+https://github.com/tcaceresm/md_analysis
+Powered by high fat food and procrastination
+"#############################################################"
+"
 }
 
 
@@ -100,7 +113,7 @@ CreateOnlyProteinDirectories() {
     mkdir -p ${BASE_DIR}/topo
 
     # Subdirectorios dentro de cada réplica
-    SUBDIRS=("mmpbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+    SUBDIRS=("equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
 
     for REP in $(seq 1 $N); do
         for SUBDIR in "${SUBDIRS[@]}"; do
@@ -120,7 +133,7 @@ CreateProteinLigandDirectories() {
     # Directorio donde crearemos repN/equi_prod/npt,nvt
     BASE_DIR=${WDPATH}/MD/${RECEPTOR}
     # Subdirectorios dentro de cada réplica
-    SUBDIRS=("mmpbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+    SUBDIRS=("mmpgbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
 
     mkdir -p ${BASE_DIR}/${LIG}/{lib,setupMD,topo}
     # Crear la estructura de directorios
@@ -132,7 +145,7 @@ CreateProteinLigandDirectories() {
 }
 
 ############################################################
-# Preparar receptor
+# Prepare receptor
 ############################################################
 PrepareReceptor() {
     local REC=$1
@@ -158,7 +171,7 @@ PrepareReceptor() {
 }
 
 ############################################################
-# Preparar non-standard residue (ligand)
+# Prepare non-standard residue (ligand)
 ############################################################
 PrepareLigand() {
     local LIG=$1
@@ -297,14 +310,39 @@ PrepareProteinLigandMD() {
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
     NSTEPS=$((500000 * $TIME))
 
-    for rep in $(seq 1 $N); do 
+    for rep in $(seq 1 $N)
+    do 
         cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
         cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
-        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"
+        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"  
     done
 
     echo "Done copying files for ProteinLigand MD"
+    echo
+}
+
+PrepareProteinLigandMMPGBSA() {
+    local LIG=$1
+    local REC=$2
+    local N=$3
+    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
+    local MD_FOLDER="${WDPATH}/MD/${REC}/${LIG}/setupMD/"
+
+    echo " #########################################"
+    echo " # Preparing ProteinLigand MMPGBSA files #"
+    echo " #########################################"
+
+    TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
+
+    for rep in $(seq 1 $N); do 
+        #echo
+        #echo "  # Preparing mmpbgsa files for $LIG #"
+        cp ${SCRIPT_PATH}/input_files/mmpgbsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpgbsa_rescoring
+        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpgbsa_rescoring/*.in
+    done
+
+    echo " Done!"
     echo
 }
 
@@ -326,6 +364,8 @@ RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 ENSEMBLE="npt"
 
+displayHello
+
 if [[ $PREP_REC -eq 1 ]]
 then
     PrepareReceptor $RECEPTOR_NAME
@@ -344,8 +384,6 @@ else
 
 fi
 
-
-
 if [[ $ONLY_PROTEIN_MD -eq 1 ]]
 then
     echo "#############################"
@@ -358,7 +396,6 @@ then
     PrepareOnlyProteinTopology $RECEPTOR_NAME $LEAP_SCRIPT
     PrepareOnlyProteinMD $RECEPTOR_NAME $REPLICAS
 fi
-
 
 # Preparar ligandos, complejos y archivos de MD
 if [[ $PROT_LIG_MD -eq 1 ]]
@@ -382,6 +419,13 @@ then
         PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
         PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
     done
+
+    if [[ $MMPBGSA -eq 1 ]]
+    then
+        PrepareProteinLigandMMPGBSA  $LIG $RECEPTOR_NAME $REPLICAS
+    fi
+
+
 fi
 
 echo "DONE!"
