@@ -115,7 +115,7 @@ for rep in $(seq 1 $REPLICAS) # Repetitions
     if [[ $EQUI -eq 1 ]]
       then
 
-      EQUI_protocol= ("min_ntr_h" "min_ntr_l" "md_nvt_ntr" "md_npt_ntr" "npt_equil_1" "npt_equil_2" "npt_equil_3" "npt_equil_4" "npt_equil_5" "npt_equil_6")
+      EQUI_protocol=("min_ntr_h" "min_ntr_l" "md_nvt_ntr" "md_npt_ntr" "npt_equil_1" "npt_equil_2" "npt_equil_3" "npt_equil_4" "npt_equil_5" "npt_equil_6")
 
       if [[ $ONLY_PROTEIN_MD -eq 1 ]]
         then
