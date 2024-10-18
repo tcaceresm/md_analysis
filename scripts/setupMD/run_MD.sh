@@ -86,6 +86,7 @@ function run_MD ()
       $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -inf $NEW.info
     fi
     echo "Done ${NEW}"
+  fi
 }
 
 
