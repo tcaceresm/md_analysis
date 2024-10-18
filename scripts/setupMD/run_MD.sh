@@ -81,9 +81,9 @@ function run_MD ()
 
     if [[ "$NEW" != "npt_equil_6" && "$NEW" != "md_prod" ]]
     then
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
     else
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -inf $NEW.info
     fi
     echo "Done ${NEW}"
   fi
