@@ -24,7 +24,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "  -d DIRECTORY     Specify the directory for the simulation."
     echo "  -p 0|1           Protein-only MD."
     echo "  -z 0|1           Protein-Ligand MD."
-    echo "  -g 0|1           (default=0) Setup MM/P(G)BSA rescoring. Only works with [-z 1]"
+    echo "  -g 0|1           (default=0) Setup MM/PB(G)SA rescoring. Only works with [-z 1]"
     echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
     echo "  -n REPLICAS      Number of replicas to run in the simulation."
     echo "  -r 0|1           (default=1) Flag to indicate if the receptor should be prepared."
@@ -42,7 +42,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
 }
 
 # Default values
-
+MMPBGSA=0
 PREP_REC=1
 PREP_LIG=1
 PREP_COFACTOR=0
@@ -133,7 +133,7 @@ CreateProteinLigandDirectories() {
     # Directorio donde crearemos repN/equi_prod/npt,nvt
     BASE_DIR=${WDPATH}/MD/${RECEPTOR}
     # Subdirectorios dentro de cada réplica
-    SUBDIRS=("mmpgbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+    SUBDIRS=("mmpbgsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
 
     mkdir -p ${BASE_DIR}/${LIG}/{lib,setupMD,topo}
     # Crear la estructura de directorios
@@ -329,17 +329,26 @@ PrepareProteinLigandMMPGBSA() {
     local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
     local MD_FOLDER="${WDPATH}/MD/${REC}/${LIG}/setupMD/"
 
-    echo " #########################################"
-    echo " # Preparing ProteinLigand MMPGBSA files #"
-    echo " #########################################"
+    echo "#########################################"
+    echo "# Preparing ProteinLigand MMPGBSA files #"
+    echo "#########################################"
+
+    if [[ ! -f ${TOPO}/${LIG}_com.pdb ]]
+    then
+        echo "ERROR! Can't find ${TOPO}/${LIG}_com.pdb in order to obtain ligand - ${LIG} - residue number."
+        echo "Make sure that protein-ligand complex topologies exist."
+        echo "Have you run the [-z 1] flag previously?"
+        echo "Exiting"
+        exit 0
+    fi
 
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
 
     for rep in $(seq 1 $N); do 
         #echo
         #echo "  # Preparing mmpbgsa files for $LIG #"
-        cp ${SCRIPT_PATH}/input_files/mmpgbsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpgbsa_rescoring
-        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpgbsa_rescoring/*.in
+        cp ${SCRIPT_PATH}/input_files/mmpbgsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring
+        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring/*.in
     done
 
     echo " Done!"
@@ -419,13 +428,16 @@ then
         PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
         PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
     done
+fi
 
-    if [[ $MMPBGSA -eq 1 ]]
-    then
+if [[ $MMPBGSA -eq 1 ]]
+then
+    LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
+    LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+    for LIG in "${LIGANDS[@]}"
+    do
         PrepareProteinLigandMMPGBSA  $LIG $RECEPTOR_NAME $REPLICAS
-    fi
-
-
+    done
 fi
 
 echo "DONE!"
