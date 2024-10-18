@@ -9,16 +9,19 @@ set -o pipefail
 Help()
 {
    # Display Help
-
-   echo "Usage: bash run_MD.sh -d \$DIRECTORY "
-   echo "options:"
-   echo "h     Print this help"
-   echo "d     Working Directory."
-   echo "n     Replicas"
-   echo "p     Run Protein-only MD."
-   echo "z     Run Protein-Ligand MD."
-   echo "e     Run equilibration."
-   echo "x     Run production."
+   echo "Usage: bash run_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-e 0|1] [-x 0|1]"
+   echo
+   echo "This script perform molecular dynamics simulations."
+   echo "You must run setup_MD.sh first, using the same working directory."    
+   echo
+   echo "Options:"
+   echo "  -h               Print this help"
+   echo "  -d DIRECTORY     Working Directory."
+   echo "  -p 0|1           Run Protein-only MD."
+   echo "  -z 0|1           Run Protein-Ligand MD."
+   echo "  -e 0|1           Run equilibration."
+   echo "  -x 0|1           Run production."
+   echo "  -n REPLICAS      Replicas"
    echo
 }
 
@@ -73,9 +76,10 @@ function run_MD ()
   local TOPO=$3
   local CRD=$4
   
-  if [[ -f $NEW.rst7 ]]
+  if [[ ! -f "${NEW}_successful.tmp" ]]
   then
-    echo "${NEW}.rst7 already exists. Skipping."
+    echo "${NEW} already executed succesfully."
+    echo "Skipping."
   else
     echo "Running ${NEW}"
 
@@ -85,6 +89,7 @@ function run_MD ()
     else
       $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -inf $NEW.info
     fi
+    touch "${NEW}_sucessful.tmp"
     echo "Done ${NEW}"
   fi
 }
@@ -186,139 +191,3 @@ for rep in $(seq 1 $REPLICAS) # Repetitions
       fi
     fi
   done
-
-  #   if [[ $PROT_LIG_MD -eq 1 ]]
-  #     then
-
-  #     # Ligandos analizados
-  #     declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
-  #     declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
-  #     for LIG in "${LIGANDS[@]}" #Run equi and prod for each lig
-  #       do
-  #         #Run Equilibration
-  #         if [[ $EQUI -eq 1 ]]
-  #           then 
-  #           echo "
-  #           ##############################
-  #           Starting Equilibration $RECEPTOR $rep
-  #           ##############################
-  #           "   
-
-  #           # Topology and coord file
-  #           CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.crd
-  #           TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
-
-  #           # Directory path /WDPATH/MD/${RECEPTOR_FOLDER}/setupMD/repX/equi/
-  #           EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
-            
-  #           cd $EQUI_PATH
-
-  #           echo "Running equilibration for ${RECEPTOR} $rep" 
-  #           OLD=$CRD
-  #           NEW=min_ntr_h
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then
-  #             $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=min_ntr_l
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=md_nvt_ntr
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x $NEW.nc -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=md_npt_ntr
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -c $OLD -r $NEW.rst7 -ref $CRD -x ${NEW}.nc -inf $NEW.info
-  #           fi
-
-  #           cd ${EQUI_PATH}/npt
-
-  #           OLD=${NEW}.rst7
-  #           NEW=npt_equil_1
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c ../$OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=npt_equil_2
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=npt_equil_3
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=npt_equil_4
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=npt_equil_5
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -ref ../md_npt_ntr.rst7 -x ${NEW}.nc -inf $NEW.info
-  #           fi
-
-  #           OLD=${NEW}.rst7
-  #           NEW=npt_equil_6
-  #           if [[ ! -f $NEW.rst7 ]]
-  #           then      
-  #             $CUDA_EXE -O -i ${NEW}.in -o ${NEW}.out -p $TOPO -c $OLD -r ${NEW}.rst7 -x ${NEW}.nc -inf $NEW.info
-  #           fi
-  #       fi
-
-
-  #       if [[ $PROD -eq 1 ]]
-  #           then
-  #             # Run Production
-
-  #             echo "
-  #             ##############################
-  #             Starting Production phase of ${RECEPTOR} rep${rep}
-  #             ##############################
-  #             "
-  #             PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
-  #             cd $PROD_PATH
-
-  #             if [[ ! -f md_prod.rst7 ]]
-  #             then
-  #                 $CUDA_EXE -O -i md_prod.in -o md_prod.out -p $TOPO -c ${EQUI_PATH}/npt/npt_equil_6.rst7 -r md_prod.rst7 -x md_prod.nc -inf md_prod.info
-  #             else
-  #                 echo "md_prod.rst7 already exist! If you want to start a new production (not a restart) please remove md_prod.rst7"
-
-  #             fi
-  #       fi
-  #         echo "
-  #         ##############################
-  #         Done rep $rep for $RECEPTOR
-  #         ##############################
-  #         "
-  #       done
-  #         echo "
-  #   ##############################
-  #   Done rep $rep for all ligands
-  #   ##############################
-  #   "
-  #     fi
-  # done

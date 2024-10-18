@@ -15,15 +15,15 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "There are two ways of setup MD:"
     echo "   1) Setup a only-protein MD. See [-p] flag below."
     echo "   2) Setup a Protein-Ligand MD. See [-z] flag below."
-    echo "Both ways are not mutually excluded. You can setup both at the same time."
+    echo "You can setup both at the same time."
     echo "If you want to re-run this script to debug something, you can save some time setting
  r|l|c flags to zero. See examples below."
     echo
     echo "Options:"
     echo "  -h               Show this help message and exit."
     echo "  -d DIRECTORY     Specify the directory for the simulation."
-    echo "  -p 0|1           Protein-only MD."
-    echo "  -z 0|1           Protein-Ligand MD."
+    echo "  -p 0|1           Set up Protein-only MD."
+    echo "  -z 0|1           Set up Protein-Ligand MD."
     echo "  -g 0|1           (default=0) Setup MM/PB(G)SA rescoring. Only works with [-z 1]"
     echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
     echo "  -n REPLICAS      Number of replicas to run in the simulation."
@@ -339,7 +339,7 @@ PrepareProteinLigandMMPGBSA() {
         echo "Make sure that protein-ligand complex topologies exist."
         echo "Have you run the [-z 1] flag previously?"
         echo "Exiting"
-        exit 0
+        exit 1
     fi
 
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
