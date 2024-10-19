@@ -107,7 +107,7 @@ function run_MD ()
 
     if [[ "$NEW" != "npt_equil_6" && "$NEW" != "md_prod" ]]
     then
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $CRD.rst7 -inf $NEW.info
     else
       $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
     fi
@@ -181,7 +181,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           echo 
 
           # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.crd
+          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
           TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
           EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
 
@@ -213,7 +213,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
       if [[ $ONLY_PROTEIN_MD -eq 1 ]]
         then
           # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.crd
+          CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
           TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
           PROD_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/prod/
 
@@ -226,7 +226,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
       if [[ $PROT_LIG_MD -eq 1 ]]
         then
           # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.crd
+          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
           TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
           EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
 
