@@ -24,15 +24,15 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "  -d DIRECTORY     Specify the directory for the simulation."
     echo "  -p 0|1           Set up Protein-only MD."
     echo "  -z 0|1           Set up Protein-Ligand MD."
-    echo "  -g 0|1           (default=0) Setup MM/PB(G)SA rescoring. Only works with [-z 1]"
     echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
     echo "  -f EQUI_TIME     (default=1) Simulation time (in ns) of last step of equilibration (2 fs timestep)"
     echo "  -n REPLICAS      Number of replicas to run in the simulation."
     echo "  -r 0|1           (default=1) Flag to indicate if the receptor should be prepared."
     echo "  -l 0|1           (default=1) Flag to indicate if the ligands should be parameterized. Doesn't apply for only-protein MD"
     echo "  -c 0|1           (default=0) Flag to indicate if the cofactor should be parameterized."
-    echo "  -x 0|1           (default=1) Preparation of topologies. If 0, won't copy infput files or calculate topologies"
+    echo "  -x 0|1           (default=1) Preparation of topologies. If 0, won't copy input files or calculate topologies"
     echo "  -k 0|1           (default=1) Copy MD input files."
+    echo "  -g 0|1           (default=0) Setup MM/PB(G)SA rescoring."
 
     echo
     echo "Examples:"
@@ -354,7 +354,7 @@ PrepareProteinLigandMMPGBSA() {
 
     if [[ ! -f ${TOPO}/${LIG}_com.pdb ]]
     then
-        echo "ERROR! Can't find ${TOPO}/${LIG}_com.pdb in order to obtain ligand - ${LIG} - residue number."
+        echo "ERROR! Can't find ${TOPO}/${LIG}_com.pdb in order to obtain ligand (${LIG}) residue number."
         echo "Make sure that protein-ligand complex topologies exist."
         echo "Have you run the [-z 1] flag previously?"
         echo "Exiting"
@@ -363,9 +363,8 @@ PrepareProteinLigandMMPGBSA() {
 
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
 
-    for rep in $(seq 1 $N); do 
-        #echo
-        #echo "  # Preparing mmpbgsa files for $LIG #"
+    for rep in $(seq 1 $N)
+    do 
         cp ${SCRIPT_PATH}/input_files/mmpbgsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring/*.in
     done
@@ -388,6 +387,14 @@ WDPATH=$(realpath "$WDPATH")
 
 # Receptor
 RECEPTOR_PDB=($(ls "${WDPATH}/receptor/"))
+
+if [[ ${#RECEPTOR_PDB[@]} -eq 0 ]]
+then
+    echo "Empty receptor folder."
+    echo "Exiting."
+    exit 1
+fi
+
 RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 ENSEMBLE="npt"
@@ -438,7 +445,16 @@ then
     echo "####################################"
     # Ligandos
     LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
+
+    if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
+    then
+        echo "Empty ligands folder."
+        echo "Exiting."
+        exit 1
+    fi
+
     LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+
 
     # Ligand leap input
     LEAP_LIGAND="leap_lib.in"
@@ -463,7 +479,16 @@ fi
 if [[ $MMPBGSA -eq 1 ]]
 then
     LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
-    LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+    
+    if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
+    then
+        echo "Empty ligands folder."
+        echo "Exiting."
+        exit 1
+    fi
+
+    LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))  
+
     for LIG in "${LIGANDS[@]}"
     do
         PrepareProteinLigandMMPGBSA  $LIG $RECEPTOR_NAME $REPLICAS
