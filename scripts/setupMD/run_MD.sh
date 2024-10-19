@@ -93,7 +93,7 @@ function run_MD ()
     echo "${NEW} already executed succesfully."
     echo "Skipping."
 
-  elif [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.nc" ]]
+  elif [[ ! -f "${NEW}_successful.tmp" ]]
   then
     echo "${NEW} output exists but didn't finished correctly".
     echo "Please check ${NEW}.out"
