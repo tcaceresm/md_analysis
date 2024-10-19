@@ -6,7 +6,7 @@ set -euo pipefail
 # Help
 ############################################################
 Help() {
-    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-rlc 0|1]"
+    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-r 0|1] [-l 0|1] [-c 0|1] [-x 0|1] [-k 0|1]"
     echo
     echo "This script sets up molecular dynamics simulations in the specified directory."
     echo "Also, it can setup MM/P(G)BSA rescoring calculations (only in protein-ligand setup)."
@@ -17,7 +17,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "   2) Setup a Protein-Ligand MD. See [-z] flag below."
     echo "You can setup both at the same time."
     echo "If you want to re-run this script to debug something, you can save some time setting
- r|l|c flags to zero. See examples below."
+ r|l|c|x|k flags to zero. See examples below."
     echo
     echo "Options:"
     echo "  -h               Show this help message and exit."
@@ -31,6 +31,9 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "  -r 0|1           (default=1) Flag to indicate if the receptor should be prepared."
     echo "  -l 0|1           (default=1) Flag to indicate if the ligands should be parameterized. Doesn't apply for only-protein MD"
     echo "  -c 0|1           (default=0) Flag to indicate if the cofactor should be parameterized."
+    echo "  -x 0|1           (default=1) Preparation of topologies. If 0, won't copy infput files or calculate topologies"
+    echo "  -k 0|1           (default=1) Copy MD input files."
+
     echo
     echo "Examples:"
     echo " -Perform both Protein-only MD and Protein-Ligand MD, 100 ns length, 3 replicas, without cofactor:"
@@ -48,11 +51,13 @@ MMPBGSA=0
 PREP_REC=1
 PREP_LIG=1
 PREP_COFACTOR=0
+PREP_TOPO=1
+PREP_MD=1
 
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:p:z:g:t:f:n:r:l:c:" option; do
+while getopts ":hd:p:z:g:t:f:n:r:l:c:x:k:" option; do
     case $option in
         h)  # Print this help
             Help
@@ -77,6 +82,10 @@ while getopts ":hd:p:z:g:t:f:n:r:l:c:" option; do
             PREP_LIG=$OPTARG;;
         c)  # Prepare cofactor?
             PREP_COFACTOR=$OPTARG;;
+        x)  # Prepare TOPO?
+            PREP_TOPO=$OPTARG;;
+        k)  # Prep MD input files
+            PREP_MD=$OPTARG;;
         \?) # Invalid option
             echo "Error: Invalid option"
             exit;;
@@ -288,11 +297,12 @@ PrepareOnlyProteinMD() {
 
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${REC}_rec.pdb" | tail -n 1)
     NSTEPS=$((500000 * $TIME))
+    NSTEPS_EQUI=$((500000 * $EQUI_TIME))
 
     for rep in $(seq 1 $N); do 
         cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
-        sed -i "s/TIME/${EQUI_TIME}/g" ${MD_FOLDER}/rep${rep}/equi/npt/npt_equil_6.in
+        sed -i "s/TIME/${NSTEPS_EQUI}/g" ${MD_FOLDER}/rep${rep}/equi/npt/npt_equil_6.in
 
         cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
         sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"
@@ -315,11 +325,14 @@ PrepareProteinLigandMD() {
 
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
     NSTEPS=$((500000 * $TIME))
+    NSTEPS_EQUI=$((500000 * $EQUI_TIME))
 
     for rep in $(seq 1 $N)
     do 
         cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
+        sed -i "s/TIME/${NSTEPS_EQUI}/g" ${MD_FOLDER}/rep${rep}/equi/npt/npt_equil_6.in
+
         cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
         sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"  
     done
@@ -389,7 +402,6 @@ fi
 # Preparar cofactor
 if [[ $PREP_COFACTOR -eq 1 ]]
 then
-    
     mkdir -p ${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib
     COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
     COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
@@ -408,8 +420,14 @@ then
     LEAP_SCRIPT="leap_create_rec.in"
 
     CreateOnlyProteinDirectories $REPLICAS $RECEPTOR_NAME
-    PrepareOnlyProteinTopology $RECEPTOR_NAME $LEAP_SCRIPT
-    PrepareOnlyProteinMD $RECEPTOR_NAME $REPLICAS
+    if [[ $PREP_TOPO -eq 1 ]]
+    then
+        PrepareOnlyProteinTopology $RECEPTOR_NAME $LEAP_SCRIPT
+    fi
+    if [[ $PREP_MD -eq 1 ]]
+    then
+        PrepareOnlyProteinMD $RECEPTOR_NAME $REPLICAS
+    fi
 fi
 
 # Preparar ligandos, complejos y archivos de MD
@@ -431,8 +449,14 @@ then
     do
         CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
         PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/${LIG}/lib" "LIG"
-        PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
-        PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
+        if [[ $PREP_TOPO -eq 1 ]]
+        then
+            PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
+        fi
+        if [[ $PREP_MD -eq 1 ]]
+        then
+            PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
+        fi
     done
 fi
 
