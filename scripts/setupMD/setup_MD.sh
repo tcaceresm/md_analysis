@@ -26,6 +26,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "  -z 0|1           Set up Protein-Ligand MD."
     echo "  -g 0|1           (default=0) Setup MM/PB(G)SA rescoring. Only works with [-z 1]"
     echo "  -t TIME          Simulation time in nanoseconds (assuming a 2 fs timestep)."
+    echo "  -f EQUI_TIME     (default=1) Simulation time (in ns) of last step of equilibration (2 fs timestep)"
     echo "  -n REPLICAS      Number of replicas to run in the simulation."
     echo "  -r 0|1           (default=1) Flag to indicate if the receptor should be prepared."
     echo "  -l 0|1           (default=1) Flag to indicate if the ligands should be parameterized. Doesn't apply for only-protein MD"
@@ -42,6 +43,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
 }
 
 # Default values
+EQUI_TIME=1
 MMPBGSA=0
 PREP_REC=1
 PREP_LIG=1
@@ -59,6 +61,8 @@ while getopts ":hd:p:z:g:t:n:r:l:c:" option; do
             WDPATH=$OPTARG;;
         t)  # Time in nanoseconds
             TIME=$OPTARG;;
+        f)  # EQUI TIME
+            EQUI_TIME=$OPTARG;;
         n)  # Replicas
             REPLICAS=$OPTARG;;
         p)  # Protein-Only MD
@@ -288,6 +292,8 @@ PrepareOnlyProteinMD() {
     for rep in $(seq 1 $N); do 
         cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
+        sed -i "s/TIME/${EQUI_TIME}/g" ${MD_FOLDER}/rep${rep}/equi/npt/npt_equil_6.in
+
         cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
         sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"
     done
