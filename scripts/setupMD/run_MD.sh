@@ -107,9 +107,9 @@ function run_MD ()
 
     if [[ "$NEW" != "npt_equil_6" && "$NEW" != "md_prod" ]]
     then
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $CRD -inf $NEW.info
     else
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
     fi
     touch "${NEW}_sucessful.tmp"
     echo "Done ${NEW}"
@@ -129,7 +129,10 @@ RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
 
-echo "Receptor is ${RECEPTOR}"
+echo
+echo "###########################"
+echo "# Receptor is ${RECEPTOR} #"
+echo "###########################"
 
 for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
   do
