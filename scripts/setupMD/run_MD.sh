@@ -1,7 +1,6 @@
 #!/usr/bin/bash
-set -e
-set -u
-set -o pipefail
+
+set -euo pipefail
 
 ############################################################
 # Help                                                     #
@@ -9,27 +8,33 @@ set -o pipefail
 Help()
 {
    # Display Help
-   echo "Usage: bash run_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-e 0|1] [-x 0|1]"
+   echo "Usage: bash run_MD.sh [-h] [-d DIRECTORY] [-n REPLICAS] [-p 0|1] [-z 0|1] [-e 0|1] [-x 0|1]"
    echo
    echo "This script perform molecular dynamics simulations."
    echo "You must run setup_MD.sh first, using the same working directory."    
    echo
    echo "Options:"
-   echo "  -h               Print this help"
-   echo "  -d DIRECTORY     Working Directory."
-   echo "  -p 0|1           Run Protein-only MD."
-   echo "  -z 0|1           Run Protein-Ligand MD."
-   echo "  -e 0|1           Run equilibration."
-   echo "  -x 0|1           Run production."
-   echo "  -n REPLICAS      Replicas"
+   echo "  -h                   Print this help"
+   echo "  -d DIRECTORY         Working Directory."
+   echo "  -p 0|1               Run Protein-only MD."
+   echo "  -z 0|1               Run Protein-Ligand MD."
+   echo "  -e 0|1               (default=1) Run equilibration."
+   echo "  -x 0|1               (default=1) Run production."
+   echo "  -n REPLICAS_END      Replicas. See example below"
+   echo "  -y REPLICAS_START    (default=1). See example below"
    echo
+   echo "Examples:"
+   echo " -Run protein-ligand MD, five replicas"
+   echo "   bash run_MD.sh -d /path/to/dir -n 5 -p 0 -z 1"
+   echo " -Run protein-ligand, replicas 1 to 3, but no 4 and 5"
+   echo "   bash run_MD.sh -d /path/to/dir -y 1 -n 3 -p 0 -z 1"
 }
 
 ############################################################
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:p:z:e:x:n:" option; do
+while getopts ":hd:p:z:e:x:n:y:" option; do
    case $option in
       h) # Print this help
          Help
@@ -45,12 +50,19 @@ while getopts ":hd:p:z:e:x:n:" option; do
       x) # Run production
          PROD=$OPTARG;;
       n) # Replicas
-         REPLICAS=$OPTARG;;
+         REPLICAS_END=$OPTARG;;
+      y) # Replicas start
+         REPLICAS_START=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
          exit;;
    esac
 done
+
+EQUI=1
+PROD=1
+REPLICAS_START=1
+
 
 function displayHello() 
 {
@@ -84,11 +96,14 @@ function run_MD ()
   elif [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.nc" ]]
   then
     echo "${NEW} output exists but didn't finished correctly".
-    echo "Please check ${NEW}.info"
+    echo "Please check ${NEW}.out"
     echo "Exiting"
     exit 1
   else
-    echo "Running ${NEW}"
+
+    echo 
+    echo "Running ${NEW}.in"
+    echo
 
     if [[ "$NEW" != "npt_equil_6" && "$NEW" != "md_prod" ]]
     then
@@ -115,22 +130,25 @@ RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
 
 
-echo "
-##############################
-Starting MD simulations
-##############################
-"
-
-for rep in $(seq 1 $REPLICAS) # Repetitions
+for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
   do
 
     if [[ $EQUI -eq 1 ]]
       then
 
+      echo "##########################"
+      echo "# Starting equilibration #"
+      echo "##########################"
+
       EQUI_protocol=("min_ntr_h" "min_ntr_l" "md_nvt_ntr" "md_npt_ntr" "npt_equil_1" "npt_equil_2" "npt_equil_3" "npt_equil_4" "npt_equil_5" "npt_equil_6")
 
       if [[ $ONLY_PROTEIN_MD -eq 1 ]]
         then
+
+          echo 
+          echo " # Protein-only! #"
+          echo 
+
           # Topology and coord file
           CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.crd
           TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
@@ -146,6 +164,11 @@ for rep in $(seq 1 $REPLICAS) # Repetitions
       
       if [[ $PROT_LIG_MD -eq 1 ]]
         then
+
+          echo 
+          echo " # Protein-Ligand! #"
+          echo 
+
           # Topology and coord file
           CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.crd
           TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
@@ -156,7 +179,7 @@ for rep in $(seq 1 $REPLICAS) # Repetitions
 
           for LIG in "${LIGANDS[@]}"
             do
-            
+            echo "  Doing for ${LIG}"
             for STEP in ${EQUI_protocol[@]}
               do
                 run_MD $CRD $STEP $TOPO $CRD
@@ -168,6 +191,11 @@ for rep in $(seq 1 $REPLICAS) # Repetitions
 
     if [[ $PROD -eq 1 ]]
     then
+
+      echo "##########################"
+      echo "# Starting production    #"
+      echo "##########################"
+
       if [[ $ONLY_PROTEIN_MD -eq 1 ]]
         then
           # Topology and coord file
