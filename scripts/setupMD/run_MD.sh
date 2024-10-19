@@ -88,17 +88,17 @@ function run_MD ()
   local TOPO=$3
   local CRD=$4
   
-  if [[ -f "${NEW}_successful.tmp" ]]
-  then
-    echo "${NEW} already executed succesfully."
-    echo "Skipping."
-
-  elif [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.out" ]]
+  if [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.nc" ]]
   then
     echo "${NEW} output exists but didn't finished correctly".
     echo "Please check ${NEW}.out"
     echo "Exiting"
     exit 1
+
+  elif [[ -f "${NEW}_successful.tmp" ]]
+  then
+    echo "${NEW} already executed succesfully."
+    echo "Skipping."
   else
     echo 
     echo "Running ${NEW}.in"
