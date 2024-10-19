@@ -167,6 +167,10 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           OLD=$CRD
           for STEP in "${EQUI_protocol[@]}"
             do
+              if [[ "$STEP" == "npt_equil_1" ]]
+              then
+                cd $EQUI_PATH/npt
+              fi
               NEW=$STEP
               run_MD $OLD $NEW $TOPO $CRD
               OLD=$NEW
@@ -194,6 +198,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
             OLD=$CRD
             for STEP in ${EQUI_protocol[@]}
               do
+
                 NEW=$STEP
                 run_MD $OLD $NEW $TOPO $CRD
                 OLD=$NEW
@@ -218,7 +223,6 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           PROD_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/prod/
 
           cd $PROD_PATH
-
           run_MD $CRD md_prod $TOPO ""
 
       fi
@@ -228,10 +232,12 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           # Topology and coord file
           CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
           TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
-          EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
+          PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
 
           declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
           declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+
+          cd $PROD_PATH
 
           for LIG in "${LIGANDS[@]}"
             do
