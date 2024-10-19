@@ -86,9 +86,10 @@ function run_MD ()
   local OLD=$1
   local NEW=$2
   local TOPO=$3
-  local CRD=$4
+  local REF=$4
+  local RESTRAINED=$5
   
-  if [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.nc" ]]
+  if [[ -f "${NEW}.nc" && ! -f "${NEW}_successful.tmp" ]]
   then
     echo "${NEW} output exists but didn't finished correctly".
     echo "Please check ${NEW}.out"
@@ -104,9 +105,9 @@ function run_MD ()
     echo "Running ${NEW}.in"
     echo
 
-    if [[ "$NEW" != "npt_equil_6" && "$NEW" != "md_prod" ]]
-    then
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $CRD.rst7 -inf $NEW.info
+    if [[ ${RESTRAINED} -eq 1 ]]
+    then  
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $REF.rst7 -inf $NEW.info
     else
       $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
     fi
@@ -164,14 +165,20 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           cd $EQUI_PATH
 
           OLD=$CRD
+          RESTRAINED=1
+
           for STEP in "${EQUI_protocol[@]}"
             do
-              if [[ "$STEP" == "npt_equil_1" ]]
+              if [[ "$STEP" == "npt_equil_1" ]] #change directory
               then
-                cd $EQUI_PATH/npt
+                cd $EQUI_PATH/npt              
+              fi
+              if [[ "$STEP" == "npt_equil_6" ]]
+              then
+                RESTRAINED=0
               fi
               NEW=$STEP
-              run_MD $OLD $NEW $TOPO $CRD
+              run_MD $OLD $NEW $TOPO $CRD $RESTRAINED
               OLD=$NEW
             done
       fi
@@ -197,9 +204,17 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
             OLD=$CRD
             for STEP in ${EQUI_protocol[@]}
               do
+                if [[ "$STEP" == "npt_equil_1" ]] #change directory
+                then
+                  cd $EQUI_PATH/npt              
+                fi
 
+                if [[ "$STEP" == "npt_equil_6" ]]
+                then
+                  RESTRAINED=0
+                fi               
                 NEW=$STEP
-                run_MD $OLD $NEW $TOPO $CRD
+                run_MD $OLD $NEW $TOPO $CRD $RESTRAINED
                 OLD=$NEW
               done
             done
@@ -216,32 +231,36 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
 
       if [[ $ONLY_PROTEIN_MD -eq 1 ]]
         then
+          echo 
+          echo " # Protein-only! #"
+          echo 
           # Topology and coord file
           CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
           TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
           PROD_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/prod/
 
           cd $PROD_PATH
-          run_MD $CRD md_prod $TOPO ""
+          run_MD $CRD md_prod $TOPO "" 0
 
       fi
       
       if [[ $PROT_LIG_MD -eq 1 ]]
         then
-          # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
-          TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
-          PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
-
+          echo 
+          echo " # Protein-Ligand! #"
+          echo 
           declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
           declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
-          cd $PROD_PATH
-
+      
           for LIG in "${LIGANDS[@]}"
-            do
-            run_MD $CRD $STEP $TOPO $CRD
-            done
+          do
+            # Topology and coord file
+            CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
+            TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
+            PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
+            cd $PROD_PATH
+            run_MD $CRD md_prod $TOPO "" 0
+          done
       fi
     fi
   done
