@@ -107,9 +107,9 @@ function run_MD ()
 
     if [[ "$NEW" != "npt_equil_6" && "$NEW" != "md_prod" ]]
     then
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -ref $CRD -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $CRD -inf $NEW.info
     else
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD -r $NEW.rst7 -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
     fi
     touch "${NEW}_sucessful.tmp"
     echo "Done ${NEW}"
@@ -158,7 +158,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           echo 
 
           # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
+          CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.rst7
           TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
           EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/equi/
 
@@ -168,7 +168,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           for STEP in "${EQUI_protocol[@]}"
             do
               NEW=$STEP
-              run_MD $OLD.rst7 $NEW $TOPO $CRD
+              run_MD $OLD $NEW $TOPO $CRD
               OLD=$NEW
             done
       fi
