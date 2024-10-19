@@ -129,9 +129,14 @@ RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
 
+echo "Receptor is ${RECEPTOR}"
 
 for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
   do
+    echo "#########################"
+    echo "# Doing replica ${rep} !#"
+    echo "#########################"
+    echo 
 
     if [[ $EQUI -eq 1 ]]
       then
