@@ -80,8 +80,8 @@ function run_MD ()
   then
     echo "${NEW} already executed succesfully."
     echo "Skipping."
-    
-  elif [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.rst7" ]]
+
+  elif [[ ! -f "${NEW}_successful.tmp" && -f "${NEW}.nc" ]]
   then
     echo "${NEW} output exists but didn't finished correctly".
     echo "Please check ${NEW}.info"
