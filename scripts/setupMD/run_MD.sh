@@ -161,9 +161,15 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
 
           cd $EQUI_PATH
 
+          OLD=""
           for STEP in "${EQUI_protocol[@]}"
             do
-              run_MD $CRD $STEP $TOPO $CRD
+              if [[ -n $OLD ]]
+              then
+              NEW=$STEP
+              run_MD $OLD $NEW $TOPO $CRD
+              fi
+              OLD=$NEW
             done
       fi
       
@@ -185,9 +191,15 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           for LIG in "${LIGANDS[@]}"
             do
             echo "  Doing for ${LIG}"
+            OLD=""
             for STEP in ${EQUI_protocol[@]}
               do
-                run_MD $CRD $STEP $TOPO $CRD
+                if [[ -n $OLD ]]
+                then
+                NEW=$STEP
+                run_MD $OLD $NEW $TOPO $CRD
+                fi
+                OLD=$NEW
               done
             done
       fi
