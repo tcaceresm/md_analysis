@@ -10,7 +10,7 @@ REC = loadpdb ../../receptor/RECEPTOR_prep.pdb
 
 savepdb REC ./RECEPTOR_rec.pdb
 
-saveAmberParm REC ./RECEPTOR_vac.parm7 ./RECEPTOR_vac.crd
+saveAmberParm REC ./RECEPTOR_vac.parm7 ./RECEPTOR_vac.rst7
 charge REC
 
 addIons REC Na+ 0
@@ -18,6 +18,6 @@ addions REC Cl- 0
 
 solvatebox REC TIP3PBOX 14.0
 savepdb REC ./RECEPTOR_solv.pdb
-saveAmberParm REC ./RECEPTOR_solv.parm7 ./RECEPTOR_solv.crd
+saveAmberParm REC ./RECEPTOR_solv.parm7 ./RECEPTOR_solv.rst7
 
 quit

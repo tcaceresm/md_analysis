@@ -22,10 +22,10 @@ savepdb LIG ./LIGAND_lig.pdb
 loadAmberParams ../lib/LIGAND.frcmod
 #loadAmberParams ../../cofactor_lib/COFACTOR.frcmod
 
-saveAmberParm LIG ./LIGAND_vac_lig.parm7 ./LIGAND_vac_lig.crd
-saveAmberParm REC ./LIGAND_vac_rec.parm7 ./LIGAND_vac_rec.crd
-saveAmberParm COM ./LIGAND_vac_com.parm7 ./LIGAND_vac_com.crd
-#saveAmberParm COF ./LIGAND_vac_cof.parm7 ./LIGAND_vac_cof.crd
+saveAmberParm LIG ./LIGAND_vac_lig.parm7 ./LIGAND_vac_lig.rst7
+saveAmberParm REC ./LIGAND_vac_rec.parm7 ./LIGAND_vac_rec.rst7
+saveAmberParm COM ./LIGAND_vac_com.parm7 ./LIGAND_vac_com.rst7
+#saveAmberParm COF ./LIGAND_vac_cof.parm7 ./LIGAND_vac_cof.rst7
 
 charge LIG
 charge REC
@@ -37,6 +37,6 @@ addions COM Cl- 0
 
 solvatebox COM TIP3PBOX 14.0
 savepdb COM ./LIGAND_solv_com.pdb
-saveAmberParm COM ./LIGAND_solv_com.parm7 ./LIGAND_solv_com.crd
+saveAmberParm COM ./LIGAND_solv_com.parm7 ./LIGAND_solv_com.rst7
 
 quit
