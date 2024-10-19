@@ -30,6 +30,11 @@ Help()
    echo "   bash run_MD.sh -d /path/to/dir -y 1 -n 3 -p 0 -z 1"
 }
 
+# Default values
+EQUI=1
+PROD=1
+REPLICAS_START=1
+
 ############################################################
 # Process the input options. Add options as needed.        #
 ############################################################
@@ -58,11 +63,6 @@ while getopts ":hd:p:z:e:x:n:y:" option; do
          exit;;
    esac
 done
-
-EQUI=1
-PROD=1
-REPLICAS_START=1
-
 
 function displayHello() 
 {
