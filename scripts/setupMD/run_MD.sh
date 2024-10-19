@@ -110,7 +110,7 @@ function run_MD ()
     else
       $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
     fi
-    touch "${NEW}_sucessful.tmp"
+    touch "${NEW}_successful.tmp"
     echo "Done ${NEW}"
   fi
 }
