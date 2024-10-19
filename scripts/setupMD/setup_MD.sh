@@ -52,7 +52,7 @@ PREP_COFACTOR=0
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:p:z:g:t:n:r:l:c:" option; do
+while getopts ":hd:p:z:g:t:f:n:r:l:c:" option; do
     case $option in
         h)  # Print this help
             Help
