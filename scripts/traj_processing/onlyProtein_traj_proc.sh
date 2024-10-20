@@ -18,6 +18,8 @@ function Help
    echo "  -h     Print help"
    echo "  -d     Working Directory."
    echo "  -n     Number of repetitions."
+   echo "  -k     Process Protein-only MD."
+   echo "  -z     Process Protein-Ligand MD."
    echo "  -e     0|1. (default=0) Process equilibration output."
    echo "  -p     0|1. (default=0) Process production output"
    echo "  -r     0|1. (default=0) Compute RMSD from trajectories"
@@ -36,7 +38,7 @@ PROCESS_OUT_FILES=0
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:n:e:p:r:w:o:" option; do
+while getopts ":hd:n:k:z:e:p:r:w:o:" option; do
    case $option in
       h) # Print this help
          Help
