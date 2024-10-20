@@ -2,8 +2,9 @@
 
 parm ../../../topo/RECEPTOR_solv.parm7
 
-trajin *.nc
 trajin ../*md*.nc
+trajin *.nc
+
 strip :WAT,Na+,Cl-,K+
 
 autoimage
