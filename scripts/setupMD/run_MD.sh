@@ -240,9 +240,10 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           # Topology and coord file
           TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
           PROD_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/prod/
+          OLD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/equi/npt/npt_equil_6
 
           cd $PROD_PATH
-          run_MD $CRD md_prod $TOPO "" 0
+          run_MD $OLD md_prod $TOPO "" 0
 
       fi
       
@@ -261,10 +262,10 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
             # Topology and coord file
             TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
             PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
-            OLD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/equi/npt/npt_equil_6
+            OLD=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/npt/npt_equil_6
 
             cd $PROD_PATH
-            run_MD $CRD md_prod $TOPO "" 0
+            run_MD $OLD md_prod $TOPO "" 0
 
           done
       fi
