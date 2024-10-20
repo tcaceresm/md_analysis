@@ -90,8 +90,7 @@ echo "
 
 function PrepareInputFile
 {
-   #               1       2         3      4    5    
-   #removeWater $PROD $PROD_FILES $RM_HOH $REC $N_RES 
+
    local OUTPUT_PATH=$1
    local INPUT_FILE_PATH=$2
    local INPUT_FILE=$3
@@ -245,15 +244,10 @@ function process_trajectories
          ### Calculate RMSD
          if [[ ${PROCESS_RMSD} -eq 1 ]] #unsolvated coordinates
             then
-               if [[ -f ${EQUI_PATH}/${ensemble}/${RECEPTOR}_equi.nc ]]
-                  then
-                     echo "   Correct unsolvated coordinates available!"
-                     PrepareInputFile ${EQUI_PATH}/${ensemble} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-                     echo "   Calculating RMSD from unsolvated trajectories"
-                     cd ${EQUI_PATH}/${ensemble}
-                     ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${ensemble}/${RMSD_equi}
-                  else
-                     echo "   No unsolvated coordinates available. Can't calculate RMSD"
+               PrepareInputFile ${EQUI_PATH}/${ensemble} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+               echo "   Calculating RMSD"
+               cd ${EQUI_PATH}/${ensemble}
+               ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${ensemble}/${RMSD_equi}
                fi
             else
                echo "   Not calculating RMSD"
@@ -290,98 +284,11 @@ ensemble="npt"
 
 displayHello
 
-# for i in $(seq 1 $N)
-#    do
-#       echo ""
-#       echo "Processing ${RECEPTOR} repetition ${i}"
-#       echo ""
-#       obtainPaths ${WDPATH} $RECEPTOR
-
-#       if [[ $prod -eq 1 ]]
-#          then
-#             echo ""
-#             echo "   ################################"
-#             echo "   # Processing Production Files  #"
-#             echo "   ################################"
-#             echo ""
-#          if [[ $PROCESS_OUT_FILES -eq 1 ]] # Process .out files
-#             then
-#                cd $PROD_PATH
-#                processProdOutFiles $PROD_PATH $PROD_INPUT_FILES
-#          fi
-                              
-#          if [[ $WAT -eq 1 ]] # Remove waters
-#             then
-#                cd ${PROD}  
-#                PrepareInputFile ${PROD_PATH} ${PROD_INPUT_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
-#                ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
-#             else
-#                echo "   Not removing WAT from trajectories"
-#          fi
-
-#          if [[ $rmsd -eq 1 ]] #Calculate RMSD
-#             then
-#                echo "   Computing RMSD"
-#                PrepareInputFile ${PROD_PATH} ${PROD_INPUT_FILES} ${RMSD} ${RECEPTOR} ${N_RES}
-#                ${AMBERHOME}/bin/cpptraj -i ${PROD_PATH}/${RMSD}
-#             else
-#                echo "   Not calculating RMSD"
-#          fi
-#       fi 
-
-#       if [[ $equi -eq 1 ]] # Process equilibration phase files
-#          then
-#             echo ""
-#             echo "   ##################################"
-#             echo "   # Processing Equilibration Files #"
-#             echo "   ##################################"
-#             echo ""          
-#             if [[ $PROCESS_OUT_FILES -eq 1 ]]
-#                then
-#                   cd $EQUI_PATH
-#                   processEquiOutFiles $EQUI_PATH $EQUI_INPUT_FILES
-#             fi
-            
-#             ### REMOVE HOH
-#             if [[ $WAT -eq 1 ]]
-#                then 
-#                   cd $EQUI_PATH/$ensemble
-#                   PrepareInputFile ${EQUI_PATH}/$ensemble ${EQUI_INPUT_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-#                   ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/$ensemble/${RM_HOH_equi}
-#                else
-#                   echo ""
-#                   echo "   Not removing WAT from trajectories"
-#             fi
-
-#             ### Calculate RMSD
-#             if [[ $rmsd -eq 1 ]] #unsolvated coordinates
-#                then
-#                   if [[ -f ${EQUI_PATH}/$ensemble/${RECEPTOR}_equi.nc ]]
-#                      then
-#                         echo "   Correct unsolvated coordinates available!"
-#                         PrepareInputFile ${EQUI_PATH}/$ensemble ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-#                         echo "   Calculating RMSD from unsolvated trajectories"
-#                         cd $EQUI_PATH/$ensemble
-#                         ${AMBERHOME}/bin/cpptraj -i ${EQUI}/$ensemble/${RMSD_equi}
-#                      else
-#                         echo "   No unsolvated coordinates available. Can't calculate RMSD"
-#                   fi
-#                else
-#                   echo "   Not calculating RMSD"
-#                   echo ""
-#             fi
-            
-#       fi
-
-#    done
- 
-#echo "DONE!"
-
-
 for i in $(seq 1 $N)
 do
    if [[ ${PROCESS_ONLY_PROTEIN} -eq 1 ]]
       then
+      echo " # Processing Only-protein # "
       LIG=false
       process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
                            ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \
@@ -389,12 +296,14 @@ do
    fi
    if [[ ${PROCESS_PROTEIN_LIGAND} -eq 1 ]]
       then
+      echo " # Processing Protein-Ligand # "
       # Analyzed ligands
       declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
       declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
       for LIG in "${LIGANDS[@]}"
          do
+         echo "Ligand is ${LIG}"
          process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
                               ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \ 
                               ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD}

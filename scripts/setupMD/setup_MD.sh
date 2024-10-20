@@ -304,8 +304,8 @@ PrepareOnlyProteinMD() {
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
         sed -i "s/TIME/${NSTEPS_EQUI}/g" ${MD_FOLDER}/rep${rep}/equi/npt/npt_equil_6.in
 
-        cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
-        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"
+        cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/npt/"
+        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/npt/md_prod.in"
     done
 
     echo "Done copying files for MD!"
