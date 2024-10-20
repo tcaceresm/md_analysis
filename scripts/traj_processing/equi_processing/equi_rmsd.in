@@ -4,6 +4,7 @@
 parm ../../../topo/LIG_solv_com.parm7
 
 trajin *.nc
+trajin ../*md*.nc
 strip :WAT,Na+,Cl-,K+
 autoimage
 

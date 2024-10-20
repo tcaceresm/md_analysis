@@ -1,8 +1,11 @@
 #Actualizado al 8-02-23. Debería borrar los scripts que no ocupo en la carpeta de los li gandos
 
-parm ../../../topo/RECEPTOR_vac.parm7
+parm ../../../topo/RECEPTOR_solv.parm7
 
-trajin RECEPTOR_equi.nc
+trajin *.nc
+trajin ../*md*.nc
+strip :WAT,Na+,Cl-,K+
+
 autoimage
 
 #RMSD. La referencia es el primer frame
