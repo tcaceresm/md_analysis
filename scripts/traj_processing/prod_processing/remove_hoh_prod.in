@@ -1,4 +1,4 @@
-parm ../../../topo/LIG_solv_com.parm7
+parm ../../../../topo/LIG_solv_com.parm7
 #trajin ../equi/npt/npt_equil_*.nc
 trajin md_prod.nc
 autoimage :1-NRES
