@@ -126,7 +126,7 @@ function obtainPaths
       N_RES=$(cat ${TOPO_PATH}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')      
    fi
 
-   if [[ $PROTEIN_LIGAND -eq 1 ]]
+   if [[ $PROCESS_PROTEIN_LIGAND -eq 1 ]]
    then
       EQUI_PATH="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
       PROD_PATH="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
@@ -171,6 +171,7 @@ function processEquiOutFiles
 
 function process_trajectories
 {
+   #echo "PROCESS TRAJECTORIES ARGUMENTS ${@}"
    local WDPATH=$1
    local RECEPTOR=$2
    local LIG=$3
