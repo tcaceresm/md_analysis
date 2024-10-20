@@ -171,7 +171,8 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
             do
               if [[ "$STEP" == "npt_equil_1" ]] #change directory
               then
-                cd $EQUI_PATH/npt              
+                cd $EQUI_PATH/npt 
+                OLD="../${OLD}"             
               fi
               if [[ "$STEP" == "npt_equil_6" ]]
               then
