@@ -140,12 +140,12 @@ function obtainPaths
 
 function processProdOutFiles
 {
-   local PROD=$1
+   local PROD_PATH=$1
    local PROD_FILES=$2
 
-   echo "Copying process_mdout.perl to ${PROD}"   
-   cp $PROD_FILES/process_mdout.perl $PROD               
-   /usr/bin/perl ${PROD}/process_mdout.perl ${PROD}/*.out
+   echo "Copying process_mdout.perl to ${PROD_PATH}"   
+   cp $PROD_FILES/process_mdout.perl ${PROD_PATH}               
+   /usr/bin/perl ${PROD}/process_mdout.perl ${PROD_PATH}/${ensemble}/*.out
 
 }
 
@@ -158,9 +158,9 @@ function processEquiOutFiles
    local EQUI_PATH=$1
    local EQUI_FILES=$2
 
-   echo "Copying process_mdout.perl to ${EQUI}"
-   cp $EQUI_FILES/process_mdout.perl $EQUI
-   /usr/bin/perl $EQUI/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
+   echo "Copying process_mdout.perl to ${EQUI_PATH}"
+   cp ${EQUI_FILES}/process_mdout.perl ${EQUI_PATH}
+   /usr/bin/perl ${EQUI_PATH}/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
 }
 
 ################################################################
