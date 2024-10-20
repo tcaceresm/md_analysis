@@ -144,7 +144,7 @@ function processProdOutFiles
    local PROD_FILES=$2
 
    echo "Copying process_mdout.perl to ${PROD_PATH}"   
-   cp $PROD_FILES/process_mdout.perl ${PROD_PATH}               
+   cp ${PROD_FILES}/process_mdout.perl ${PROD_PATH}/${ensemble}               
    /usr/bin/perl ${PROD_PATH}/process_mdout.perl ${PROD_PATH}/${ensemble}/*.out
 
 }
