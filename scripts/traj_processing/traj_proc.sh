@@ -47,9 +47,9 @@ while getopts ":hd:y:n:k:z:e:p:r:w:o:" option; do
          exit;;
       d) # Enter the MD Directory
          WDPATH=$OPTARG;;
-      n) # Replicas
+      y) # Replicas
          REPLICAS_START=$OPTARG;;
-      y) # Replicas end
+      n) # Replicas end
          REPLICAS_END=$OPTARG;;
       k) # Protein-only
          PROCESS_ONLY_PROTEIN=$OPTARG;;
