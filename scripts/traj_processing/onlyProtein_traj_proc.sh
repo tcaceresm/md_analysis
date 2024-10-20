@@ -248,7 +248,6 @@ function process_trajectories
                echo "   Calculating RMSD"
                cd ${EQUI_PATH}/${ensemble}
                ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${ensemble}/${RMSD_equi}
-               fi
             else
                echo "   Not calculating RMSD"
                echo ""
