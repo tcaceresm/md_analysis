@@ -123,7 +123,7 @@ function obtainPaths
       EQUI_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/equi/"
       PROD_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/prod/"
       TOPO_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/"
-      N_RES=$(cat ${TOPO}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')      
+      N_RES=$(cat ${TOPO_PATH}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')      
    fi
 
    if [[ $PROTEIN_LIGAND -eq 1 ]]
@@ -182,6 +182,8 @@ function process_trajectories
    local PROCESS_WAT=$9
    local PROCESS_RMSD=$10
 
+   obtainPaths ${WDPATH} ${RECEPTOR} ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} ${LIG}
+
    if [[ $PROCESS_PROD -eq 1 ]]
       then
          echo ""
@@ -189,8 +191,6 @@ function process_trajectories
          echo "   # Processing Production Files  #"
          echo "   ################################"
          echo ""
-
-         obtainPaths ${WDPATH} ${RECEPTOR} ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} ${LIG}
 
          if [[ ${PROCESS_OUT_FILES} -eq 1 ]] # Process .out files
             then
@@ -374,20 +374,20 @@ displayHello
 
 #    done
  
-echo "DONE!"
+#echo "DONE!"
 
 
 for i in $(seq 1 $N)
 do
    if [[ ${PROCESS_ONLY_PROTEIN} -eq 1 ]]
       then
-      process_trajectories ${WDPATH} ${RECEPTOR} "" ${PROCESS_EQUI} ${PROCESS_PROD} \
-                           ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \ 
+      LIG=false
+      process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
+                           ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \
                            ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD}
    fi
    if [[ ${PROCESS_PROTEIN_LIGAND} -eq 1 ]]
       then
-
       # Analyzed ligands
       declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
       declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
