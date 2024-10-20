@@ -20,8 +20,8 @@ Help()
    echo "  -z 0|1               Run Protein-Ligand MD."
    echo "  -e 0|1               (default=1) Run equilibration."
    echo "  -x 0|1               (default=1) Run production."
-   echo "  -n REPLICAS_END      Replicas. See example below"
    echo "  -y REPLICAS_START    (default=1). See example below"
+   echo "  -n REPLICAS_END      Replicas. See example below"
    echo
    echo "Examples:"
    echo " -Run protein-ligand MD, five replicas"
@@ -39,7 +39,7 @@ REPLICAS_START=1
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:p:z:e:x:n:y:" option; do
+while getopts ":hd:p:z:e:x:y:n:" option; do
    case $option in
       h) # Print this help
          Help

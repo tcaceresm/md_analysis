@@ -17,7 +17,8 @@ function Help
    echo "Options:"
    echo "  -h     Print help"
    echo "  -d     Working Directory."
-   echo "  -n     Number of repetitions."
+   echo "  -y     (default=1) REPLICAS_START."
+   echo "  -n     Replicas END."
    echo "  -k     Process Protein-only MD."
    echo "  -z     Process Protein-Ligand MD."
    echo "  -e     0|1. (default=0) Process equilibration output."
@@ -28,6 +29,7 @@ function Help
 }
 
 # Default values
+REPLICAS_START=1
 PROCESS_EQUI=0
 PROCESS_PROD=0
 PROCESS_RMSD=0
@@ -38,7 +40,7 @@ PROCESS_OUT_FILES=0
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:n:k:z:e:p:r:w:o:" option; do
+while getopts ":hd:y:n:k:z:e:p:r:w:o:" option; do
    case $option in
       h) # Print this help
          Help
@@ -46,7 +48,9 @@ while getopts ":hd:n:k:z:e:p:r:w:o:" option; do
       d) # Enter the MD Directory
          WDPATH=$OPTARG;;
       n) # Replicas
-         N=$OPTARG;;
+         REPLICAS_START=$OPTARG;;
+      y) # Replicas end
+         REPLICAS_END=$OPTARG;;
       k) # Protein-only
          PROCESS_ONLY_PROTEIN=$OPTARG;;
       z) # Protein-ligand
@@ -282,11 +286,12 @@ ensemble="npt"
 
 displayHello
 
-for i in $(seq 1 $N)
+for i in $(seq ${REPLICAS_START} ${REPLICAS_END})
 do
    if [[ ${PROCESS_ONLY_PROTEIN} -eq 1 ]]
       then
       echo " # Processing Only-protein # "
+      echo " #       Repetition ${i}   # "
       LIG=false
       process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
                            ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \
