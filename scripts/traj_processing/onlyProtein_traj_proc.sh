@@ -47,6 +47,10 @@ while getopts ":hd:n:k:z:e:p:r:w:o:" option; do
          WDPATH=$OPTARG;;
       n) # Replicas
          N=$OPTARG;;
+      k) # Protein-only
+         PROCESS_ONLY_PROTEIN=$OPTARG;;
+      z) # Protein-ligand
+         PROCESS_PROTEIN_LIGAND=$OPTARG;;
       e) # Equilibration processing
          PROCESS_EQUI=$OPTARG;;
       p) # Production processing
