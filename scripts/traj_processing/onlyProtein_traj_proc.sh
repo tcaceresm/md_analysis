@@ -237,7 +237,6 @@ function process_trajectories
                PrepareInputFile ${EQUI_PATH}/${ensemble} ${EQUI_INPUT_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ensemble}/${RM_HOH_equi}
             else
-               echo ""
                echo "   Not removing WAT from trajectories"
          fi
 
@@ -247,7 +246,7 @@ function process_trajectories
                PrepareInputFile ${EQUI_PATH}/${ensemble} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                echo "   Calculating RMSD"
                cd ${EQUI_PATH}/${ensemble}
-               ${AMBERHOME}/bin/cpptraj -i ${EQUI}/${ensemble}/${RMSD_equi}
+               ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ensemble}/${RMSD_equi}
             else
                echo "   Not calculating RMSD"
                echo ""
