@@ -10,7 +10,6 @@ function Help
 {
    # Display Help
 
-   #echo "Syntax: traj_proc.sh -d working_directory -e 1 -p 1 -r 1 [-h|d|e|p|r]"
    echo "Syntax: traj_proc.sh OPTIONS"
    echo "options:"
    echo "h     Print help"
@@ -23,7 +22,7 @@ function Help
 }
 
 ################################################################
-# Remove waters from molecular dynamics trajectories function. #
+# Prepare Input Files. #
 ################################################################
 
 function PrepareInputFile
