@@ -232,11 +232,12 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
 
       if [[ $ONLY_PROTEIN_MD -eq 1 ]]
         then
+          
           echo 
           echo " # Protein-only! #"
           echo 
+          
           # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
           TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
           PROD_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/prod/
 
@@ -247,20 +248,24 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
       
       if [[ $PROT_LIG_MD -eq 1 ]]
         then
+          
           echo 
           echo " # Protein-Ligand! #"
-          echo 
+          echo
+
           declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
           declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
       
           for LIG in "${LIGANDS[@]}"
           do
             # Topology and coord file
-            CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
             TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
             PROD_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/prod/
+            OLD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/equi/npt/npt_equil_6
+
             cd $PROD_PATH
             run_MD $CRD md_prod $TOPO "" 0
+
           done
       fi
     fi
