@@ -24,7 +24,7 @@ function Help
    echo "  -p     0|1. (default=0) Process production output"
    echo "  -r     0|1. (default=0) Compute RMSD from trajectories"
    echo "  -w     0|1. (default=0) Remove WAT from trajectories"
-   echo "  -o     0|1. (default=0)Process .out files"
+   echo "  -o     0|1. (default=0) Process .out files"
 }
 
 # Default values
@@ -181,7 +181,7 @@ function process_trajectories
    local PROCESS_PROTEIN_LIGAND=$7
    local PROCESS_OUT_FILES=$8
    local PROCESS_WAT=$9
-   local PROCESS_RMSD=$10
+   local PROCESS_RMSD=${10}
 
    obtainPaths ${WDPATH} ${RECEPTOR} ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} ${LIG}
 
