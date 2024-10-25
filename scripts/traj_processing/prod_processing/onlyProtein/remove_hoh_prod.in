@@ -1,5 +1,5 @@
 parm ../../../topo/RECEPTOR_solv.parm7
 trajin *md_prod*.nc
-autoimage :1-NRES
 strip :WAT,Na+,K+,Cl-
+autoimage :1-NRES
 trajout RECEPTOR_prod_noWAT.nc format netcdf
