@@ -231,7 +231,7 @@ function process_trajectories
             elif [[ ${PROCESS_RMSD} -eq 1 && ! -f "${PROD_PATH}/${RECEPTOR}_prod_noWAT.nc" ]]
             then
                echo "   #########################################################"
-               echo "   No unsolvated coordinates available (${RECEPTOR}_prod_noWAT.nc). Can't calculate RMSD "
+               echo "   Can't calculate RMSD: No unsolvated coordinates available (${RECEPTOR}_prod_noWAT.nc)."
                echo "   #########################################################"
                exit 1
 
@@ -257,21 +257,35 @@ function process_trajectories
          
          ### REMOVE HOH
          if [[ ${PROCESS_WAT} -eq 1 ]]
-            then 
+            then
                cd ${EQUI_PATH}/${ENSEMBLE}
                PrepareInputFile ${EQUI_PATH}/${ENSEMBLE} ${EQUI_INPUT_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ENSEMBLE}/${RM_HOH_equi}
             else
+               echo "   ####################################"   
                echo "   Not removing WAT from trajectories"
+               echo "   ####################################"
          fi
 
          ### Calculate RMSD
-         if [[ ${PROCESS_RMSD} -eq 1 ]] #unsolvated coordinates
+         if [[ ${PROCESS_RMSD} -eq 1 && -f ${EQUI_PATH}/${ENSEMBLE}/${RECEPTOR}_equi_noWAT.nc ]] #unsolvated coordinates
             then
-               PrepareInputFile ${EQUI_PATH}/${ENSEMBLE} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-               echo "   Calculating RMSD"
+               echo "   ##########################################"
+               echo "   Computing RMSD from unsolvated coordinates"
+               echo "   ##########################################"
+
                cd ${EQUI_PATH}/${ENSEMBLE}
+
+               PrepareInputFile ${EQUI_PATH}/${ENSEMBLE} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+
                ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ENSEMBLE}/${RMSD_equi}
+            
+            elif [[ ${PROCESS_RMSD} -eq 1 && ! -f ${EQUI_PATH}/${ENSEMBLE}/${RECEPTOR}_equi_noWAT.nc ]]
+            then
+               echo "   #########################################################"
+               echo "   Can't calculate RMSD: No unsolvated coordinates available (${RECEPTOR}_prod_noWAT.nc). "
+               echo "   #########################################################"
+               exit 1
             else
                echo "#####################"
                echo "Not calculating RMSD"

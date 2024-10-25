@@ -3,5 +3,5 @@ trajin ../*md*.nc
 trajin ./*npt_equil_*.nc
 autoimage :1-NRES
 strip :WAT,Na+,K+,Cl-
-trajout ./RECEPTOR_equi.nc format netcdf
+trajout ./RECEPTOR_equi_noWAT.nc format netcdf
 

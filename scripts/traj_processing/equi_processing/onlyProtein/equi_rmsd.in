@@ -1,16 +1,11 @@
-parm ../../../topo/RECEPTOR_solv.parm7
+parm ../../../topo/RECEPTOR_vac.parm7
 
-trajin ../*md*.nc
-trajin *npt_equil*.nc
-strip :WAT,Na+,Cl-,K+
-autoimage :1-NRES
+trajin RECEPTOR_equi_noWAT.nc
 
 rms first out RECEPTOR_rmsd_noWAT.data :1-NRES@CA,C,N
 average crdset Avg
 run
 
-strip :WAT,Na+,Cl-,K+
-autoimage :1-NRES
 rms ref Avg
 atomicfluct out RECEPTOR_rmsf_noWAT.data 1-NRES@CA,C,N byres
 run
