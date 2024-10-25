@@ -120,11 +120,12 @@ function obtainPaths
    local PROCESS_ONLY_PROTEIN=$3
    local PROCESS_PROTEIN_LIGAND=$4
    local LIG=$5
+   local ENSEMBLE=$6
 
    if [[ $PROCESS_ONLY_PROTEIN -eq 1 ]]
    then
       EQUI_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/equi/"
-      PROD_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/prod"
+      PROD_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/prod/${ENSEMBLE}"
       TOPO_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/"
       N_RES=$(cat ${TOPO_PATH}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')      
    fi
@@ -132,7 +133,7 @@ function obtainPaths
    if [[ $PROCESS_PROTEIN_LIGAND -eq 1 ]]
    then
       EQUI_PATH="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/equi/"
-      PROD_PATH="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/"
+      PROD_PATH="${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${i}/prod/${ENSEMBLE}"
       TOPO_PATH="${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/"
       N_RES=$(cat ${TOPO}/${LIG}_com.pdb | tail -n 3 | awk '{print $5}')
    fi
@@ -147,9 +148,9 @@ function processProdOutFiles
    local PROD_PATH=$1
    local PROD_FILES=$2
 
-   echo "Copying process_mdout.perl to ${PROD_PATH}/${ensemble}"   
-   cp ${PROD_FILES}/process_mdout.perl ${PROD_PATH}/${ensemble}               
-   /usr/bin/perl ${PROD_PATH}/${ensemble}/process_mdout.perl ${PROD_PATH}/${ensemble}/*.out
+   echo "Copying process_mdout.perl to ${PROD_PATH}/"   
+   cp ${PROD_FILES}/process_mdout.perl ${PROD_PATH}/               
+   /usr/bin/perl ${PROD_PATH}/process_mdout.perl ${PROD_PATH}/*.out
 
 }
 
@@ -161,10 +162,11 @@ function processEquiOutFiles
 {
    local EQUI_PATH=$1
    local EQUI_FILES=$2
+   local ENSEMBLE=$3
 
    echo "Copying process_mdout.perl to ${EQUI_PATH}"
    cp ${EQUI_FILES}/process_mdout.perl ${EQUI_PATH}
-   /usr/bin/perl ${EQUI_PATH}/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./$ensemble/*.out
+   /usr/bin/perl ${EQUI_PATH}/process_mdout.perl min_ntr_h.out min_ntr_l.out md_nvt_ntr.out md_npt_ntr.out ./${ENSEMBLE}/*.out
 }
 
 ################################################################
@@ -185,8 +187,9 @@ function process_trajectories
    local PROCESS_OUT_FILES=$8
    local PROCESS_WAT=$9
    local PROCESS_RMSD=${10}
+   local ENSEMBLE=${11}
 
-   obtainPaths ${WDPATH} ${RECEPTOR} ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} ${LIG}
+   obtainPaths ${WDPATH} ${RECEPTOR} ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} ${LIG} ${ENSEMBLE}
 
    if [[ $PROCESS_PROD -eq 1 ]]
       then
@@ -231,15 +234,15 @@ function process_trajectories
          if [[ ${PROCESS_OUT_FILES} -eq 1 ]]
             then
                cd ${EQUI_PATH}
-               processEquiOutFiles ${EQUI_PATH} ${EQUI_INPUT_FILES}
+               processEquiOutFiles ${EQUI_PATH} ${EQUI_INPUT_FILES} ${ENSEMBLE}
          fi
          
          ### REMOVE HOH
          if [[ ${PROCESS_WAT} -eq 1 ]]
             then 
-               cd ${EQUI_PATH}/${ensemble}
-               PrepareInputFile ${EQUI_PATH}/${ensemble} ${EQUI_INPUT_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
-               ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ensemble}/${RM_HOH_equi}
+               cd ${EQUI_PATH}/${ENSEMBLE}
+               PrepareInputFile ${EQUI_PATH}/${ENSEMBLE} ${EQUI_INPUT_FILES} ${RM_HOH_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+               ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ENSEMBLE}/${RM_HOH_equi}
             else
                echo "   Not removing WAT from trajectories"
          fi
@@ -247,10 +250,10 @@ function process_trajectories
          ### Calculate RMSD
          if [[ ${PROCESS_RMSD} -eq 1 ]] #unsolvated coordinates
             then
-               PrepareInputFile ${EQUI_PATH}/${ensemble} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
+               PrepareInputFile ${EQUI_PATH}/${ENSEMBLE} ${EQUI_INPUT_FILES} ${RMSD_equi} ${RECEPTOR} ${N_RES} #${TOPO}
                echo "   Calculating RMSD"
-               cd ${EQUI_PATH}/${ensemble}
-               ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ensemble}/${RMSD_equi}
+               cd ${EQUI_PATH}/${ENSEMBLE}
+               ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ENSEMBLE}/${RMSD_equi}
             else
                echo "   Not calculating RMSD"
                echo ""
@@ -282,7 +285,7 @@ RMSD="prod_rmsd.in"
 RMSD_equi="equi_rmsd.in"
 
 # MD ensemble
-ensemble="npt"
+ENSEMBLE="npt"
 
 displayHello
 
@@ -294,8 +297,8 @@ do
       echo " #       Repetition ${i}   # "
       LIG=false
       process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
-                           ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \
-                           ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD}
+                           ${PROCESS_ONLY_PROTEIN} 0 \
+                           ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD} ${ENSEMBLE}
    fi
    if [[ ${PROCESS_PROTEIN_LIGAND} -eq 1 ]]
       then
@@ -308,8 +311,8 @@ do
          do
          echo "Ligand is ${LIG}"
          process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
-                              ${PROCESS_ONLY_PROTEIN} ${PROCESS_PROTEIN_LIGAND} \ 
-                              ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD}
+                              0 ${PROCESS_PROTEIN_LIGAND} \ 
+                              ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD} ${ENSEMBLE}
       done
    fi
 done
