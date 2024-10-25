@@ -206,7 +206,7 @@ function process_trajectories
             then
                cd ${PROD_PATH}  
                PrepareInputFile ${PROD_PATH} ${PROD_INPUT_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
-               ${AMBERHOME}/bin/cpptraj -i ${PROD}/${RM_HOH}
+               ${AMBERHOME}/bin/cpptraj -i ${PROD_PATH}/${RM_HOH}
             else
                echo "   Not removing WAT from trajectories"
          fi
