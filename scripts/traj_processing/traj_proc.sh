@@ -124,7 +124,7 @@ function obtainPaths
    if [[ $PROCESS_ONLY_PROTEIN -eq 1 ]]
    then
       EQUI_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/equi/"
-      PROD_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/prod/"
+      PROD_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${i}/prod"
       TOPO_PATH="${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/"
       N_RES=$(cat ${TOPO_PATH}/${RECEPTOR}_rec.pdb | tail -n 3 | awk '{print $5}')      
    fi
@@ -147,9 +147,9 @@ function processProdOutFiles
    local PROD_PATH=$1
    local PROD_FILES=$2
 
-   echo "Copying process_mdout.perl to ${PROD_PATH}"   
+   echo "Copying process_mdout.perl to ${PROD_PATH}/${ensemble}"   
    cp ${PROD_FILES}/process_mdout.perl ${PROD_PATH}/${ensemble}               
-   /usr/bin/perl ${PROD_PATH}/process_mdout.perl ${PROD_PATH}/${ensemble}/*.out
+   /usr/bin/perl ${PROD_PATH}/${ensemble}/process_mdout.perl ${PROD_PATH}/${ensemble}/*.out
 
 }
 
