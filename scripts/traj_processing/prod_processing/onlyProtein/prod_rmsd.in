@@ -1,15 +1,10 @@
-parm ../../../topo/RECEPTOR_solv.parm7
-trajin *md_prod*.nc
-strip :WAT,Na+,Cl-,K+
-autoimage :1-NRES
+parm ../../../topo/RECEPTOR_vac.parm7
+trajin RECEPTOR_prod_noWAT.nc
 
 rms first out LIG_rmsd_noWAT.data :1-NRES@CA,C,N 
 
 average crdset Avg
 run
-
-strip :WAT,Na+,Cl-,K+
-autoimage :1-NRES
 
 #RMSD de residuos a 6 amstrong de la auxina (residuo 586). La referencia es el primer frame. No deberia especificar la línea 18, pero no funciona https://amber-md.github.io/cpptraj/CPPTRAJ.xhtml#magicparlabel-7024
 rms ref Avg

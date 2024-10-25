@@ -207,20 +207,38 @@ function process_trajectories
                               
          if [[ ${PROCESS_WAT} -eq 1 ]] # Remove waters
             then
+               echo "   ##########################################"
+               echo "   Removing waters from trajectories"
+               echo "   ##########################################"
                cd ${PROD_PATH}  
                PrepareInputFile ${PROD_PATH} ${PROD_INPUT_FILES} ${RM_HOH} ${RECEPTOR} ${N_RES} 
                ${AMBERHOME}/bin/cpptraj -i ${PROD_PATH}/${RM_HOH}
             else
+               echo "   ####################################"   
                echo "   Not removing WAT from trajectories"
+               echo "   ####################################"
          fi
 
-         if [[ ${PROCESS_RMSD} -eq 1 ]] #Calculate RMSD
+         if [[ ${PROCESS_RMSD} -eq 1 && -f "${PROD_PATH}/${RECEPTOR}_prod_noWAT.nc" ]] #Calculate RMSD
             then
-               echo "   Computing RMSD"
+               echo "   ##########################################"
+               echo "   Computing RMSD from unsolvated coordinates"
+               echo "   ##########################################"
+               cd ${PROD_PATH}
                PrepareInputFile ${PROD_PATH} ${PROD_INPUT_FILES} ${RMSD} ${RECEPTOR} ${N_RES}
                ${AMBERHOME}/bin/cpptraj -i ${PROD_PATH}/${RMSD}
+
+            elif [[ ${PROCESS_RMSD} -eq 1 && ! -f "${PROD_PATH}/${RECEPTOR}_prod_noWAT.nc" ]]
+            then
+               echo "   #########################################################"
+               echo "   No unsolvated coordinates available (${RECEPTOR}_prod_noWAT.nc). Can't calculate RMSD "
+               echo "   #########################################################"
+               exit 1
+
             else
+               echo "   #####################"
                echo "   Not calculating RMSD"
+               echo "   #####################"
          fi
    fi 
 
@@ -255,8 +273,9 @@ function process_trajectories
                cd ${EQUI_PATH}/${ENSEMBLE}
                ${AMBERHOME}/bin/cpptraj -i ${EQUI_PATH}/${ENSEMBLE}/${RMSD_equi}
             else
-               echo "   Not calculating RMSD"
-               echo ""
+               echo "#####################"
+               echo "Not calculating RMSD"
+               echo "#####################"
          fi
          
    fi
@@ -293,8 +312,11 @@ for i in $(seq ${REPLICAS_START} ${REPLICAS_END})
 do
    if [[ ${PROCESS_ONLY_PROTEIN} -eq 1 ]]
       then
-      echo " # Processing Only-protein # "
-      echo " #       Repetition ${i}   # "
+      echo "########################"
+      echo "Processing Only-protein "
+      echo "     Repetition ${i} "
+      echo "########################"
+      
       LIG=false
       process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
                            ${PROCESS_ONLY_PROTEIN} 0 \
