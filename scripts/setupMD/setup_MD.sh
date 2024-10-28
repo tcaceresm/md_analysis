@@ -6,7 +6,7 @@ set -euo pipefail
 # Help
 ############################################################
 Help() {
-    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-r 0|1] [-l 0|1] [-c 0|1] [-x 0|1] [-k 0|1]"
+    echo "Usage: bash setup_MD.sh [-h] [-d DIRECTORY] [-t TIME] [-n REPLICAS] [-p 0|1] [-z 0|1] [-r 0|1] [-l 0|1] [-c 0|1] [-x 0|1] [-k 0|1] [-g 0|1] [-u 0|1] [-y CHARGE]"
     echo
     echo "This script sets up molecular dynamics simulations in the specified directory."
     echo "Also, it can setup MM/P(G)BSA rescoring calculations (only in protein-ligand setup)."
@@ -33,6 +33,8 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "  -x 0|1           (default=1) Preparation of topologies. If 0, won't copy input files or calculate topologies"
     echo "  -k 0|1           (default=1) Copy MD input files."
     echo "  -g 0|1           (default=0) Setup MM/PB(G)SA rescoring."
+    echo "  -u 0|1           (default=1) Compute partial charges using antechamber"
+    echo "  -y CHARGE        (default='bcc') Charge method for ligand parameterization. See antechamber -L for charge methods."
 
     echo
     echo "Examples:"
@@ -53,11 +55,13 @@ PREP_LIG=1
 PREP_COFACTOR=0
 PREP_TOPO=1
 PREP_MD=1
+CHARGE_METHOD='bcc'
+COMPUTE_CHARGES=1
 
 ###########################################################
 # Options
 ###########################################################
-while getopts ":hd:p:z:g:t:f:n:r:l:c:x:k:" option; do
+while getopts ":hd:p:z:g:t:f:n:r:l:c:x:k:u:y:" option; do
     case $option in
         h)  # Print this help
             Help
@@ -86,6 +90,10 @@ while getopts ":hd:p:z:g:t:f:n:r:l:c:x:k:" option; do
             PREP_TOPO=$OPTARG;;
         k)  # Prep MD input files
             PREP_MD=$OPTARG;;
+        u)  # Compute charges
+            COMPUTE_CHARGES=$OPTARG;;
+        y)  # Charge method
+            CHARGE_METHOD=$OPTARG;;
         \?) # Invalid option
             echo "Error: Invalid option"
             exit;;
@@ -144,7 +152,7 @@ CreateProteinLigandDirectories() {
     local RECEPTOR=$3
 
     # Directorio donde crearemos repN/equi_prod/npt,nvt
-    BASE_DIR=${WDPATH}/MD/${RECEPTOR}
+    BASE_DIR=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD
     # Subdirectorios dentro de cada réplica
     SUBDIRS=("mmpbgsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
 
@@ -192,6 +200,7 @@ PrepareLigand() {
     local LEAP_LIG=$3
     local LIGAND_LIB=$4
     local RESNAME=$5
+    local COMPUTE_CHARGES=$6
         
     echo "####################################"
     echo "# Preparing ligand: $LIG           #"
@@ -208,8 +217,13 @@ PrepareLigand() {
     LIGAND_NET_CHARGE=$(awk '/ATOM/{ f = 1; next } /BOND/{ f = 0 } f' "${LIG}.mol2" | awk '{sum += $9} END {printf "%.0f\n", sum}')
     echo "Net charge of ${LIG}.mol2: ${LIGAND_NET_CHARGE}" | tee -a ligand_net_charge.log
 
-    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -c bcc -nc "$LIGAND_NET_CHARGE" -at gaff2 -rn $RESNAME
-    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}_lig.pdb" -fo pdb -dr n -nc $LIGAND_NET_CHARGE -at gaff2 -rn $RESNAME
+    if [[ ${COMPUTE_CHARGES} -eq 1 ]]
+    then
+        $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -c "${CHARGE_METHOD}" -nc "$LIGAND_NET_CHARGE" -at gaff2 -rn $RESNAME
+    else
+        $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}.mol2" -fo mol2 -at gaff2 -rn $RESNAME
+    fi
+    $AMBERHOME/bin/antechamber -i "${LIGAND_LIB}/${LIG}.mol2" -fi mol2 -o "${LIGAND_LIB}/${LIG}_lig.pdb" -fo pdb -dr n -at gaff2 -rn $RESNAME
     $AMBERHOME/bin/parmchk2 -i "${LIGAND_LIB}/${LIG}.mol2" -f mol2 -o "${LIGAND_LIB}/${LIG}.frcmod"
     $AMBERHOME/bin/tleap -f "${LIGAND_LIB}/${LEAP_LIG}" > prepare_ligand.log
     
@@ -257,7 +271,7 @@ PrepareProteinLigandTopology() {
     local LIG=$1
     local REC=$2
     local LEAP_TOPO=$3
-    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
+    local TOPO="${WDPATH}/MD/${REC}/proteinLigandMD/${LIG}/topo"
 
     echo "####################################"
     echo "# Preparing Topologies $REC - $LIG #"
@@ -316,8 +330,8 @@ PrepareProteinLigandMD() {
     local LIG=$1
     local REC=$2
     local N=$3
-    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
-    local MD_FOLDER="${WDPATH}/MD/${REC}/${LIG}/setupMD/"
+    local TOPO="${WDPATH}/MD/${REC}/proteinLigandMD/${LIG}/topo"
+    local MD_FOLDER="${WDPATH}/MD/${REC}/proteinLigandMD/${LIG}/setupMD/"
 
     echo "####################################"
     echo "# Preparing ProteinLigand MD files #"
@@ -333,8 +347,8 @@ PrepareProteinLigandMD() {
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/equi/*.in ${MD_FOLDER}/rep${rep}/equi/n*t/*.in 
         sed -i "s/TIME/${NSTEPS_EQUI}/g" ${MD_FOLDER}/rep${rep}/equi/npt/npt_equil_6.in
 
-        cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/"
-        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/md_prod.in"  
+        cp "${SCRIPT_PATH}/input_files/prod/md_prod.in" "${MD_FOLDER}/rep${rep}/prod/npt"
+        sed -i "s/TIME/${NSTEPS}/g" "${MD_FOLDER}/rep${rep}/prod/npt/md_prod.in"  
     done
 
     echo "Done copying files for ProteinLigand MD"
@@ -345,8 +359,8 @@ PrepareProteinLigandMMPGBSA() {
     local LIG=$1
     local REC=$2
     local N=$3
-    local TOPO="${WDPATH}/MD/${REC}/${LIG}/topo"
-    local MD_FOLDER="${WDPATH}/MD/${REC}/${LIG}/setupMD/"
+    local TOPO="${WDPATH}/MD/${REC}/proteinLigandMD/${LIG}/topo"
+    local MD_FOLDER="${WDPATH}/MD/${REC}/proteinLigandMD/${LIG}/setupMD/"
 
     echo "#########################################"
     echo "# Preparing ProteinLigand MMPGBSA files #"
@@ -365,7 +379,7 @@ PrepareProteinLigandMMPGBSA() {
 
     for rep in $(seq 1 $N)
     do 
-        cp ${SCRIPT_PATH}/input_files/mmpbgsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring
+        cp ${SCRIPT_PATH}/input_files/mmpgbsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring
         sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring/*.in
     done
 
@@ -412,7 +426,7 @@ then
     mkdir -p ${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib
     COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
     COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
-    PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF"
+    PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF" ${COMPUTE_CHARGES}
 else
     COFACTOR_NAME="a"
 
@@ -464,7 +478,11 @@ then
     for LIG in "${LIGANDS[@]}"
     do
         CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
-        PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/${LIG}/lib" "LIG"
+
+        if [[ $PREP_LIG -eq 1 ]]
+        then
+            PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
+        fi
         if [[ $PREP_TOPO -eq 1 ]]
         then
             PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO

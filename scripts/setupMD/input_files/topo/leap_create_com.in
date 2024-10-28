@@ -8,8 +8,8 @@ loadoff ../lib/LIGAND.lib
 #loadoff ../../cofactor_lib/COFACTOR.lib
 
 LIG = loadpdb ../lib/LIGAND_lig.pdb
-REC = loadpdb ../../receptor/RECEPTOR_prep.pdb
-#COF = loadpdb ../../cofactor_lib/COFACTOR_lig.pdb
+REC = loadpdb ../../../receptor/RECEPTOR_prep.pdb
+#COF = loadpdb ../../../cofactor_lib/COFACTOR_lig.pdb
 #REC = combine {REC COF}
 COM = combine {REC LIG}
 #COM = combine {REC LIG}
@@ -20,7 +20,7 @@ savepdb LIG ./LIGAND_lig.pdb
 #savepdb COF ./LIGAND_cof.pdb
 
 loadAmberParams ../lib/LIGAND.frcmod
-#loadAmberParams ../../cofactor_lib/COFACTOR.frcmod
+#loadAmberParams ../../../cofactor_lib/COFACTOR.frcmod
 
 saveAmberParm LIG ./LIGAND_vac_lig.parm7 ./LIGAND_vac_lig.rst7
 saveAmberParm REC ./LIGAND_vac_rec.parm7 ./LIGAND_vac_rec.rst7
