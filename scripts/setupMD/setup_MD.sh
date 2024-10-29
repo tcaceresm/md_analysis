@@ -49,7 +49,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
 
 # Default values
 EQUI_TIME=1
-MMPBGSA=0
+MMPBSA=0
 PREP_REC=1
 PREP_LIG=1
 PREP_COFACTOR=0
@@ -79,7 +79,7 @@ while getopts ":hd:p:z:g:t:f:n:r:l:c:x:k:u:y:" option; do
         z)  # Protein-Ligand MD
             PROT_LIG_MD=$OPTARG;;
         g)  # MM/P(G)BSA rescoring
-            MMPBGSA=$OPTARG;;
+            MMPBSA=$OPTARG;;
         r)  # Prepare receptor?
             PREP_REC=$OPTARG;;
         l)  # Prepare ligand?
@@ -364,7 +364,7 @@ PrepareProteinLigandMD() {
     echo
 }
 
-PrepareProteinLigandMMPGBSA() {
+PrepareProteinLigandMMPBSA() {
     local LIG=$1
     local REC=$2
     local N=$3
@@ -372,7 +372,7 @@ PrepareProteinLigandMMPGBSA() {
     local MD_FOLDER="${WDPATH}/MD/${REC}/proteinLigandMD/${LIG}/setupMD/"
 
     echo "#########################################"
-    echo "# Preparing ProteinLigand MMPGBSA files #"
+    echo "# Preparing ProteinLigand MMPBSA files #"
     echo "#########################################"
 
     if [[ ! -f ${TOPO}/${LIG}_com.pdb ]]
@@ -503,9 +503,9 @@ then
             PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
         fi
 
-        if [[ $MMPBGSA -eq 1 ]]
+        if [[ $MMPBSA -eq 1 ]]
         then
-            PrepareProteinLigandMMPGBSA $LIG $RECEPTOR_NAME $REPLICAS
+            PrepareProteinLigandMMPBSA $LIG $RECEPTOR_NAME $REPLICAS
         fi
 
     done
