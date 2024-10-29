@@ -154,7 +154,7 @@ CreateProteinLigandDirectories() {
     # Directorio donde crearemos repN/equi_prod/npt,nvt
     BASE_DIR=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD
     # Subdirectorios dentro de cada réplica
-    SUBDIRS=("mmpbgsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
+    SUBDIRS=("mmpbsa_rescoring" "equi/npt" "equi/nvt" "prod/npt" "prod/nvt")
 
     mkdir -p ${BASE_DIR}/${LIG}/{lib,setupMD,topo}
     # Crear la estructura de directorios
