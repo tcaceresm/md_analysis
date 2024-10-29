@@ -491,25 +491,9 @@ then
         then
             PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
         fi
-    done
-fi
-
-if [[ $MMPBGSA -eq 1 ]]
-then
-    LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"))
-    
-    if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
-    then
-        echo "Empty ligands folder."
-        echo "Exiting."
-        exit 1
-    fi
-
-    LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))  
-
-    for LIG in "${LIGANDS[@]}"
-    do
-        PrepareProteinLigandMMPGBSA  $LIG $RECEPTOR_NAME $REPLICAS
+        if [[ $MMPBGSA -eq 1 ]]
+        then
+            PrepareProteinLigandMMPGBSA $LIG $RECEPTOR_NAME $REPLICAS
     done
 fi
 
