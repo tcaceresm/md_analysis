@@ -337,6 +337,15 @@ PrepareProteinLigandMD() {
     echo "# Preparing ProteinLigand MD files #"
     echo "####################################"
 
+    if [[ ! -f ${TOPO}/${LIG}_com.pdb ]]
+    then
+        echo "ERROR! Can't find ${TOPO}/${LIG}_com.pdb in order to obtain ligand (${LIG}) residue number."
+        echo "Make sure that protein-ligand complex topologies exist."
+        echo "Have you run the [-x 1] flag previously?"
+        echo "Exiting"
+        exit 1
+    fi
+    
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
     NSTEPS=$((500000 * $TIME))
     NSTEPS_EQUI=$((500000 * $EQUI_TIME))
@@ -498,7 +507,7 @@ then
         then
             PrepareProteinLigandMMPGBSA $LIG $RECEPTOR_NAME $REPLICAS
         fi
-        
+
     done
 fi
 
