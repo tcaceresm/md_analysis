@@ -8,7 +8,7 @@ set -euo pipefail
 Help()
 {
    # Display Help
-   echo "Usage: bash run_MMPBGSA.sh [-h] [-d DIRECTORY] [-n REPLICAS] [-r 0|1] [-y 0|1] [-n 0|1]"
+   echo "Usage: bash run_MMPBSA.sh [-h] [-d DIRECTORY] [-n REPLICAS] [-r 0|1] [-y 0|1] [-n 0|1]"
    echo
    echo "This script perform MM/PB(G)SA rescoring of docked poses."
    echo "You must run setup_MD.sh first, using the same working directory."    
@@ -58,7 +58,7 @@ function displayHello()
 {
 echo "
 ##############################
-Welcome to run_MMPBGSA v0.0.0
+Welcome to run_MMPBSA v0.0.0
 Author: Tomás Cáceres <caceres.tomas@uc.cl>
 Laboratory of Molecular Design <http://schuellerlab.org/>
 https://github.com/tcaceresm/md_analysis
@@ -223,7 +223,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
       # Topology and coord file
       TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/
       REF=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv_com
-      RESCORING_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/mmpbgsa_rescoring
+      RESCORING_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/mmpbsa_rescoring
       
       cd $RESCORING_PATH
       
