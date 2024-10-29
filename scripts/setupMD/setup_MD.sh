@@ -483,17 +483,22 @@ then
         then
             PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
         fi
+
         if [[ $PREP_TOPO -eq 1 ]]
         then
             PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
         fi
+
         if [[ $PREP_MD -eq 1 ]]
         then
             PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
         fi
+
         if [[ $MMPBGSA -eq 1 ]]
         then
             PrepareProteinLigandMMPGBSA $LIG $RECEPTOR_NAME $REPLICAS
+        fi
+        
     done
 fi
 
