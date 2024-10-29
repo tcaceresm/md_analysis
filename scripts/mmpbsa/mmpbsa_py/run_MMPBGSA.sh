@@ -154,44 +154,6 @@ EOF
 }
 
 ############################################################
-# MM/PBGSA input
-############################################################
-
-function create_mmpbsa_input () {
-cat > mm_pbsa.in  <<EOF
-  Input file for PBSA
-&general
-startframe=1, endframe=1100, interval=100,
-verbose=2, keep_files=0, netcdf=1,
-use_sander=1
-
-/
-&pb
-inp=2, indi=1.0, exdi=80.0, cavity_offset=-0.5692,
-cavity_surften=0.0378, prbrad=1.4,
-scale=2.0, linit=1000, istrng=0.0, radiopt=0, 
-istrng=0.15, fillratio=4.0,
-EOF
-
-}
-
-function create_mmgbsa_input () {
-
-cat > mm_gbsa.in  <<EOF
-  Input file for GBSA
-&general
-startframe=1, endframe=1,
-verbose=2, keep_files=0, netcdf=1,
-use_sander=1
-/
-&gb
-igb=1, saltcon=0.1, surfoff=0.0,
-surften=0.0072, molsurf=0, probe=0
-EOF
-
-}
-
-############################################################
 # Perform MM/PBGSA calculations
 ############################################################
 
@@ -272,11 +234,11 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
 
       if [[ $RUN_MMPBSA -eq 1 ]]
       then
-        create_mmpbsa_input 
+        #create_mmpbsa_input 
         run_rescoring $LIG "mm_pbsa.in" min_no_ntr_noWAT.rst7 ${TOPO}/${LIG}_vac_com.parm7 ${TOPO}/${LIG}_vac_rec.parm7 ${TOPO}/${LIG}_vac_lig.parm7 1 MMPBSA.py.MPI mmpbsa
       elif [[ $RUN_MMGBSA -eq 1 ]]
       then
-        create_mmgbsa_input
+        #create_mmgbsa_input
         run_rescoring $LIG "mm_gbsa.in" ${RESCORING_PATH}/min_no_ntr_noWAT.rst7 ${TOPO}/${LIG}_vac_com.parm7 ${TOPO}/${LIG}_vac_rec.parm7 ${TOPO}/${LIG}_vac_lig.parm7 1 MMPBSA.py.MPI mmgbsa
       fi
     done
