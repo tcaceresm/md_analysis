@@ -379,7 +379,7 @@ PrepareProteinLigandMMPGBSA() {
     then
         echo "ERROR! Can't find ${TOPO}/${LIG}_com.pdb in order to obtain ligand (${LIG}) residue number."
         echo "Make sure that protein-ligand complex topologies exist."
-        echo "Have you run the [-z 1] flag previously?"
+        echo "Have you run the [-x 1] flag previously?"
         echo "Exiting"
         exit 1
     fi
