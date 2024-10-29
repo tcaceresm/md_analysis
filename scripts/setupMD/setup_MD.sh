@@ -364,7 +364,7 @@ PrepareProteinLigandMD() {
     echo
 }
 
-PrepareProteinLigandMMPGBSAMinimization() {
+PrepareProteinLigandMMPGBSA() {
     local LIG=$1
     local REC=$2
     local N=$3
@@ -435,9 +435,10 @@ then
     mkdir -p ${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib
     COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"))
     COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
+
     PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF" ${COMPUTE_CHARGES}
 else
-    COFACTOR_NAME="a"
+    COFACTOR_NAME="a" #I'm not a good programmer
 
 fi
 
@@ -478,7 +479,6 @@ then
 
     LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
-
     # Ligand leap input
     LEAP_LIGAND="leap_lib.in"
     # Leap input para topologias complejo proteina-ligando
@@ -505,7 +505,7 @@ then
 
         if [[ $MMPBGSA -eq 1 ]]
         then
-            PrepareProteinLigandMMPGBSAMinimization $LIG $RECEPTOR_NAME $REPLICAS
+            PrepareProteinLigandMMPGBSA $LIG $RECEPTOR_NAME $REPLICAS
         fi
 
     done
