@@ -388,8 +388,8 @@ PrepareProteinLigandMMPBSA() {
 
     for rep in $(seq 1 $N)
     do 
-        cp ${SCRIPT_PATH}/input_files/mmpgbsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring
-        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpbgsa_rescoring/*.in
+        cp ${SCRIPT_PATH}/input_files/mmpbsa_rescoring/*.in ${MD_FOLDER}/rep${rep}/mmpbsa_rescoring
+        sed -i "s/TOTALRES/${TOTALRES}/g" ${MD_FOLDER}/rep${rep}/mmpbsa_rescoring/*.in
     done
 
     echo " Done!"
@@ -500,7 +500,7 @@ then
 
         if [[ $PREP_MD -eq 1 ]]
         then
-            PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
+            PrepareProteinLigandMD "$LPrepareProteinLigandMMPBSAIG" "$RECEPTOR_NAME" $REPLICAS
         fi
 
         if [[ $MMPBSA -eq 1 ]]
