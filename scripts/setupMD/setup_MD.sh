@@ -409,8 +409,7 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WDPATH=$(realpath "$WDPATH")
 
 # Receptor
-#RECEPTOR_PDB=($(ls "${WDPATH}/receptor/*.pdb"))
-RECEPTOR_PDB=("${WDPATH}/receptor/"*.pdb)
+RECEPTOR_PDB=($(ls "${WDPATH}/receptor/"*.pdb))
 if [[ ${#RECEPTOR_PDB[@]} -eq 0 ]]
 then
     echo "Empty receptor folder."
@@ -433,8 +432,8 @@ fi
 if [[ $PREP_COFACTOR -eq 1 ]]
 then
     mkdir -p ${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib
-    #COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/*.mol2"))
-    COFACTOR_MOL2=("${WDPATH}/cofactor/"*.mol2)
+    COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/"*.mol2))
+    
     COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
     PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF" ${COMPUTE_CHARGES}
@@ -469,8 +468,8 @@ then
     echo "# Preparing Protein-Ligand MD      #"
     echo "####################################"
     # Ligandos
-    #LIGANDS_MOL2=($(ls "${WDPATH}/ligands/*.mol2"))
-    LIGANDS_MOL2=("${WDPATH}/ligands/"*.mol2)
+    LIGANDS_MOL2=($(ls "${WDPATH}/ligands/"*.mol2))
+    
     echo $LIGANDS_MOL2
     if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
     then
