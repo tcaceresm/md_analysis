@@ -468,7 +468,7 @@ then
     echo "# Preparing Protein-Ligand MD      #"
     echo "####################################"
     # Ligandos
-    LIGANDS_MOL2=($(basename "${WDPATH}/ligands/"*.mol2))
+    LIGANDS_MOL2=($("${WDPATH}/ligands/"*.mol2))
 
     if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
     then
@@ -487,7 +487,7 @@ then
     for LIG in "${LIGANDS[@]}"
     do
         CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
-
+        echo "CAAACA ${LIG}"
         if [[ $PREP_LIG -eq 1 ]]
         then
             PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
