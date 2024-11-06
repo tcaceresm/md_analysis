@@ -433,7 +433,8 @@ fi
 if [[ $PREP_COFACTOR -eq 1 ]]
 then
     mkdir -p ${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib
-    COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/*.mol2"))
+    #COFACTOR_MOL2=($(ls "${WDPATH}/cofactor/*.mol2"))
+    COFACTOR_MOL2=("${WDPATH}/cofactor/"*.mol2)
     COFACTOR_NAME=($(sed "s/.mol2//g" <<< "${COFACTOR_MOL2[*]}"))
 
     PrepareLigand $COFACTOR_NAME "${WDPATH}/cofactor" "leap_lib_cof.in" "${WDPATH}/MD/${RECEPTOR_NAME}/cofactor_lib" "COF" ${COMPUTE_CHARGES}
@@ -468,8 +469,8 @@ then
     echo "# Preparing Protein-Ligand MD      #"
     echo "####################################"
     # Ligandos
-    LIGANDS_MOL2=($(ls "${WDPATH}/ligands/*.mol2"))
-
+    #LIGANDS_MOL2=($(ls "${WDPATH}/ligands/*.mol2"))
+    LIGANDS_MOL2=("${WDPATH}/ligands/"*.mol2)
     if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
     then
         echo "Empty ligands folder."
