@@ -468,7 +468,7 @@ then
     echo "# Preparing Protein-Ligand MD      #"
     echo "####################################"
     # Ligandos
-    LIGANDS_MOL2=($("${WDPATH}/ligands/"*.mol2))
+    LIGANDS_MOL2=$("${WDPATH}/ligands/"*.mol2)
 
     if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
     then
