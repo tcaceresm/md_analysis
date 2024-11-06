@@ -199,7 +199,7 @@ then
     exit 1
 fi
 
-RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
+RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 # Ligandos analizados
 LIGANDS_MOL2=("${WDPATH}/ligands/"*.mol2)
