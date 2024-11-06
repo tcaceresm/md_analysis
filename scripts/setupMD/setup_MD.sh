@@ -409,8 +409,8 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WDPATH=$(realpath "$WDPATH")
 
 # Receptor
-RECEPTOR_PDB=($(ls "${WDPATH}/receptor/*.pdb"))
-
+#RECEPTOR_PDB=($(ls "${WDPATH}/receptor/*.pdb"))
+RECEPTOR_PDB=("${WDPATH}/receptor/"*.pdb)
 if [[ ${#RECEPTOR_PDB[@]} -eq 0 ]]
 then
     echo "Empty receptor folder."
