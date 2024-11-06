@@ -469,8 +469,7 @@ then
     echo "####################################"
     # Ligandos
     LIGANDS_MOL2=($(basename "${WDPATH}/ligands/"*.mol2))
-    
-    echo "PEEEO $LIGANDS_MOL2"
+
     if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
     then
         echo "Empty ligands folder."
