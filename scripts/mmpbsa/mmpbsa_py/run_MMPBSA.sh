@@ -190,13 +190,28 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Ruta de la carpeta de trabajo. Es SCRIPT_PATH / WD_PATH
 WDPATH=($(realpath $WD_PATH))
 
-# Receptores analizados
-RECEPTOR_PDB=($(ls ${WDPATH}/receptor/))
-RECEPTOR=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
+# Receptor
+RECEPTOR_PDB=($(basename "${WDPATH}/receptor/"*.pdb))
+if [[ ${#RECEPTOR_PDB[@]} -eq 0 ]]
+then
+    echo "Empty receptor folder."
+    echo "Exiting."
+    exit 1
+fi
+
+RECEPTOR_NAME=($(sed "s/.pdb//g" <<< "${RECEPTOR_PDB[*]}"))
 
 # Ligandos analizados
-declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
-declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+LIGANDS_MOL2=("${WDPATH}/ligands/"*.mol2)
+
+if [[ ${#LIGANDS_MOL2[@]} -eq 0 ]]
+then
+    echo "Empty ligands folder."
+    echo "Exiting."
+    exit 1
+fi
+
+LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
 CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
 
@@ -215,6 +230,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
       
     for LIG in "${LIGANDS[@]}"
     do
+      LIG=$(basename "${LIG}")
       echo "#######################"
       echo " Doing ligand: ${LIG} "
       echo "#######################"
