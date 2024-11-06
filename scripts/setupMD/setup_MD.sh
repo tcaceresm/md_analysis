@@ -478,7 +478,7 @@ then
     fi
 
     LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
+    echo "PEEENE $LIGANDS"
     # Ligand leap input
     LEAP_LIGAND="leap_lib.in"
     # Leap input para topologias complejo proteina-ligando
