@@ -486,8 +486,9 @@ then
 
     for LIG in "${LIGANDS[@]}"
     do
+        LIG=$(basename "${LIG}")
         CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
-        echo "CAAACA ${LIG}"
+        
         if [[ $PREP_LIG -eq 1 ]]
         then
             PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
