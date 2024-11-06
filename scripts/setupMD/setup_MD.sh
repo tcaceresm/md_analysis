@@ -500,7 +500,7 @@ then
 
         if [[ $PREP_MD -eq 1 ]]
         then
-            PrepareProteinLigandMD "$PrepareProteinLigandMMPBSA" "$RECEPTOR_NAME" $REPLICAS
+            PrepareProteinLigandMD "$RECEPTOR_NAME" $REPLICAS
         fi
 
         if [[ $MMPBSA -eq 1 ]]
