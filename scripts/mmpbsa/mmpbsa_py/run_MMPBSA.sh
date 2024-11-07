@@ -11,11 +11,13 @@ Help()
    echo "Usage: bash run_MMPBSA.sh [-h] [-d DIRECTORY] [-n REPLICAS] [-r 0|1] [-y 0|1] [-n 0|1]"
    echo
    echo "This script perform MM/PB(G)SA rescoring of docked poses."
-   echo "You must run setup_MD.sh first, using the same working directory."    
+   echo "You must run setup_MD.sh first, using the same working directory."
+   echo "Minimization needs to be performed at least one time." 
    echo
    echo "Options:"
    echo "  -h                   Print this help"
    echo "  -d DIRECTORY         Working Directory."
+   echo "  -m MINIMIZATION      (default=0) Run minimization"
    echo "  -r 0|1               (default=0) Run MM/PBSA rescoring."
    echo "  -g 0|1               (default=0) Run MM/GBSA rescoring."
    echo "  -y REPLICAS_START    (default=1). See example below"
@@ -28,6 +30,7 @@ Help()
 RUN_MMPBSA=0
 RUN_MMGBSA=0
 REPLICAS_START=1
+RUN_MINIMIZATION=0
 
 ############################################################
 # Process the input options. Add options as needed.        #
@@ -99,6 +102,7 @@ function run_minimization ()
   # 3 steps minimization in explicit solvent
   local TOPO=$1
   local REF=$2
+  local CUDA_EXE=$3
   echo "####################"
   echo " Minimization"
   echo "####################"
@@ -243,19 +247,22 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
       
       cd $RESCORING_PATH
       
-      run_minimization $TOPO/${LIG}_solv_com.parm7 $REF
-      
+      if [[ $RUN_MINIMIZATION -eq 1 ]]
+      then
+        run_minimization $TOPO/${LIG}_solv_com.parm7 $REF
+      fi
+
       process_rst7 ${LIG}
       cpptraj -i ${RESCORING_PATH}/remove_solvent.in
 
       if [[ $RUN_MMPBSA -eq 1 ]]
       then
         #create_mmpbsa_input 
-        run_rescoring $LIG "mm_pbsa.in" min_no_ntr_noWAT.rst7 ${TOPO}/${LIG}_vac_com.parm7 ${TOPO}/${LIG}_vac_rec.parm7 ${TOPO}/${LIG}_vac_lig.parm7 1 MMPBSA.py.MPI mmpbsa
+        run_rescoring $LIG "mm_pbsa.in" min_no_ntr_noWAT.rst7 ${TOPO}/${LIG}_vac_com.parm7 ${TOPO}/${LIG}_vac_rec.parm7 ${TOPO}/${LIG}_vac_lig.parm7 1 MMPBSA.py.MPI mmpbsa &
       elif [[ $RUN_MMGBSA -eq 1 ]]
       then
         #create_mmgbsa_input
-        run_rescoring $LIG "mm_gbsa.in" ${RESCORING_PATH}/min_no_ntr_noWAT.rst7 ${TOPO}/${LIG}_vac_com.parm7 ${TOPO}/${LIG}_vac_rec.parm7 ${TOPO}/${LIG}_vac_lig.parm7 1 MMPBSA.py.MPI mmgbsa
+        run_rescoring $LIG "mm_gbsa.in" ${RESCORING_PATH}/min_no_ntr_noWAT.rst7 ${TOPO}/${LIG}_vac_com.parm7 ${TOPO}/${LIG}_vac_rec.parm7 ${TOPO}/${LIG}_vac_lig.parm7 1 MMPBSA.py.MPI mmgbsa &
       fi
     done
   done
