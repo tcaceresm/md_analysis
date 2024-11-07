@@ -200,8 +200,8 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
             echo "  Doing for ${LIG}"
 
             # Topology and coord file
-            CRD=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv
-            TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv
+            CRD=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv_com
+            TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv_com
             EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/equi/     
 
             OLD=$CRD
@@ -245,7 +245,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           echo 
           
           # Topology and coord file
-          TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
+          TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
           PROD_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/prod/npt
           OLD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/equi/npt/npt_equil_6
 
@@ -267,7 +267,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           for LIG in "${LIGANDS[@]}"
           do
             # Topology and coord file
-            TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv.parm7
+            TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv_com
             PROD_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/prod/npt
             OLD=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/equi/npt/npt_equil_6
 
