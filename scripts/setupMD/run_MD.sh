@@ -191,28 +191,35 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           echo " # Protein-Ligand! #"
           echo 
 
-          # Topology and coord file
-          CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
-          TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
-          EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/
-
           declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
           declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
           for LIG in "${LIGANDS[@]}"
             do
+
             echo "  Doing for ${LIG}"
+
+            # Topology and coord file
+            CRD=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv
+            TOPO=${WDPATH}/MD/${RECEPTOR}/${LIG}/topo/${LIG}_solv.parm7
+            EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/${LIG}/setupMD/rep${rep}/equi/     
+
             OLD=$CRD
+
+            cd $EQUI_PATH
+
             for STEP in ${EQUI_protocol[@]}
               do
                 if [[ "$STEP" == "npt_equil_1" ]] #change directory
                 then
-                  cd $EQUI_PATH/npt              
+                  cd $EQUI_PATH/npt      
                 fi
 
                 if [[ "$STEP" == "npt_equil_6" ]]
                 then
                   RESTRAINED=0
+                else
+                  RESTRAINED=1
                 fi               
                 NEW=$STEP
                 run_MD $OLD $NEW $TOPO $CRD $RESTRAINED
