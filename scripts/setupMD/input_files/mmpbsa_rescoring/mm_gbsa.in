@@ -1,9 +1,6 @@
 Input file for GBSA
 &general
-startframe=1, endframe=1,
-verbose=2, keep_files=0, netcdf=1,
-use_sander=1
+verbose=2, keep_files=1, netcdf=1
 /
 &gb
-igb=1, saltcon=0.1, surfoff=0.0,
-surften=0.0072, molsurf=0, probe=0
+igb=1, saltcon=0.150, molsurf=0
