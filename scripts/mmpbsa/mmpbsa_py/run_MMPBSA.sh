@@ -44,7 +44,7 @@ while getopts ":hd:d:m:r:g:y:n:" option; do
       d) # Enter the MD Directory
          WD_PATH=$OPTARG;;
       m) # Run minimization
-         RUN_MINIMIZATION=OPTARG;;
+         RUN_MINIMIZATION=$OPTARG;;
       r) # Run mm/pbsa rescoring
          RUN_MMPBSA=$OPTARG;;
       g) # Run mm/gbsa rescoring
