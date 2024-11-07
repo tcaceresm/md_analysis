@@ -36,13 +36,15 @@ RUN_MINIMIZATION=0
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:d:r:g:y:n:" option; do
+while getopts ":hd:d:m:r:g:y:n:" option; do
    case $option in
       h) # Print this help
          Help
          exit;;
       d) # Enter the MD Directory
          WD_PATH=$OPTARG;;
+      m) # Run minimization
+         RUN_MINIMIZATION=OPTARG;;
       r) # Run mm/pbsa rescoring
          RUN_MMPBSA=$OPTARG;;
       g) # Run mm/gbsa rescoring
