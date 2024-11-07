@@ -107,9 +107,9 @@ function run_MD ()
 
     if [[ ${RESTRAINED} -eq 1 ]]
     then  
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $REF.rst7 -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO.parm7 -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -ref $REF.rst7 -inf $NEW.info
     else
-      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
+      $CUDA_EXE -O -i $NEW.in -o $NEW.out -p $TOPO.parm7 -x $NEW.nc -c $OLD.rst7 -r $NEW.rst7 -inf $NEW.info
     fi
     touch "${NEW}_successful.tmp"
     echo "Done ${NEW}"
@@ -159,7 +159,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
 
           # Topology and coord file
           CRD=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
-          TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv.parm7
+          TOPO=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/topo/${RECEPTOR}_solv
           EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/onlyProteinMD/rep${rep}/equi/
 
           cd $EQUI_PATH
@@ -201,7 +201,7 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
 
             # Topology and coord file
             CRD=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv
-            TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv.parm7
+            TOPO=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/topo/${LIG}_solv
             EQUI_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/equi/     
 
             OLD=$CRD
