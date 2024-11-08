@@ -12,7 +12,11 @@ Help()
    echo
    echo "This script perform MM/PB(G)SA rescoring of docked poses."
    echo "You must run setup_MD.sh first, using the same working directory."
-   echo "Minimization needs to be performed at least one time." 
+   echo "Minimization needs to be performed at least one time before performing MM/PB(G)SA calculations."
+   echo "If you need to compute MM/PB(G)SA for several ligands, specify [-c] flag. See below."
+   echo " In this case, each ligand calculation will be asigned to different threads and ran in parallel."
+   echo " Only MM/PB(G)SA calculation can be parallelized. Minimization won't be parallelized"
+
    echo
    echo "Options:"
    echo "  -h                   Print this help"
@@ -37,7 +41,7 @@ RUN_MINIMIZATION=0
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:d:m:r:g:y:n:" option; do
+while getopts ":hd:d:m:r:g:y:n:c:" option; do
    case $option in
       h) # Print this help
          Help
@@ -78,19 +82,19 @@ Powered by high fat food and procrastination
 ############################################################
 # Check output
 ############################################################
-function check_file() {
-  local FILE=$1
+function check_output() {
   
-  if [[ -f "${FILE}.nc" && ! -f "${FILE}_successful.tmp" ]]
+  local file=$1
+  
+  if [[ -f "${file}.nc" && ! -f "${file}_successful.tmp" ]]
   then
-    echo "${FILE} output exists but didn't finished correctly".
-    echo "Please check ${FILE}.out"
+    echo "${file} output exists but didn't finished correctly".
+    echo "Please check ${file}.out"
     echo "Exiting"
     echo 0
-
-  elif [[ -f "${FILE}_successful.tmp" ]]
+  elif [[ -f "${file}_successful.tmp" ]]
   then
-    echo "${FILE} already executed succesfully."
+    echo "${file} already executed succesfully."
     echo "Skipping."
     echo 1
   else
@@ -105,50 +109,57 @@ function check_file() {
 function run_minimization ()
 {
   # 3 steps minimization in explicit solvent
-  local TOPO=$1
-  local REF=$2
-  local CUDA_EXE=$3
+  local wdpath=$1
+  local receptor=$2
+  local lig=$3
+  local rep=$4
+
+  # Topology and coord file
+  topo=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/
+  ref=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${li}_solv_com
+  #RESCORING_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/mmpbsa_rescoring
+
   echo "####################"
-  echo " Minimization"
+  echo " Minimization receptor: ${receptor} - ligand: ${ligand}"
   echo "####################"
 
   echo "Running min_ntr_h.in"
-  status=$(check_file "min_ntr_h")
+  status=$(check_output "min_ntr_h")
   #status=$? #save output from last command
 
   if [[ $status -eq 2 ]]
   then
-    $CUDA_EXE -O -i min_ntr_h.in -o min_ntr_h.out -x min_ntr_h.nc -r min_ntr_h.rst7 -inf min_ntr_h.info -p $TOPO -c $REF.rst7 -ref $REF.rst7
+    $cuda_exe -O -i min_ntr_h.in -o min_ntr_h.out -x min_ntr_h.nc -r min_ntr_h.rst7 -inf min_ntr_h.info -p $topo -c $ref.rst7 -ref $ref.rst7
     touch min_ntr_h_successful.tmp
   fi
 
   echo
   echo "Running min_ntr_l.in"
   
-  status=$(check_file "min_ntr_l")
+  status=$(check_output "min_ntr_l")
   #status=$?
   
   if [[ $status -eq 2 ]]
   then
-    $CUDA_EXE -O -i min_ntr_l.in -o min_ntr_l.out -x min_ntr_l.nc -r min_ntr_l.rst7 -inf min_ntr_l.info -p $TOPO -c min_ntr_h.rst7 -ref $REF.rst7
+    $cuda_exe -O -i min_ntr_l.in -o min_ntr_l.out -x min_ntr_l.nc -r min_ntr_l.rst7 -inf min_ntr_l.info -p $topo -c min_ntr_h.rst7 -ref $ref.rst7
     touch min_ntr_l_successful.tmp
   fi
 
   echo
   echo "Running min_no_ntr.in"
   
-  status=$(check_file "min_no_ntr")
+  status=$(check_output "min_no_ntr")
   #status=$?
 
   if [[ $status -eq 2 ]]
   then
-    $CUDA_EXE -O -i min_no_ntr.in -o min_no_ntr.out -x min_no_ntr.nc -r min_no_ntr.rst7 -inf min_no_ntr.info -p $TOPO -c min_ntr_l.rst7
+    $cuda_exe -O -i min_no_ntr.in -o min_no_ntr.out -x min_no_ntr.nc -r min_no_ntr.rst7 -inf min_no_ntr.info -p $topo -c min_ntr_l.rst7
   touch "min_no_ntr_successful.tmp"
   fi
 }
 
 ############################################################
-# Strip WAT, Na+, Cl- from rst7
+# Strip WAT, Na+, Cl- from coordinates
 ############################################################
 
 function process_rst7 () {
@@ -166,63 +177,42 @@ EOF
 # Perform MM/PBGSA calculations
 ############################################################
 
-function run_rescoring () {
-  local LIG=$1
-  local INPUT_FILE=$2
-  local TRAJECTORY=$3
-  local COM_TOP=$4
-  local REC_TOP=$5
-  local LIG_TOP=$6
-  local THREADS=$7
-  local EXE=$8
-  local TYPE=$9
-  local RESCORING_PATH=${10}
-
-  echo "##############"
-  echo " Rescoring"
-  echo "##############"
+function rescoring () {
   
-  cd ${RESCORING_PATH}
-
-  ${EXE} -O \
-  -i $INPUT_FILE \
-  -cp ../../../topo/$COM_TOP \
-  -rp ../../../topo/$REC_TOP \
-  -lp ../../../topo/$LIG_TOP \
-  -y ${TRAJECTORY} \
-  -o ${LIG}_${TYPE}.data \
-  -eo ${LIG}_${TYPE}_frame.data
-  }
-
-############################################################
-# Process Ligand
-############################################################
-# Testing to run with gnu parallel
-
-function run_ligand_rescoring() {
   lig=$1
   rep=$2
-  WDPATH=$3
-  RECEPTOR=$4
+  wdpath=$3
+  receptor=$4
+  input_file=$5
+  type=$6
 
+  mmpbsa_exe=$(which MMPBSA.py)
+  if [[ -z ${mmpbsa_exe} ]]
+  then
+    echo "MMPBSA.py not present. Did you source amber?"
+    exit 1
+  fi
 
-  # Topology and coord file
-  TOPO="${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${lig}/topo"
-  RESCORING_PATH="${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${lig}/setupMD/rep${rep}/mmpbsa_rescoring"
+  # rescoring folder
+  rescoring_path="${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/setupMD/rep${rep}/mmpbsa_rescoring"
   
- 
-  run_rescoring $lig \
-  "mm_gbsa.in" \
-  "min_no_ntr_noWAT.rst7" \
-  "${lig}_vac_com.parm7" \
-  "${lig}_vac_rec.parm7" \
-  "${lig}_vac_lig.parm7" \
-  1 \
-  MMPBSA.py \
-  "mmgbsa" \
-  ${RESCORING_PATH}
+  echo "##############"
+  echo " Rescoring $receptor - $lig"
+  echo "##############"
+  
+  cd ${rescoring_path}
 
-}
+  ${mmpbsa_exe} -O \
+  -i $input_file \
+  -cp ../../../topo/${lig}_vac_com.parm7 \
+  -rp ../../../topo/${lig}_vac_rec.parm7 \
+  -lp ../../../topo/${lig}_vac_lig.parm7 \
+  -y min_no_ntr_noWAT.rst7 \
+  -o ${lig}_${type}.data \
+  -eo ${lig}_${type}_frame.data
+  
+  echo "DONE!"
+  }
 
 ############################################################
 # Main
@@ -257,8 +247,6 @@ fi
 
 LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
-CUDA_EXE=${AMBERHOME}/bin/pmemd.cuda
-
 echo
 echo "###########################"
 echo "# Receptor is ${RECEPTOR} #"
@@ -270,20 +258,54 @@ echo
 ################################
 
 # Export the function to be used by parallel
-export -f run_ligand_rescoring
-export -f run_rescoring
+export -f rescoring
 
 # Generate a list of all jobs
-jobs=()
-for LIG in "${LIGANDS[@]}"
-  do
+JOBS_MMPBSA=()
+JOBS_MMGBSA=()
+
+for REP in $(seq ${REPLICAS_START} ${REPLICAS_END})
+do
+  for LIG in "${LIGANDS[@]}"
+    
     LIG=$(basename "${LIG}")
+    
+    # Minimization
+    if [[ ${RUN_MINIMIZATION} -eq 1 ]]
+    then
+      run_minimization ${WDPATH} ${RECEPTOR} ${LIG} ${REP} #$TOPO/${LIG}_solv_com.parm7 $REF
+    fi
+          
     # For each replica-ligand combination, prepare the job for parallel execution
-    jobs+=("$LIG 1 ${WDPATH} ${RECEPTOR}")
+    JOBS_MMPBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR}" "mm_pbsa.in" "mmpbsa") # lig rep wdpath receptor
+    JOBS_MMGBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR}" "mm_gbsa.in" "mmgbsa")
+
   done
 
+done
+
+if [[ ${RUN_MMGBSA} -eq 1 ]]
+then
+
+fi
+
+# Run with GNU parallel
+printf "%s\n" "${JOBS_MMPBSA[@]}" | parallel -j $NUM_CORES --colsep ' ' rescoring {1} {2} {3} {4} {5} {6}
 
 
-# Run
-printf "%s\n" "${jobs[@]}" | parallel -j $NUM_CORES --colsep ' ' run_ligand_rescoring {1} {2} {3} {4}
 
+# if [[ ${RUN_MMGBSA} -eq 1 ]]
+# then
+#   JOBS_MMGBSA=()
+#   for LIG in "${LIGANDS[@]}"
+#   do
+#     for REP in $(seq $REPLICAS_START $REPLICAS_END)
+#       LIG=$(basename "${LIG}")
+#       # For each replica-ligand combination, prepare the job for parallel execution
+#       JOBS_MMGBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR}" "mm_gbsa.in" "mmgbsa") # lig rep wdpath receptor
+#     done
+#   done
+#   # Run with GNU parallel
+#   printf "%s\n" "${JOBS_MMGBSA[@]}" | parallel -j $NUM_CORES --colsep ' ' rescoring {1} {2} {3} {4} {5} {6}
+
+# fi
