@@ -118,7 +118,7 @@ function run_minimization ()
   # Topology and coord file
   topo=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/
   ref=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${lig}_solv_com
-  #RESCORING_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/mmpbsa_rescoring
+  rescoring_path=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/setupMD/rep${rep}/mmpbsa_rescoring
 
   echo "####################"
   echo " Minimization receptor: ${receptor} - ligand: ${lig}"
@@ -129,6 +129,8 @@ function run_minimization ()
     echo "${cuda_exe} not present. Did you source amber?"
     exit 1
   fi
+  
+  cd ${rescoring_path}
 
   echo "Running min_ntr_h.in"
   status=$(check_output "min_ntr_h")
