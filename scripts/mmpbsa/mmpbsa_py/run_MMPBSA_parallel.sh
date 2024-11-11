@@ -113,6 +113,7 @@ function run_minimization ()
   local receptor=$2
   local lig=$3
   local rep=$4
+  local cuda_exe=$5
 
   # Topology and coord file
   topo=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/
@@ -122,6 +123,12 @@ function run_minimization ()
   echo "####################"
   echo " Minimization receptor: ${receptor} - ligand: ${lig}"
   echo "####################"
+
+  if [[ -z ${cuda_exe} ]]
+  then
+    echo "${cuda_exe} not present. Did you source amber?"
+    exit 1
+  fi
 
   echo "Running min_ntr_h.in"
   status=$(check_output "min_ntr_h")
@@ -273,7 +280,8 @@ do
     # Minimization
     if [[ ${RUN_MINIMIZATION} -eq 1 ]]
     then
-      run_minimization ${WDPATH} ${RECEPTOR} ${LIG} ${REP} #$TOPO/${LIG}_solv_com.parm7 $REF
+      CUDA_EXE=$(which pmemd.cuda)
+      run_minimization ${WDPATH} ${RECEPTOR} ${LIG} ${REP} ${CUDA_EXE} #$TOPO/${LIG}_solv_com.parm7 $REF
     fi
           
     # For each replica-ligand combination, prepare the job for parallel execution
