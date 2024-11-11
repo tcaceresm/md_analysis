@@ -116,7 +116,7 @@ function run_minimization ()
 
   # Topology and coord file
   topo=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/
-  ref=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${li}_solv_com
+  ref=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${lig}_solv_com
   #RESCORING_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/mmpbsa_rescoring
 
   echo "####################"
