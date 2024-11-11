@@ -211,7 +211,7 @@ function rescoring () {
   cd ${rescoring_path}
 
   process_rst7 ${lig}
-  cpptraj -i ${rescoring_path}/remove_solvent.in
+  cpptraj -i ./remove_solvent.in
 
   ${mmpbsa_exe} -O \
   -i $input_file \
@@ -270,6 +270,7 @@ echo
 
 # Export the function to be used by parallel
 export -f rescoring
+export -f process_rst7
 
 # Generate a list of all jobs
 JOBS_MMPBSA=()
