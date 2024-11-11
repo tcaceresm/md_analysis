@@ -286,12 +286,15 @@ done
 
 if [[ ${RUN_MMGBSA} -eq 1 ]]
 then
-
+  # Run with GNU parallel
+  printf "%s\n" "${JOBS_MMGBSA[@]}" | parallel -j $NUM_CORES --colsep ' ' rescoring {1} {2} {3} {4} {5} {6}
 fi
 
-# Run with GNU parallel
-printf "%s\n" "${JOBS_MMPBSA[@]}" | parallel -j $NUM_CORES --colsep ' ' rescoring {1} {2} {3} {4} {5} {6}
-
+if [[ ${RUN_MMPBSA} -eq 1 ]]
+then
+  # Run with GNU parallel
+  printf "%s\n" "${JOBS_MMPBSA[@]}" | parallel -j $NUM_CORES --colsep ' ' rescoring {1} {2} {3} {4} {5} {6}
+fi
 
 
 # if [[ ${RUN_MMGBSA} -eq 1 ]]
