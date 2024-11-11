@@ -267,7 +267,7 @@ JOBS_MMGBSA=()
 for REP in $(seq ${REPLICAS_START} ${REPLICAS_END})
 do
   for LIG in "${LIGANDS[@]}"
-    
+  do  
     LIG=$(basename "${LIG}")
     
     # Minimization
