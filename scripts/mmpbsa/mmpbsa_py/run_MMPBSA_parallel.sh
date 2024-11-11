@@ -173,7 +173,6 @@ function run_minimization ()
 
 function process_rst7 () {
   local LIG=$1
-  
   cat > remove_solvent.in <<EOF
 parm ../../../topo/${LIG}_solv_com.parm7
 trajin min_no_ntr.rst7
@@ -287,8 +286,8 @@ do
     fi
           
     # For each replica-ligand combination, prepare the job for parallel execution
-    JOBS_MMPBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR}" "mm_pbsa.in" "mmpbsa") # lig rep wdpath receptor
-    JOBS_MMGBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR}" "mm_gbsa.in" "mmgbsa")
+    JOBS_MMPBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR} mm_pbsa.in mmpbsa") # lig rep wdpath receptor
+    JOBS_MMGBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR} mm_gbsa.in mmgbsa")
 
   done
 
