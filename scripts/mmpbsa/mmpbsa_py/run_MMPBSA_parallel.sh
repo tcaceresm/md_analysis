@@ -116,8 +116,8 @@ function run_minimization ()
   local cuda_exe=$5
 
   # Topology and coord file
-  topo=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/
-  ref=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${lig}_solv_com
+  topo=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${lig}_solv_com.parm7
+  ref=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/topo/${lig}_solv_com.rst7
   rescoring_path=${wdpath}/MD/${receptor}/proteinLigandMD/${lig}/setupMD/rep${rep}/mmpbsa_rescoring
 
   echo "####################"
@@ -138,7 +138,7 @@ function run_minimization ()
 
   if [[ $status -eq 2 ]]
   then
-    $cuda_exe -O -i min_ntr_h.in -o min_ntr_h.out -x min_ntr_h.nc -r min_ntr_h.rst7 -inf min_ntr_h.info -p $topo -c $ref.rst7 -ref $ref.rst7
+    $cuda_exe -O -i min_ntr_h.in -o min_ntr_h.out -x min_ntr_h.nc -r min_ntr_h.rst7 -inf min_ntr_h.info -p $topo -c $ref -ref $ref
     touch min_ntr_h_successful.tmp
   fi
 
@@ -150,7 +150,7 @@ function run_minimization ()
   
   if [[ $status -eq 2 ]]
   then
-    $cuda_exe -O -i min_ntr_l.in -o min_ntr_l.out -x min_ntr_l.nc -r min_ntr_l.rst7 -inf min_ntr_l.info -p $topo -c min_ntr_h.rst7 -ref $ref.rst7
+    $cuda_exe -O -i min_ntr_l.in -o min_ntr_l.out -x min_ntr_l.nc -r min_ntr_l.rst7 -inf min_ntr_l.info -p $topo -c min_ntr_h.rst7 -ref $ref
     touch min_ntr_l_successful.tmp
   fi
 
