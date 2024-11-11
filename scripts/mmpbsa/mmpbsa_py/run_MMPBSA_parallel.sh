@@ -120,7 +120,7 @@ function run_minimization ()
   #RESCORING_PATH=${WDPATH}/MD/${RECEPTOR}/proteinLigandMD/${LIG}/setupMD/rep${rep}/mmpbsa_rescoring
 
   echo "####################"
-  echo " Minimization receptor: ${receptor} - ligand: ${ligand}"
+  echo " Minimization receptor: ${receptor} - ligand: ${lig}"
   echo "####################"
 
   echo "Running min_ntr_h.in"
