@@ -172,9 +172,9 @@ function run_minimization ()
 ############################################################
 
 function process_rst7 () {
-  local LIG=$1
+  local lig=$1
   cat > remove_solvent.in <<EOF
-parm ../../../topo/${LIG}_solv_com.parm7
+parm ../../../topo/${lig}_solv_com.parm7
 trajin min_no_ntr.rst7
 strip :WAT,Na+,Cl-
 trajout min_no_ntr_noWAT.rst7
@@ -209,6 +209,9 @@ function rescoring () {
   echo "##############"
   
   cd ${rescoring_path}
+
+  process_rst7 ${lig}
+  cpptraj -i ${rescoring_path}/remove_solvent.in
 
   ${mmpbsa_exe} -O \
   -i $input_file \
