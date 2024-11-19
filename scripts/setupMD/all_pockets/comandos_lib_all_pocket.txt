@@ -1,0 +1,8 @@
+for i in $(seq 1 14); do antechamber -i sitio_${i}.mol2 -fi mol2 -o sitio_${i}_prep.mol2 -fo mol2 -at gaff2 -rn L${i}; done
+for i in $(seq 1 14); do antechamber -i sitio_${i}_prep.mol2 -fi mol2 -o sitio_${i}_prep.pdb -fo pdb -at gaff2 -rn L${i}; done
+
+# Este una vez nomás
+parmchk2 -i "${LIGAND_LIB}/${LIG}.mol2" -f mol2 -o "${LIGAND_LIB}/${LIG}.frcmod"
+#
+
+for i in $(seq 1 14); do cp leap_lib.in leap_lib_tmp.in ; sed -i "s/SITIO/${i}/g" leap_lib_tmp.in ; tleap -f leap_lib_tmp.in ; done

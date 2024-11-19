@@ -1,0 +1,90 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff2
+
+set default PBradii mbondi
+
+loadoff ../lib/L1.lib
+loadoff ../lib/L2.lib
+loadoff ../lib/L3.lib
+loadoff ../lib/L4.lib
+loadoff ../lib/L5.lib
+loadoff ../lib/L6.lib
+loadoff ../lib/L7.lib
+loadoff ../lib/L8.lib
+loadoff ../lib/L9.lib
+loadoff ../lib/L10.lib
+loadoff ../lib/L11.lib
+loadoff ../lib/L12.lib
+loadoff ../lib/L13.lib
+loadoff ../lib/L14.lib
+
+L1 = loadpdb ../lib/sitio_1_prep.pdb
+L2 = loadpdb ../lib/sitio_2_prep.pdb
+L3 = loadpdb ../lib/sitio_3_prep.pdb
+L4 = loadpdb ../lib/sitio_4_prep.pdb
+L5 = loadpdb ../lib/sitio_5_prep.pdb
+L6 = loadpdb ../lib/sitio_6_prep.pdb
+L7 = loadpdb ../lib/sitio_7_prep.pdb
+L8 = loadpdb ../lib/sitio_8_prep.pdb
+L9 = loadpdb ../lib/sitio_9_prep.pdb
+L10 = loadpdb ../lib/sitio_10_prep.pdb
+L11 = loadpdb ../lib/sitio_11_prep.pdb
+L12 = loadpdb ../lib/sitio_12_prep.pdb
+L13 = loadpdb ../lib/sitio_13_prep.pdb
+L14 = loadpdb ../lib/sitio_14_prep.pdb
+
+REC = loadpdb ../../../receptor/ClpP4_prep.pdb
+COM = combine {REC L1 L2 L3 L4 L5 L6 L7 L8 L9 L10 L11 L12 L13 L14}
+
+
+savepdb COM ./AV145_com.pdb
+savepdb REC ./AV145_rec.pdb
+savepdb L1 ./AV145_L1.pdb
+savepdb L2 ./AV145_L2.pdb
+savepdb L3 ./AV145_L3.pdb
+savepdb L4 ./AV145_L4.pdb
+savepdb L5 ./AV145_L5.pdb
+savepdb L6 ./AV145_L6.pdb
+savepdb L7 ./AV145_L7.pdb
+savepdb L8 ./AV145_L8.pdb
+savepdb L9 ./AV145_L9.pdb
+savepdb L10 ./AV145_L10.pdb
+savepdb L11 ./AV145_L11.pdb
+savepdb L12 ./AV145_L12.pdb
+savepdb L13 ./AV145_L13.pdb
+savepdb L14 ./AV145_L14.pdb
+
+loadAmberParams ../lib/AV145.frcmod
+
+saveAmberParm REC ./AV145_vac_rec.parm7 ./AV145_vac_rec.rst7
+saveAmberParm COM ./AV145_vac_com.parm7 ./AV145_vac_com.rst7
+saveAmberParm L1 ./AV145_vac_l1.parm7 ./AV145_vac_l1.rst7
+saveAmberParm L2 ./AV145_vac_l2.parm7 ./AV145_vac_l2.rst7
+saveAmberParm L3 ./AV145_vac_l3.parm7 ./AV145_vac_l2.rst7
+saveAmberParm L4 ./AV145_vac_l4.parm7 ./AV145_vac_l3.rst7
+saveAmberParm L5 ./AV145_vac_l5.parm7 ./AV145_vac_l4.rst7
+saveAmberParm L6 ./AV145_vac_l6.parm7 ./AV145_vac_l5.rst7
+saveAmberParm L7 ./AV145_vac_l7.parm7 ./AV145_vac_l6.rst7
+saveAmberParm L8 ./AV145_vac_l8.parm7 ./AV145_vac_l7.rst7
+saveAmberParm L9 ./AV145_vac_l9.parm7 ./AV145_vac_l8.rst7
+saveAmberParm L10 ./AV145_vac_l10.parm7 ./AV145_vac_l9.rst7
+saveAmberParm L11 ./AV145_vac_l11.parm7 ./AV145_vac_l10.rst7
+saveAmberParm L12 ./AV145_vac_l12.parm7 ./AV145_vac_l12.rst7
+saveAmberParm L13 ./AV145_vac_l13.parm7 ./AV145_vac_l13.rst7
+saveAmberParm L14 ./AV145_vac_l14.parm7 ./AV145_vac_l14.rst7
+
+
+#charge LIG
+charge REC
+charge COM
+
+
+addIons COM Na+ 0
+addions COM Cl- 0
+
+solvatebox COM TIP3PBOX 14.0
+savepdb COM ./AV145_solv_com.pdb
+saveAmberParm COM ./AV145_solv_com.parm7 ./AV145_solv_com.rst7
+
+quit

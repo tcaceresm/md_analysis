@@ -1,0 +1,10 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+source leaprc.gaff2
+
+loadAmberParams FV11_R.frcmod
+LSITIO = loadmol2 sitio_SITIO_prep.mol2
+check LSITIO
+saveoff LSITIO LSITIO.lib
+
+quit
