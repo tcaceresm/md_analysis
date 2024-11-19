@@ -191,12 +191,13 @@ for rep in $(seq $REPLICAS_START $REPLICAS_END) # Repetitions
           echo " # Protein-Ligand! #"
           echo 
 
-          declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
-          declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
-
+          LIGANDS_MOL2=("${WDPATH}/ligands/"*.mol2)
+          LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
+          
           for LIG in "${LIGANDS[@]}"
             do
 
+            LIG=$(basename "${LIG}")
             echo "  Doing for ${LIG}"
 
             # Topology and coord file

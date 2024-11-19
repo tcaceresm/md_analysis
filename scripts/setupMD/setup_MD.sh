@@ -16,8 +16,7 @@ and an optional \"ligands\" and \"cofactor\" folder containing MOL2 file of liga
     echo "   1) Setup a only-protein MD. See [-p] flag below."
     echo "   2) Setup a Protein-Ligand MD. See [-z] flag below."
     echo "You can setup both at the same time."
-    echo "If you want to re-run this script to debug something, you can save some time setting
- r|l|c|x|k flags to zero. See examples below."
+    echo "If you want to re-run this script to debug something, you can save some time setting r|l|c|x|k flags to zero. See examples below."
     echo
     echo "Options:"
     echo "  -h               Show this help message and exit."
