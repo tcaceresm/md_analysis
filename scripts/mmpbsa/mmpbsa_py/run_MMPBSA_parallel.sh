@@ -41,7 +41,7 @@ RUN_MINIMIZATION=0
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-while getopts ":hd:d:m:r:g:y:n:c:" option; do
+while getopts ":hd:m:r:g:y:n:c:" option; do
    case $option in
       h) # Print this help
          Help
@@ -269,12 +269,15 @@ echo
 ################################
 
 # Export the function to be used by parallel
+export -f run_minimization
+export -f check_output
 export -f rescoring
 export -f process_rst7
 
 # Generate a list of all jobs
 JOBS_MMPBSA=()
 JOBS_MMGBSA=()
+JOBS_MINIMIZATION=()
 
 for REP in $(seq ${REPLICAS_START} ${REPLICAS_END})
 do
@@ -283,19 +286,28 @@ do
     LIG=$(basename "${LIG}")
     
     # Minimization
-    if [[ ${RUN_MINIMIZATION} -eq 1 ]]
-    then
-      CUDA_EXE=$(which pmemd.cuda)
-      run_minimization ${WDPATH} ${RECEPTOR} ${LIG} ${REP} ${CUDA_EXE} #$TOPO/${LIG}_solv_com.parm7 $REF
-    fi
+#    if [[ ${RUN_MINIMIZATION} -eq 1 ]]
+#    then
+#      CUDA_EXE=$(which pmemd.cuda)
+      #run_minimization ${WDPATH} ${RECEPTOR} ${LIG} ${REP} ${CUDA_EXE} #$TOPO/${LIG}_solv_com.parm7 $REF
+#    fi
           
     # For each replica-ligand combination, prepare the job for parallel execution
     JOBS_MMPBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR} mm_pbsa.in mmpbsa") # lig rep wdpath receptor
     JOBS_MMGBSA+=("${LIG} ${REP} ${WDPATH} ${RECEPTOR} mm_gbsa.in mmgbsa")
 
+    CUDA_EXE=$(which pmemd.cuda)
+    JOBS_MINIMIZATION+=("${WDPATH} ${RECEPTOR} ${LIG} ${REP} ${CUDA_EXE}")
+
   done
 
 done
+
+
+if [[ ${RUN_MINIMIZATION} -eq 1 ]]
+then
+  printf "%s\n" "${JOBS_MINIMIZATION[@]}" | parallel -j $NUM_CORES --colsep ' ' run_minimization {1} {2} {3} {4} {5}
+fi
 
 if [[ ${RUN_MMGBSA} -eq 1 ]]
 then
