@@ -344,11 +344,10 @@ PrepareProteinLigandMD() {
         echo "Exiting"
         exit 1
     fi
-    
+
     TOTALRES=$(awk '/ATOM/ {print $5}' "${TOPO}/${LIG}_com.pdb" | tail -n 1)
     NSTEPS=$((500000 * $TIME))
     NSTEPS_EQUI=$((500000 * $EQUI_TIME))
-
     for rep in $(seq 1 $N)
     do 
         cp -r ${SCRIPT_PATH}/input_files/equi/* ${MD_FOLDER}/rep${rep}/equi/
@@ -482,33 +481,103 @@ then
     # Leap input para topologias complejo proteina-ligando
     LEAP_TOPO="leap_create_com.in"
 
-    for LIG in "${LIGANDS[@]}"
-    do
+    # for LIG in "${LIGANDS[@]}"
+    # do
+    #     LIG=$(basename "${LIG}")
+        
+    #     CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
+        
+    #     if [[ $PREP_LIG -eq 1 ]]
+    #     then
+    #         PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
+    #     fi
+
+    #     if [[ $PREP_TOPO -eq 1 ]]
+    #     then
+    #         PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
+    #     fi
+
+    #     if [[ $PREP_MD -eq 1 ]]
+    #     then
+    #         PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
+    #     fi
+
+    #     if [[ $MMPBSA -eq 1 ]]
+    #     then
+    #         PrepareProteinLigandMMPBSA $LIG $RECEPTOR_NAME $REPLICAS
+    #     fi
+
+    # done
+
+    #######
+
+    # Assuming necessary environment variables are set:
+    # $LIGANDS (Array of ligands), $RECEPTOR_NAME, $WDPATH, $LEAP_TOPO, $COMPUTE_CHARGES, etc.
+
+    # Export functions
+    export -f CreateProteinLigandDirectories
+    export -f PrepareLigand
+    export -f PrepareProteinLigandTopology
+    export -f PrepareProteinLigandMD
+    export -f PrepareProteinLigandMMPBSA
+
+    # Export necessary variables for parallel jobs
+    export AMBERHOME
+    export SCRIPT_PATH
+    export LIG
+    export WDPATH
+    export LEAP_LIGAND
+    export LEAP_TOPO
+    export COMPUTE_CHARGES
+    export PREP_LIG
+    export PREP_TOPO
+    export PREP_MD
+    export MMPBSA
+    export REPLICAS
+    export TIME
+    export EQUI_TIME
+
+    RECEPTOR_NAME=${RECEPTOR_NAME[0]} 
+    
+    export RECEPTOR_NAME
+
+    # Function to process each ligand
+    process_ligand() {
+	echo "REPLICAS ${REPLICAS}"
+        LIG=$1  # The ligand file name
+	RECEPTOR_NAME=$2
+
         LIG=$(basename "${LIG}")
-        
+        # Create directories for protein-ligand setup
         CreateProteinLigandDirectories $REPLICAS $LIG $RECEPTOR_NAME
-        
-        if [[ $PREP_LIG -eq 1 ]]
-        then
-            PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
-        fi
 
-        if [[ $PREP_TOPO -eq 1 ]]
-        then
-            PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
-        fi
+         if [[ $PREP_LIG -eq 1 ]]
+         then
+             PrepareLigand $LIG "${WDPATH}/ligands" "leap_lib.in" "${WDPATH}/MD/${RECEPTOR_NAME}/proteinLigandMD/${LIG}/lib" "LIG" ${COMPUTE_CHARGES}
+         fi
 
-        if [[ $PREP_MD -eq 1 ]]
-        then
-            PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
-        fi
+         if [[ $PREP_TOPO -eq 1 ]]
+         then
+             PrepareProteinLigandTopology "$LIG" "$RECEPTOR_NAME" $LEAP_TOPO
+         fi
 
-        if [[ $MMPBSA -eq 1 ]]
-        then
-            PrepareProteinLigandMMPBSA $LIG $RECEPTOR_NAME $REPLICAS
-        fi
+         if [[ $PREP_MD -eq 1 ]]
+         then
+             PrepareProteinLigandMD "$LIG" "$RECEPTOR_NAME" $REPLICAS
+         fi
 
-    done
+         if [[ $MMPBSA -eq 1 ]]
+         then
+             PrepareProteinLigandMMPBSA $LIG $RECEPTOR_NAME $REPLICAS
+         fi
+    }
+
+    # Export the function so it can be used by parallel
+    export -f process_ligand
+
+    # Run the jobs in parallel
+    parallel --jobs 33 process_ligand ::: "${LIGANDS[@]}" ::: "${RECEPTOR_NAME}"
+    ###################
 fi
 
 echo "DONE!"
