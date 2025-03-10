@@ -332,6 +332,10 @@ do
       echo "########################"
       
       LIG=false
+
+      PROD_INPUT_FILES=$SCRIPT_PATH/prod_processing/onlyProtein/
+      EQUI_INPUT_FILES=$SCRIPT_PATH/equi_processing/onlyProtein/
+      
       process_trajectories ${WDPATH} ${RECEPTOR} ${LIG} ${PROCESS_EQUI} ${PROCESS_PROD} \
                            ${PROCESS_ONLY_PROTEIN} 0 \
                            ${PROCESS_OUT_FILES} ${PROCESS_WAT} ${PROCESS_RMSD} ${ENSEMBLE}
@@ -343,6 +347,8 @@ do
       declare -a LIGANDS_MOL2=($(ls ${WDPATH}/ligands/))
       declare -a LIGANDS=($(sed "s/.mol2//g" <<< "${LIGANDS_MOL2[*]}"))
 
+      PROD_INPUT_FILES=$SCRIPT_PATH/prod_processing/onlyProtein/
+      EQUI_INPUT_FILES=$SCRIPT_PATH/equi_processing/onlyProtein/
       for LIG in "${LIGANDS[@]}"
          do
          echo "Ligand is ${LIG}"
